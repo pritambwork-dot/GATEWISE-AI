@@ -14,6 +14,15 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@expo/vector-icons':
+        specifier: ^15.1.1
+        version: 15.1.1(expo-font@58.0.11(expo@51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)
+      '@gatewise/api-contracts':
+        specifier: workspace:*
+        version: link:../../packages/api-contracts
+      '@gatewise/design-tokens':
+        specifier: workspace:*
+        version: link:../../packages/design-tokens
       expo:
         specifier: ~51.0.0
         version: 51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1)
@@ -51,6 +60,9 @@ importers:
       '@babel/core':
         specifier: ^7.20.0
         version: 7.29.13(supports-color@8.1.1)
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
       '@types/react':
         specifier: ~18.2.45
         version: 18.2.79
@@ -942,6 +954,13 @@ packages:
       react: '*'
       react-native: '*'
 
+  '@expo/vector-icons@15.1.1':
+    resolution: {integrity: sha512-Iu2VkcoI5vygbtYngm7jb4ifxElNVXQYdDrYkT7UCEIiKLeWnQY0wf2ZhHZ+Wro6Sc5TaumpKUOqDRpLi5rkvw==}
+    peerDependencies:
+      expo-font: '>=14.0.4'
+      react: '*'
+      react-native: '*'
+
   '@expo/xcpretty@4.4.7':
     resolution: {integrity: sha512-EbxYllZ7/ozONVZd425cm4XnolfW+AmSFT5aP7Jdno6oc3WrYQcHz2CO20z/2rwWwYgztmV2PXvYH+BQ8YFjqg==}
     hasBin: true
@@ -969,17 +988,37 @@ packages:
     resolution: {integrity: sha512-4QqS3LY5PBmTRHj9sAg1HLoPzqAI0uOX6wI/TRqHIcOxlFidy6YEmCQJk6FSZjNLGCeubDMfmkWL+qaLKhSGQA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  '@jest/diff-sequences@30.5.0':
+    resolution: {integrity: sha512-OsqBjHXCn8cadasoAZBP6nWYvMsRhpMzGXTpxJ5aO04NlbdhIz+FVe3q49l0AwVhsz/cEmIpBes6gAFl1/dWQg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   '@jest/environment@29.7.0':
     resolution: {integrity: sha512-aQIfHDq33ExsN4jP1NWGXhxgQ/wixs60gDiKO+XVMd8Mn0NWPWgc34ZQDTb2jKaUWQ7MuwoitXAsN2XVXNMpAw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  '@jest/expect-utils@30.5.2':
+    resolution: {integrity: sha512-d/HOLSrJUlBIl6n3LzOa7cjW3xdePm5H5gQw2lixZ/0h157l9sw3mLblzFqnPcTbhDzhRQdBOX3A3KcG73nm5Q==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/fake-timers@29.7.0':
     resolution: {integrity: sha512-q4DH1Ha4TTFPdxLsqDXK1d3+ioSL7yL5oCMJZgDYm6i+6CygW5E5xVr/D1HdsGxjt1ZWSfUAs9OxSB/BNelWrQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  '@jest/get-type@30.5.0':
+    resolution: {integrity: sha512-9/2VUPitAjmBzbvDvqrxmvB7BzWsBW0WmkkojX1ODuxX1NLGxx9gfaZpHB0z8DtJ9uhGNmZG/VXBhf8uO0OV8Q==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  '@jest/pattern@30.5.0':
+    resolution: {integrity: sha512-HdNQYSdRTEBNrginaqzQtTjG0HRMfrra/z6Ok7uL3S87vSlarIVohEsJsSj5edu3MiHoHjAkvPROz5ZjoKai+w==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  '@jest/schemas@30.5.0':
+    resolution: {integrity: sha512-/hunigyNpc4RCjC0VaW3f5RCUZVM2+WQ65qP7z083Gmvac7or2LI50XVNOtE4YPgBpV0yxYiAgorAPGniCoJmg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/types@24.9.0':
     resolution: {integrity: sha512-XKK7ze1apu5JWQ5eZjHITP66AX+QsLlbaJRBGYr8pNzwcAE2JVkwnf0yqjHTsDRcjR0mujy/NmZMXw5kl+kGBw==}
@@ -992,6 +1031,10 @@ packages:
   '@jest/types@29.6.3':
     resolution: {integrity: sha512-u3UPsIilWKOM3F9CXtrG8LEJmNxwoCQC/XVj4IKYXvvpx7QIi/Kg1LI5uDmDpKlac62NUtX7eLjRh+jVZcLOzw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  '@jest/types@30.5.1':
+    resolution: {integrity: sha512-LvVYn83nnXPl+Rg98nvcFgjx6nRMTArhSn6RAX/w3ELn54S8A42TYZvsCMdGUqTM8S0wyXbtlQdU6Hi6dykj9g==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -1332,6 +1375,9 @@ packages:
   '@sinclair/typebox@0.27.12':
     resolution: {integrity: sha512-hhyNJ+nbR6ZR7pToHvllEFun9TL0sbL+tk/ON75lo+Xas054uez98qRbsuNt7MBCyZKK4+8Yli/OAGZhmfBZ/g==}
 
+  '@sinclair/typebox@0.34.52':
+    resolution: {integrity: sha512-XiMQh7qqVlxZzcVD+kkGMNGMzcTrDMLWI7S4x7z1MkCkbDPrekpZXEUK0eZqZFMuHQg2a2DZOcDIh9o5v3Gonw==}
+
   '@sinonjs/commons@3.0.1':
     resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
 
@@ -1358,6 +1404,9 @@ packages:
 
   '@types/istanbul-reports@3.0.4':
     resolution: {integrity: sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==}
+
+  '@types/jest@30.0.0':
+    resolution: {integrity: sha512-XTYugzhuwqWjws0CVz8QpM36+T+Dz5mTEBKhNs/esGLnCIlGdRy+Dq78NRjd7ls7r8BC8ZRMOrKlkO1hU0JOwA==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -1757,6 +1806,10 @@ packages:
 
   ci-info@3.9.0:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
+    engines: {node: '>=8'}
+
+  ci-info@4.5.0:
+    resolution: {integrity: sha512-d1uM8k5UZEyPza1n/MG3ko8nKupKN0KJpFsipgPcgaCCvV+IqIfJ+NzTjetlLM+UcXZx3+cLrNr76+eAO7G1Mw==}
     engines: {node: '>=8'}
 
   clean-stack@2.2.0:
@@ -2159,6 +2212,10 @@ packages:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
     engines: {node: '>=10'}
 
+  expect@30.5.2:
+    resolution: {integrity: sha512-0LNuMvs8/5mRYhnCR4k+lGV7fqPMs6Bnksda4S3zsCUmdxBpAn4zU4NNzXdq1pMKe/H4W5t/zVIDSJ/H3e0vDA==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   expo-asset@10.0.10:
     resolution: {integrity: sha512-0qoTIihB79k+wGus9wy0JMKq7DdenziVx3iUkGvMAy2azscSgWH6bd2gJ9CGnhC6JRd3qTMFBL0ou/fx7WZl7A==}
     peerDependencies:
@@ -2183,6 +2240,13 @@ packages:
     resolution: {integrity: sha512-Q1i2NuYri3jy32zdnBaHHCya1wH1yMAsI+3CCmj9zlQzlhsS9Bdwcj2W3c5eU5FvH2hsNQy4O+O1NnM6o/pDaQ==}
     peerDependencies:
       expo: '*'
+
+  expo-font@58.0.11:
+    resolution: {integrity: sha512-6r7s6xk2L2orvum+x+TY1fzEcMtuCBRQTLgC/Su2uLzNPpT4L+E+S4IAGy8ZIjeVvwk2j2pj+HiZ23O7eh1PGQ==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
 
   expo-keep-awake@13.0.2:
     resolution: {integrity: sha512-kKiwkVg/bY0AJ5q1Pxnm/GvpeB6hbNJhcFsoOWDh2NlpibhCLaHL826KHUM+WsnJRbVRxJ+K9vbPRHEMvFpVyw==}
@@ -2812,6 +2876,10 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
+  jest-diff@30.5.2:
+    resolution: {integrity: sha512-rBtHnI6BWTiWj3lM7fOLVfChx7R9B0u9VV3PRHawKs79x6ZjW1QoSrKenaigNGWlvhtoi2BqvDbABDie+Os3xQ==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   jest-environment-node@29.7.0:
     resolution: {integrity: sha512-DOSwCRqXirTOyheM+4d5YZOrWcdu0LNZ87ewUoywbcb2XR4wKgqiG8vNeYwhjFMbEkfju7wx2GYH0P2gevGvFw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -2820,17 +2888,37 @@ packages:
     resolution: {integrity: sha512-zrteXnqYxfQh7l5FHyL38jL39di8H8rHoecLH3JNxH3BwOrBsNeabdap5e0I23lD4HHI8W5VFBZqG4Eaq5LNcw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  jest-matcher-utils@30.5.2:
+    resolution: {integrity: sha512-lFkB365PTIHOhPzwrb9T6gvlDnPpOZ7/c3ewOKKB7bzztqjVrtlyRL2MkyfJXpyY2u2SKw001JKrTx14fBUFcQ==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   jest-message-util@29.7.0:
     resolution: {integrity: sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  jest-message-util@30.5.1:
+    resolution: {integrity: sha512-UdQlLdd9wL/Ys7xRErckqwD6wPlSZYueosSWuHc1r2ztGLwlgPvtSJq2+BPEgaEY13WLvfFbmhTj8pba0Sd1jg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   jest-mock@29.7.0:
     resolution: {integrity: sha512-ITOMZn+UkYS4ZFh83xYAOzWStloNzJFO2s8DWrE4lhtGD+AorgnbkiKERe4wQVBydIGPx059g6riW5Btp6Llnw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  jest-mock@30.5.2:
+    resolution: {integrity: sha512-KTHb37Fhj8xY8qPFvTFaFJHcdsumQp+ExsUlgoX232Agmc706gagBs53+CYvulV7MVQo9AgXOUxsqzzVBoJlrA==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  jest-regex-util@30.5.0:
+    resolution: {integrity: sha512-Mg0WK7A6xRHLSA1udJ8y9f3lM0uUhFTBnLKzwPmqB9AylvpleJ6BLemR8K9dK27DY+cesDryoA7yLZCAHsPG1A==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   jest-util@29.7.0:
     resolution: {integrity: sha512-z6EbKajIpqGKU56y5KBUgy1dt1ihhQJgWzUlZHArA/+X2ad7Cb5iF+AK1EWVL/Bo7Rz9uurpqw6SiBCefUbCGA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  jest-util@30.5.1:
+    resolution: {integrity: sha512-yKuxmNy2rSbTXw+3SIPanJo+nV4/BS1p26v44IYBFMsswSQySfMMcPHErnOncda7i9HEz0q605rIhSTBVgrZTg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   jest-validate@29.7.0:
     resolution: {integrity: sha512-ZB7wHqaRGVw/9hST/OuFUReG7M8vKeq0/J2egIGLdvjHCmYqGARhzXmtgi+gVeZ5uXFF219aOc3Ls2yLg27tkw==}
@@ -3609,6 +3697,10 @@ packages:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
+  pretty-format@30.5.1:
+    resolution: {integrity: sha512-byhRAPguVKMQIj4kjJwJ5lAskVhfuiSdiYl/aLTWpgkGEmic2jYhJh1yE9ih8Ox44Xg9ccCT11/S6QrzSJuNrg==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
   proc-log@4.2.0:
     resolution: {integrity: sha512-g8+OnU/L2v+wyiVK+D5fA34J7EH8jZ8DDlvwhRCMxmMj7UCBvxiO1mGeN+36JXIKF4zevU4kRBd8lVgG9vLelA==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -3689,6 +3781,9 @@ packages:
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
+
+  react-is@19.3.1:
+    resolution: {integrity: sha512-RRieF6IyxQBkcK6pP8xOHprLTPW6QjRkbGdImtqNme+/hYVwCZkLQLdlZGOhUqXwkS9IEynaGvPJtv6XB/cz0Q==}
 
   react-native-helmet-async@2.0.4:
     resolution: {integrity: sha512-m3CkXWss6B1dd6mCMleLpzDCJJGGaHOLQsUzZv8kAASJmMfmVT4d2fx375iXKTRWT25ThBfae3dECuX5cq/8hg==}
@@ -5843,6 +5938,12 @@ snapshots:
       react: 18.2.0
       react-native: 0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1)
 
+  '@expo/vector-icons@15.1.1(expo-font@58.0.11(expo@51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)':
+    dependencies:
+      expo-font: 58.0.11(expo@51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)
+      react: 18.2.0
+      react-native: 0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1)
+
   '@expo/xcpretty@4.4.7':
     dependencies:
       '@babel/code-frame': 7.29.7
@@ -5874,12 +5975,18 @@ snapshots:
     dependencies:
       '@jest/types': 29.6.3
 
+  '@jest/diff-sequences@30.5.0': {}
+
   '@jest/environment@29.7.0':
     dependencies:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
       '@types/node': 20.19.43
       jest-mock: 29.7.0
+
+  '@jest/expect-utils@30.5.2':
+    dependencies:
+      '@jest/get-type': 30.5.0
 
   '@jest/fake-timers@29.7.0':
     dependencies:
@@ -5890,9 +5997,20 @@ snapshots:
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
+  '@jest/get-type@30.5.0': {}
+
+  '@jest/pattern@30.5.0':
+    dependencies:
+      '@types/node': 20.19.43
+      jest-regex-util: 30.5.0
+
   '@jest/schemas@29.6.3':
     dependencies:
       '@sinclair/typebox': 0.27.12
+
+  '@jest/schemas@30.5.0':
+    dependencies:
+      '@sinclair/typebox': 0.34.52
 
   '@jest/types@24.9.0':
     dependencies:
@@ -5911,6 +6029,16 @@ snapshots:
   '@jest/types@29.6.3':
     dependencies:
       '@jest/schemas': 29.6.3
+      '@types/istanbul-lib-coverage': 2.0.6
+      '@types/istanbul-reports': 3.0.4
+      '@types/node': 20.19.43
+      '@types/yargs': 17.0.35
+      chalk: 4.1.2
+
+  '@jest/types@30.5.1':
+    dependencies:
+      '@jest/pattern': 30.5.0
+      '@jest/schemas': 30.5.0
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
       '@types/node': 20.19.43
@@ -6457,6 +6585,8 @@ snapshots:
 
   '@sinclair/typebox@0.27.12': {}
 
+  '@sinclair/typebox@0.34.52': {}
+
   '@sinonjs/commons@3.0.1':
     dependencies:
       type-detect: 4.0.8
@@ -6488,6 +6618,11 @@ snapshots:
   '@types/istanbul-reports@3.0.4':
     dependencies:
       '@types/istanbul-lib-report': 3.0.3
+
+  '@types/jest@30.0.0':
+    dependencies:
+      expect: 30.5.2
+      pretty-format: 30.5.1
 
   '@types/json-schema@7.0.15': {}
 
@@ -6928,6 +7063,8 @@ snapshots:
 
   ci-info@3.9.0: {}
 
+  ci-info@4.5.0: {}
+
   clean-stack@2.2.0: {}
 
   cli-cursor@2.1.0:
@@ -7360,6 +7497,15 @@ snapshots:
       signal-exit: 3.0.7
       strip-final-newline: 2.0.0
 
+  expect@30.5.2:
+    dependencies:
+      '@jest/expect-utils': 30.5.2
+      '@jest/get-type': 30.5.0
+      jest-matcher-utils: 30.5.2
+      jest-message-util: 30.5.1
+      jest-mock: 30.5.2
+      jest-util: 30.5.1
+
   expo-asset@10.0.10(expo@51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       expo: 51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1)
@@ -7390,6 +7536,12 @@ snapshots:
     dependencies:
       expo: 51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1)
       fontfaceobserver: 2.3.0
+
+  expo-font@58.0.11(expo@51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0):
+    dependencies:
+      expo: 51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1)
+      react: 18.2.0
+      react-native: 0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1)
 
   expo-keep-awake@13.0.2(expo@51.0.39(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(react-native@0.74.5(@babel/core@7.29.13(supports-color@8.1.1))(@babel/preset-env@7.29.7(@babel/core@7.29.13(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@18.2.79)(react@18.2.0)(supports-color@8.1.1))(react@18.2.0)(supports-color@8.1.1)):
     dependencies:
@@ -8071,6 +8223,13 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
+  jest-diff@30.5.2:
+    dependencies:
+      '@jest/diff-sequences': 30.5.0
+      '@jest/get-type': 30.5.0
+      chalk: 4.1.2
+      pretty-format: 30.5.1
+
   jest-environment-node@29.7.0:
     dependencies:
       '@jest/environment': 29.7.0
@@ -8081,6 +8240,13 @@ snapshots:
       jest-util: 29.7.0
 
   jest-get-type@29.6.3: {}
+
+  jest-matcher-utils@30.5.2:
+    dependencies:
+      '@jest/get-type': 30.5.0
+      chalk: 4.1.2
+      jest-diff: 30.5.2
+      pretty-format: 30.5.1
 
   jest-message-util@29.7.0:
     dependencies:
@@ -8094,11 +8260,33 @@ snapshots:
       slash: 3.0.0
       stack-utils: 2.0.6
 
+  jest-message-util@30.5.1:
+    dependencies:
+      '@babel/code-frame': 7.29.7
+      '@jest/types': 30.5.1
+      '@types/stack-utils': 2.0.3
+      chalk: 4.1.2
+      graceful-fs: 4.2.11
+      jest-util: 30.5.1
+      picomatch: 4.0.7
+      pretty-format: 30.5.1
+      slash: 3.0.0
+      stack-utils: 2.0.6
+
   jest-mock@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
       '@types/node': 20.19.43
       jest-util: 29.7.0
+
+  jest-mock@30.5.2:
+    dependencies:
+      '@jest/expect-utils': 30.5.2
+      '@jest/types': 30.5.1
+      '@types/node': 20.19.43
+      jest-util: 30.5.1
+
+  jest-regex-util@30.5.0: {}
 
   jest-util@29.7.0:
     dependencies:
@@ -8108,6 +8296,15 @@ snapshots:
       ci-info: 3.9.0
       graceful-fs: 4.2.11
       picomatch: 2.3.2
+
+  jest-util@30.5.1:
+    dependencies:
+      '@jest/types': 30.5.1
+      '@types/node': 20.19.43
+      chalk: 4.1.2
+      ci-info: 4.5.0
+      graceful-fs: 4.2.11
+      picomatch: 4.0.7
 
   jest-validate@29.7.0:
     dependencies:
@@ -8952,6 +9149,13 @@ snapshots:
       ansi-styles: 5.2.0
       react-is: 18.3.1
 
+  pretty-format@30.5.1:
+    dependencies:
+      '@jest/react-is-18': react-is@18.3.1
+      '@jest/react-is-19': react-is@19.3.1
+      '@jest/schemas': 30.5.0
+      ansi-styles: 5.2.0
+
   proc-log@4.2.0: {}
 
   process-nextick-args@2.0.1: {}
@@ -9029,6 +9233,8 @@ snapshots:
   react-is@17.0.2: {}
 
   react-is@18.3.1: {}
+
+  react-is@19.3.1: {}
 
   react-native-helmet-async@2.0.4(react@18.2.0):
     dependencies:

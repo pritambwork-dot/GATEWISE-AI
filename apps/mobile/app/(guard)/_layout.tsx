@@ -1,33 +1,26 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
-import { Colors } from '../../constants/theme';
-import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../../src/theme';
 
 export default function GuardTabsLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: Colors.deep,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
           backgroundColor: Colors.surface,
-          borderTopColor: Colors.border,
-          height: 64,
+          borderTopColor: Colors.borderSubtle,
+          borderTopWidth: 1,
+          height: 60,
           paddingBottom: 8,
-          paddingTop: 8,
+          paddingTop: 6,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '600',
-        },
-        headerStyle: {
-          backgroundColor: Colors.surface,
-          borderBottomColor: Colors.border,
-          borderBottomWidth: 1,
-        },
-        headerTintColor: Colors.deep,
-        headerTitleStyle: {
           fontWeight: '700',
-          fontSize: 16,
         },
       }}
     >
@@ -35,32 +28,56 @@ export default function GuardTabsLayout() {
         name="verify"
         options={{
           title: 'Verify',
-          headerTitle: 'Main Campus Gate · Post 02',
           tabBarLabel: 'Verify',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'shield-checkmark' : 'shield-checkmark-outline'}
+              size={22}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="activity"
         options={{
           title: 'Activity',
-          headerTitle: 'Gate Verification History',
           tabBarLabel: 'Activity',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'time' : 'time-outline'}
+              size={22}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="visitors"
         options={{
           title: 'Visitors',
-          headerTitle: 'Visitor Pass Management',
           tabBarLabel: 'Visitors',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'people' : 'people-outline'}
+              size={22}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          headerTitle: 'Guard Profile & Station Diagnostics',
           tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={22}
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>

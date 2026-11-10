@@ -1,171 +1,259 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors } from '../../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Typography, Spacing, BorderRadius } from '../../src/theme';
+import { useAuth } from '../../src/providers/AuthProvider';
+import { InputField, PasswordField, PrimaryButton, SurfaceCard } from '../../src/components';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login, isLoading, toggleDemoMode, demoMode } = useAuth();
+
   const [employeeId, setEmployeeId] = useState('SEC-G014');
   const [password, setPassword] = useState('guard123');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSignIn = () => {
-    if (!employeeId || !password) {
-      Alert.alert('Required', 'Please enter your Employee ID and password.');
+  const handleSignIn = async () => {
+    if (!employeeId.trim() || !password.trim()) {
+      setErrorMessage('Please enter both Employee ID and station password.');
       return;
     }
-    // Navigate to guard station home
-    router.replace('/(guard)/verify');
+
+    setErrorMessage(null);
+    try {
+      await login(employeeId.trim(), password);
+      router.replace('/(guard)/verify');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
+    }
+  };
+
+  const handleQuickDemoFill = () => {
+    setEmployeeId('SEC-G014');
+    setPassword('guard123');
+    setErrorMessage(null);
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={styles.keyboardContainer}
     >
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>GATE POST TERMINAL</Text>
-          </View>
-          <Text style={styles.title}>GATEWISE AI</Text>
-          <Text style={styles.subtitle}>Institutional Gate Verification · IIM Sambalpur</Text>
-        </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.cardWrapper}>
+          {/* Institution Brand Header */}
+          <View style={styles.brandHeader}>
+            <View style={styles.shieldIconContainer}>
+              <Ionicons name="shield-checkmark" size={32} color={Colors.primary} />
+            </View>
+            <Text style={styles.brandTitle}>GATEWISE AI</Text>
+            <Text style={styles.brandSubtitle}>
+              Institutional Gate Verification · IIM Sambalpur
+            </Text>
 
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Guard Employee ID</Text>
-            <TextInput
-              style={styles.input}
-              value={employeeId}
-              onChangeText={setEmployeeId}
+            <View style={styles.gateLockBadge}>
+              <Ionicons name="location-outline" size={13} color={Colors.deep} />
+              <Text style={styles.gateLockText}>Main Campus Gate · Post 02</Text>
+            </View>
+          </View>
+
+          {/* Login Card */}
+          <SurfaceCard variant="elevated" padding={Spacing.xl}>
+            <Text style={styles.formTitle}>Guard Terminal Sign-In</Text>
+            <Text style={styles.formSubtitle}>
+              Enter assigned officer credentials to unlock gate terminal.
+            </Text>
+
+            {errorMessage && (
+              <View style={styles.errorBanner}>
+                <Ionicons name="alert-circle" size={16} color={Colors.error} />
+                <Text style={styles.errorBannerText}>{errorMessage}</Text>
+              </View>
+            )}
+
+            <InputField
+              label="Guard Employee ID"
               placeholder="e.g. SEC-G014"
+              value={employeeId}
+              onChangeText={(text) => {
+                setEmployeeId(text);
+                if (errorMessage) setErrorMessage(null);
+              }}
               autoCapitalize="characters"
+              leftIcon={<Ionicons name="card-outline" size={18} color={Colors.textSecondary} />}
             />
-          </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Station Password</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={setPassword}
+            <PasswordField
+              label="Station Password"
               placeholder="••••••••"
-              secureTextEntry
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (errorMessage) setErrorMessage(null);
+              }}
             />
+
+            <PrimaryButton
+              title="Authenticate & Lock Gate"
+              onPress={handleSignIn}
+              loading={isLoading}
+              icon={<Ionicons name="log-in-outline" size={20} color="#FFFFFF" />}
+              style={styles.signInButton}
+            />
+
+            {/* Quick Demo Fill Helper */}
+            <TouchableOpacity
+              onPress={handleQuickDemoFill}
+              style={styles.demoFillButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="sparkles-outline" size={14} color={Colors.deep} />
+              <Text style={styles.demoFillText}>Quick-Fill Officer Ramesh (SEC-G014)</Text>
+            </TouchableOpacity>
+          </SurfaceCard>
+
+          {/* Security Compliance Note */}
+          <View style={styles.securityNoteCard}>
+            <Ionicons name="lock-closed-outline" size={16} color={Colors.textSecondary} />
+            <Text style={styles.securityNoteText}>
+              Security guards cannot create or approve permanent identities. Single-shot camera
+              scans only. Zero video recording or permanent biometric storage.
+            </Text>
           </View>
-
-          <TouchableOpacity style={styles.button} onPress={handleSignIn} activeOpacity={0.8}>
-            <Text style={styles.buttonText}>Authenticate & Lock Gate</Text>
-          </TouchableOpacity>
         </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Station: Post 02 · Main Campus Gate</Text>
-          <Text style={styles.securityNote}>
-            Guards cannot create permanent identities. All activity is cryptographically logged.
-          </Text>
-        </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  keyboardContainer: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
-    padding: 24,
+    padding: Spacing.xl,
   },
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 3,
+  cardWrapper: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
   },
-  header: {
+  brandHeader: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: Spacing.xl,
   },
-  badge: {
+  shieldIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: Colors.lightGreen,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 9999,
-    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+    borderWidth: 1.5,
+    borderColor: Colors.mint,
   },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '700',
+  brandTitle: {
+    ...Typography.titleLarge,
     color: Colors.deep,
-    letterSpacing: 0.8,
+    letterSpacing: 0.5,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: Colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: 12,
+  brandSubtitle: {
+    ...Typography.caption,
     color: Colors.textSecondary,
+    textAlign: 'center',
     marginTop: 4,
   },
-  form: {
-    gap: 16,
-  },
-  inputGroup: {
-    gap: 6,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-  },
-  input: {
-    backgroundColor: Colors.background,
+  gateLockBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surfaceSecondary,
     borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 14,
+    borderColor: Colors.borderSubtle,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: BorderRadius.full,
+    marginTop: Spacing.md,
+  },
+  gateLockText: {
+    ...Typography.badge,
+    color: Colors.deep,
+    fontSize: 11,
+    marginLeft: 4,
+  },
+  formTitle: {
+    ...Typography.titleSmall,
     color: Colors.textPrimary,
   },
-  button: {
-    backgroundColor: Colors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
+  formSubtitle: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    marginTop: 2,
+    marginBottom: Spacing.base,
+  },
+  errorBanner: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
+    backgroundColor: '#FDF2F2',
+    borderWidth: 1,
+    borderColor: '#F8CECE',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.base,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  footer: {
-    marginTop: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    alignItems: 'center',
-    gap: 4,
-  },
-  footerText: {
-    fontSize: 12,
+  errorBannerText: {
+    ...Typography.caption,
+    color: Colors.error,
     fontWeight: '600',
-    color: Colors.textPrimary,
+    marginLeft: 6,
+    flex: 1,
   },
-  securityNote: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 14,
+  signInButton: {
+    marginTop: Spacing.sm,
+  },
+  demoFillButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
+    marginTop: Spacing.xs,
+  },
+  demoFillText: {
+    ...Typography.captionBold,
+    color: Colors.deep,
+    marginLeft: 4,
+  },
+  securityNoteCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: Colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    marginTop: Spacing.base,
+  },
+  securityNoteText: {
+    ...Typography.caption,
+    fontSize: 11,
+    color: Colors.textSecondary,
+    marginLeft: 8,
+    flex: 1,
+    lineHeight: 16,
   },
 });
