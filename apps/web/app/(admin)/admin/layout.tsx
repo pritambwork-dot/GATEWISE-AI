@@ -12,6 +12,8 @@ import {
 import { AuthProvider, useAuth } from '@/lib/contexts/auth-context';
 import { api } from '@/lib/services/api';
 import { NotificationItem } from '@/types';
+import { AssistantSidePanel } from '@/components/assistant/AssistantSidePanel';
+import { AssistantTriggerButton } from '@/components/assistant/AssistantTriggerButton';
 
 const NAV_GROUPS = [
   {
@@ -54,6 +56,19 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showAssistant, setShowAssistant] = useState(false);
+
+  // Keyboard shortcut Cmd+K or Ctrl+/ for AI Assistant
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setShowAssistant((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Fetch live notifications
   useEffect(() => {
@@ -246,6 +261,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
               />
             </div>
 
+            {/* AI Assistant Co-Pilot Trigger */}
+            <AssistantTriggerButton
+              isOpen={showAssistant}
+              onClick={() => setShowAssistant(!showAssistant)}
+            />
+
             {/* Notification Centre Button & Popover */}
             <div className="relative">
               <button
@@ -336,6 +357,12 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+
+      {/* Slide-Over AI Operations Assistant */}
+      <AssistantSidePanel
+        isOpen={showAssistant}
+        onClose={() => setShowAssistant(false)}
+      />
     </div>
   );
 }

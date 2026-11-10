@@ -14,7 +14,8 @@
 * **Single-Shot Camera Capture**: Manual capture triggered exclusively by the stationed security officer. Zero continuous background video surveillance or ambient tracking.
 * **Decoupled Identity vs. Authorization**: Biometric comparison confirms *who* a person is ($\ge 90\%$ confidence); institutional records separately determine *whether* their term clearance permits entry.
 * **Immutable Cryptographic Audit Trail**: Every verification event and guard decision is sealed with a SHA-256 cryptographic signature.
-* **Zero Biometric Exposure to LLMs**: The embedded Gemini AI assistant operates purely on operational SOPs and text policies. Biometrics are never sent to external LLMs.
+* **GATEWISE AI Assistant (Google ADK & Gemini)**: Institutional operations co-pilot powered by Google ADK and Gemini Developer API. Executes read-only operational summaries and prepares human-in-the-loop action proposals via an `@assistant-ui/react` desktop side-panel.
+* **Zero Biometric Exposure to LLMs**: The embedded Gemini AI assistant operates purely on operational SOPs, aggregate statistics, and text policies. Biometrics and private PII are never sent to external LLMs.
 
 ---
 
@@ -45,7 +46,8 @@ gatewise-ai/
 │
 ├── backend/                  # Modular FastAPI Core Backend
 │   ├── app/
-│   │   ├── api/v1/           # Versioned REST & SSE endpoints
+│   │   ├── agent/            # GATEWISE AI Assistant (Google ADK, Gemini, Tools, Security, Session)
+│   │   ├── api/v1/           # Versioned REST & SSE endpoints (including /agent/chat & /agent/message)
 │   │   ├── core/             # Pydantic settings, database pool, structured logging
 │   │   ├── models/           # SQLAlchemy declarative models (User, Gate, Identity, Event, etc.)
 │   │   ├── schemas/          # Pydantic v2 validation models
@@ -65,6 +67,7 @@ gatewise-ai/
 │   └── api-contracts/        # Shared TypeScript interfaces for auth, events, and visitor passes
 │
 ├── docs/
+│   ├── agent/                # AGENT_REPOSITORY_RESEARCH.md, AGENT_OPERATIONS.md
 │   ├── architecture/         # REPOSITORY_AUDIT.md, SYSTEM_ARCHITECTURE.md, DEVELOPMENT_ROADMAP.md
 │   ├── design/               # DESIGN_IMPLEMENTATION.md
 │   ├── api/                  # API contracts & endpoint specifications
