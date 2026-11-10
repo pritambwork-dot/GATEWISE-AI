@@ -154,6 +154,10 @@ class GuardGateAssignment(Base):
     gate = relationship("Gate", back_populates="guard_assignments")
     assigner = relationship("User", foreign_keys=[assigned_by])
 
+    @property
+    def is_active(self) -> bool:
+        return self.status == "ACTIVE"
+
 # ==============================================================================
 # 4. INSTITUTIONAL IDENTITIES
 # ==============================================================================
@@ -415,3 +419,7 @@ class DriveSyncJob(Base):
     last_error = Column(Text, nullable=True)
     error_message = Column(Text, nullable=True) # Alias
     page_token = Column(String, nullable=True)
+
+    @property
+    def status(self) -> str:
+        return self.job_status

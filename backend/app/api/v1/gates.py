@@ -17,9 +17,94 @@ class AssignGuardRequest(BaseModel):
     shift_name: Optional[str] = "Shift A (Morning 06:00 - 14:00)"
     effective_until: Optional[datetime] = None
 
+class CreateGateRequest(BaseModel):
+    gate_code: str
+    gate_name: str
+    location: str
+    operating_hours: Optional[str] = "24/7 Continuous"
+    status: Optional[str] = "ACTIVE"
+
+class UpdateGateRequest(BaseModel):
+    gate_name: Optional[str] = None
+    location: Optional[str] = None
+    operating_hours: Optional[str] = None
+    status: Optional[str] = None
+
 @router.get("/")
 def list_gates(db: Session = Depends(get_db)):
     return db.query(Gate).all()
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+def create_gate(
+    payload: CreateGateRequest,
+    admin: User = Depends(require_roles([GatewiseRole.ADMIN, GatewiseRole.SUPER_ADMIN])),
+    db: Session = Depends(get_db)
+):
+    """Admin-only: Creates a new physical institutional gate post."""
+    existing = db.query(Gate).filter(Gate.gate_code == payload.gate_code).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Gate with code '{payload.gate_code}' already exists."
+        )
+
+    gate = Gate(
+        gate_code=payload.gate_code,
+        gate_name=payload.gate_name,
+        location=payload.location,
+        operating_hours=payload.operating_hours,
+        status=payload.status or "ACTIVE"
+    )
+    db.add(gate)
+
+    audit = AuditLog(
+        action="GATE_POST_CREATED",
+        actor_id=admin.id,
+        actor_email=admin.email,
+        resource_type="GATE",
+        resource_id=gate.id,
+        result="SUCCESS",
+        details={"gate_code": payload.gate_code, "gate_name": payload.gate_name}
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(gate)
+    return gate
+
+@router.patch("/{gate_id}")
+def update_gate(
+    gate_id: str,
+    payload: UpdateGateRequest,
+    admin: User = Depends(require_roles([GatewiseRole.ADMIN, GatewiseRole.SUPER_ADMIN])),
+    db: Session = Depends(get_db)
+):
+    """Admin-only: Updates gate operational status, name, or location."""
+    gate = db.query(Gate).filter(Gate.id == gate_id).first()
+    if not gate:
+        raise HTTPException(status_code=404, detail=f"Gate '{gate_id}' not found.")
+
+    if payload.gate_name is not None:
+        gate.gate_name = payload.gate_name
+    if payload.location is not None:
+        gate.location = payload.location
+    if payload.operating_hours is not None:
+        gate.operating_hours = payload.operating_hours
+    if payload.status is not None:
+        gate.status = payload.status
+
+    audit = AuditLog(
+        action="GATE_POST_UPDATED",
+        actor_id=admin.id,
+        actor_email=admin.email,
+        resource_type="GATE",
+        resource_id=gate.id,
+        result="SUCCESS",
+        details={"gate_id": gate.id, "new_status": gate.status}
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(gate)
+    return gate
 
 @router.get("/my-assignment")
 def get_my_active_assignment(

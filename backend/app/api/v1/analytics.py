@@ -30,7 +30,7 @@ def get_dashboard_metrics(db: Session = Depends(get_db)):
     for g in gates:
         g_events = [e for e in events if e.gate_id == g.id]
         active_assignment = db.query(GuardGateAssignment).filter(
-            GuardGateAssignment.gate_id == g.id, GuardGateAssignment.is_active == True
+            GuardGateAssignment.gate_id == g.id, GuardGateAssignment.status == "ACTIVE"
         ).first()
         guard = db.query(User).filter(User.id == active_assignment.guard_id).first() if active_assignment else None
 
@@ -74,7 +74,7 @@ def get_dashboard_metrics(db: Session = Depends(get_db)):
         active_visitors_on_campus=active_visitors if active_visitors > 0 else 42,
         pending_enrollment_referrals=len(enrollment_reqs) if len(enrollment_reqs) > 0 else 3,
         system_health_status="HEALTHY",
-        drive_sync_last_status=last_sync.status if last_sync else "COMPLETED",
+        drive_sync_last_status=last_sync.job_status if last_sync else "COMPLETED",
         drive_sync_last_time=last_sync.completed_at if last_sync and last_sync.completed_at else datetime.now(timezone.utc),
         drive_identities_count=identities_count if identities_count > 0 else 5,
         gates=gate_items,

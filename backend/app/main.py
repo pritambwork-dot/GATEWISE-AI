@@ -13,7 +13,8 @@ from .models.entities import (
 from .services.drive_sync_service import run_drive_sync
 from .api.v1 import (
     auth, verification, identities, visitors,
-    enrollment, activity, gates, assistant, analytics, repository
+    enrollment, activity, gates, assistant, analytics, repository,
+    guards, audit, notifications
 )
 
 def seed_initial_data():
@@ -196,6 +197,9 @@ app.include_router(gates.router, prefix=settings.API_V1_STR)
 app.include_router(repository.router, prefix=settings.API_V1_STR)
 app.include_router(assistant.router, prefix=settings.API_V1_STR)
 app.include_router(analytics.router, prefix=settings.API_V1_STR)
+app.include_router(guards.router, prefix=settings.API_V1_STR)
+app.include_router(audit.router, prefix=settings.API_V1_STR)
+app.include_router(notifications.router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():
