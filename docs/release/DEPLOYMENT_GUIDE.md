@@ -27,7 +27,7 @@ ENVIRONMENT="production"
 DEBUG=False
 
 # Database
-DATABASE_URL="postgresql://gatewise_user:STRONG_PASSWORD@postgres.internal:5432/gatewise_prod"
+DATABASE_URL="postgresql://<db_user>:<db_password>@<db_host>:5432/<db_name>"
 
 # Security & Tokens
 SECRET_KEY="PRODUCTION_CRYPTO_SECRET_AT_LEAST_64_CHARS"

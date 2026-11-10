@@ -181,21 +181,34 @@ app = FastAPI(
 # Cross-Origin Resource Sharing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.allowed_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
+    expose_headers=["X-Request-ID", "X-Response-Time-Ms"]
 )
 
 @app.middleware("http")
-async def add_performance_tracing_headers(request: Request, call_next):
+async def add_security_and_tracing_headers(request: Request, call_next):
     req_id = request.headers.get("X-Request-ID") or f"req-{uuid.uuid4().hex[:12]}"
     t0 = time.perf_counter()
     response = await call_next(request)
     duration_ms = (time.perf_counter() - t0) * 1000
+    
+    # Performance tracing headers
     response.headers["X-Request-ID"] = req_id
     response.headers["X-Response-Time-Ms"] = f"{duration_ms:.2f}"
+    
+    # Production security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(self), microphone=(), geolocation=()"
+    
+    if settings.ENVIRONMENT == "production":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        
     return response
 
 # Register API v1 Routers

@@ -1,0 +1,67 @@
+# ==============================================================================
+# GATEWISE AI — Edge Reverse Proxy & TLS Configuration (Caddy)
+# Enforces TLS 1.3, HSTS, HTTP-to-HTTPS redirection, and reverse proxy routing
+# ==============================================================================
+
+{
+    email admin.security@iimsambalpur.ac.in
+    admin off
+}
+
+# 1. Public Website & APK Download Centre (www.gatewiseai.internal / apex)
+gatewiseai.internal, www.gatewiseai.internal {
+    reverse_proxy web:3000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+    }
+
+    # Static asset aggressive caching
+    @static path /_next/static/* /favicon.* /apple-touch-icon.png /icon-*
+    header @static Cache-Control "public, max-age=31536000, immutable"
+
+    encode zstd gzip
+}
+
+# 2. Administrator Command Centre Portal (admin.gatewiseai.internal)
+admin.gatewiseai.internal {
+    # Forward all admin traffic to Next.js admin route
+    reverse_proxy web:3000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+    }
+
+    encode zstd gzip
+}
+
+# 3. Backend Verification & Real-time Telemetry API (api.gatewiseai.internal)
+api.gatewiseai.internal {
+    reverse_proxy backend:8000 {
+        # Streaming SSE configuration
+        transport http {
+            keepalive 30s
+            compression off
+        }
+    }
+
+    # Limit request body to 15MB for base64 image capture
+    request_body {
+        max_size 15MB
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}

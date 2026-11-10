@@ -1,0 +1,186 @@
+name: GATEWISE AI — Continuous Integration & Controlled Release Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*.*.*', 'release-*' ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. SECURITY & SECRET SCANNING AUDIT
+  # ============================================================================
+  security-audit:
+    name: Security & Secret Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Execute Secret Scan Tool
+        run: |
+          python3 scripts/security_secret_scan.py
+
+  # ============================================================================
+  # 2. CODE QUALITY & STATIC TYPECHECK
+  # ============================================================================
+  code-quality:
+    name: Code Quality & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js & pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck Mobile Guard Application
+        run: pnpm --filter @gatewise/mobile typecheck
+
+      - name: Build Design Tokens & API Contracts
+        run: |
+          pnpm --filter @gatewise/design-tokens build
+          pnpm --filter @gatewise/api-contracts build
+
+  # ============================================================================
+  # 3. BACKEND & INTEGRATION TEST SUITE
+  # ============================================================================
+  test-backend:
+    name: Backend Test Suite (FastAPI & pgvector)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install System Libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libglib2.0-0 libgl1-mesa-glx libpq-dev
+
+      - name: Install Python Dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Run Pytest Test Suite
+        env:
+          APP_ENV: testing
+          DATABASE_URL: sqlite:///backend/gatewise.db
+          GATEWISE_ASSISTANT_ENABLED: "true"
+        run: |
+          PYTHONPATH=. pytest backend/tests/ -v --durations=10
+
+      - name: Verify Disaster Recovery Snapshot & Parity
+        run: |
+          python3 scripts/db_backup_restore.py
+
+  # ============================================================================
+  # 4. WEB PORTAL & PUBLIC SITE BUILD
+  # ============================================================================
+  build-web:
+    name: Next.js Web Portal & Download Centre Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js & pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Next.js Production Bundle
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+        run: |
+          pnpm --filter @gatewise/web build
+
+  # ============================================================================
+  # 5. ANDROID GUARD EXPO BUNDLE VERIFICATION
+  # ============================================================================
+  build-mobile-bundle:
+    name: Android Guard App Hermes Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js & pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 11.22.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Export Expo Bundle for Android
+        working-directory: apps/mobile
+        run: |
+          npx expo export --platform android --dump-sourcemap=false
+
+  # ============================================================================
+  # 6. CONTAINER DOCKER BUILD VALIDATION
+  # ============================================================================
+  build-docker-containers:
+    name: Production Docker Container Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Container
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: gatewise/backend:latest
+
+      - name: Build Web Portal Container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: false
+          tags: gatewise/web:latest

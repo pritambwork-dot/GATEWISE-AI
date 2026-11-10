@@ -6,6 +6,7 @@
 *.key
 *.keystore
 *.jks
+.signing_keys/
 
 # Dependencies
 node_modules/
@@ -48,6 +49,7 @@ htmlcov/
 *.db
 *.sqlite
 *.sqlite3
+backups/
 gatewise.db
 
 # Machine Learning Model Weights (OpenCV Zoo)

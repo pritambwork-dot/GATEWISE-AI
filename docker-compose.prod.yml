@@ -1,0 +1,133 @@
+version: '3.8'
+
+# ==============================================================================
+# GATEWISE AI — Production Infrastructure Compose Stack
+# Multi-container isolated architecture for institutional deployment
+# ==============================================================================
+
+networks:
+  gatewise-internal:
+    driver: bridge
+  gatewise-public:
+    driver: bridge
+
+volumes:
+  pg_prod_data:
+    driver: local
+  backend_storage:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local
+
+services:
+  # 1. PostgreSQL Relational Database with pgvector Extension
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: gatewise-prod-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gatewise_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password must be set in environment}
+      POSTGRES_DB: ${POSTGRES_DB:-gatewise_production}
+    volumes:
+      - pg_prod_data:/var/lib/postgresql/data
+    networks:
+      - gatewise-internal
+    # Database is strictly NOT exposed on public host network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gatewise_admin} -d ${POSTGRES_DB:-gatewise_production}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4096M
+
+  # 2. FastAPI Core Backend & Computer Vision Inference Engine
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gatewise-prod-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-gatewise_admin}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-gatewise_production}
+      DATABASE_POOL_SIZE: 15
+      SECRET_KEY: ${SECRET_KEY:?Cryptographic secret key must be set in environment}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://gatewiseai.internal,https://admin.gatewiseai.internal}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_DRIVE_FOLDER_ID: ${GOOGLE_DRIVE_FOLDER_ID:-}
+      GATEWISE_ASSISTANT_ENABLED: ${GATEWISE_ASSISTANT_ENABLED:-true}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
+      GEMINI_MAX_REQUESTS_PER_MINUTE: 30
+      GEMINI_DAILY_REQUEST_LIMIT: 1500
+    volumes:
+      - backend_storage:/app/storage
+    networks:
+      - gatewise-internal
+      - gatewise-public
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 3072M
+
+  # 3. Next.js Desktop Admin Portal & Public APK Download Centre
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: gatewise-prod-web
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      INTERNAL_BACKEND_URL: http://backend:8000/api/:path*
+      NEXT_PUBLIC_API_URL: https://api.gatewiseai.internal/api/v1
+    networks:
+      - gatewise-public
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 2048M
+
+  # 4. Edge Reverse Proxy & Automatic TLS Manager (Caddy)
+  proxy:
+    image: caddy:2-alpine
+    container_name: gatewise-prod-proxy
+    restart: unless-stopped
+    depends_on:
+      - web
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - gatewise-public

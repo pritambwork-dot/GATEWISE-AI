@@ -15,6 +15,23 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_SQLITE_PATH}")
     DATABASE_POOL_SIZE: int = int(os.getenv("DATABASE_POOL_SIZE", "10"))
     
+    # Operational Environment
+    ENVIRONMENT: str = os.getenv("APP_ENV", "development")
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "")
+    
+    @property
+    def allowed_cors_origins(self) -> list[str]:
+        if self.CORS_ORIGINS:
+            return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        if self.ENVIRONMENT == "production":
+            return [
+                "https://gatewiseai.internal",
+                "https://admin.gatewiseai.internal",
+                "https://api.gatewiseai.internal"
+            ]
+        # In development/staging, support localhost ports and wildcards
+        return ["*"]
+    
     # Biometric thresholds
     FACE_MATCH_AUTO_ADMIT: float = 0.90
     FACE_MATCH_CANDIDATE: float = 0.70
