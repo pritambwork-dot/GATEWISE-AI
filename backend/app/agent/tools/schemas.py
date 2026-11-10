@@ -10,7 +10,15 @@ class NavigationInput(BaseModel):
 class VerificationTrendsInput(BaseModel):
     timeframe: str = Field(
         default="today",
-        description="Time period to analyze: 'today', '7d', or '30d'"
+        description="Time period to analyze: 'today', 'yesterday', 'previous_7_days' / '7d', or 'previous_30_days' / '30d'"
+    )
+    start_date: Optional[str] = Field(
+        default=None,
+        description="Optional ISO start date for custom range filter"
+    )
+    end_date: Optional[str] = Field(
+        default=None,
+        description="Optional ISO end date for custom range filter"
     )
 
 class ExplainWorkflowInput(BaseModel):

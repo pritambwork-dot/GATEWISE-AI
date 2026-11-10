@@ -141,7 +141,19 @@ These tools **never modify state directly**. Instead, they emit structured `Acti
 +-----------------------------------+-------------+-------+-------+
 ```
 
-### 5.1 Privacy & Sanitization Pipeline
+### 5.2 Rate Limiting & Sliding Window Controls
+- **Per-Minute Window:** Enforced via `SlidingWindowRateLimiter` at **30 requests per minute** per user ID. Excess requests receive HTTP 429 Too Many Requests.
+- **Daily Quota Window:** Capped at **1,500 requests per day** across all threads.
+- **Session Auto-Reclamation:** Inactive administrator conversations expire after **60 minutes** (`SESSION_TTL_MINUTES=60`).
+
+### 5.3 Compliance Audit Logging
+- Every tool invocation automatically records an entry in the PostgreSQL `AuditLog` table:
+  - `action`: `"AGENT_TOOL_EXECUTION"`
+  - `resource_type`: `"AGENT_ASSISTANT"`
+  - `resource_id`: Executed tool name
+  - `details`: Sanitized parameters, timestamps, and caller user ID.
+
+---
 - **Input Screening:** Queries are scanned for prompt injection markers (`system override`, `developer mode`, `drop database`). Malicious requests are rejected immediately.
 - **Data Redaction:** Regex filters automatically redact 12-digit Aadhaar numbers, 10-digit telephone numbers, JWT tokens, API keys, and 128-D raw floating-point arrays before LLM processing.
 - **Output Scrubbing:** All tool dictionaries pass through `scrub_sensitive_dict`, stripping fields named `password`, `embedding`, `raw_vector`, or `token`.

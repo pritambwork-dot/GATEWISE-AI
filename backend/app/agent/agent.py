@@ -10,6 +10,7 @@ from .config import agent_settings
 from .prompts.system_prompt import GATEWISE_SYSTEM_PROMPT
 from .security.privacy import sanitize_text, detect_prompt_injection, scrub_sensitive_dict
 from .security.permissions import validate_tool_permission, is_tool_authorized
+from .security.rate_limiter import rate_limiter
 from .runtime.session import session_manager, AgentMessage, AgentSession
 from .runtime.streaming import (
     sse_text_delta, sse_tool_start, sse_tool_result,
@@ -37,54 +38,64 @@ class GatewiseAgent:
         tool_name: str,
         arguments: Dict[str, Any],
         user_role: str,
-        db: Session
+        db: Session,
+        actor_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Validates permissions and safely executes the requested tool."""
+        """Validates permissions, audits execution, and safely executes the requested tool."""
         validate_tool_permission(tool_name, user_role)
 
-        if tool_name == "get_dashboard_summary":
-            return tool_registry.get_dashboard_summary(db)
-        elif tool_name == "get_verification_trends":
-            timeframe = arguments.get("timeframe", "today")
-            return tool_registry.get_verification_trends(db, timeframe=timeframe)
-        elif tool_name == "get_gate_activity_summary":
-            return tool_registry.get_gate_activity_summary(db)
-        elif tool_name == "get_pending_enrollment_summary":
-            return tool_registry.get_pending_enrollment_summary(db)
-        elif tool_name == "get_visitor_summary":
-            return tool_registry.get_visitor_summary(db)
-        elif tool_name == "get_system_health_summary":
-            return tool_registry.get_system_health_summary(db)
-        elif tool_name == "explain_application_workflow":
-            topic = arguments.get("topic", "overview")
-            return tool_registry.explain_application_workflow(topic)
-        elif tool_name == "explain_status":
-            code = arguments.get("status_code", "VERIFIED_AUTHORIZED")
-            return tool_registry.explain_status(code)
-        elif tool_name == "navigate_to_page":
-            target = arguments.get("target_page", "/admin")
-            return tool_registry.navigate_to_page(target)
-        elif tool_name == "propose_gate_status_change":
-            proposal = tool_registry.propose_gate_status_change(
-                gate_code=arguments.get("gate_code", "MAIN-01"),
-                new_status=arguments.get("new_status", "MAINTENANCE"),
-                reason=arguments.get("reason", "Administrative review")
-            )
-            return {"proposal": proposal.model_dump()}
-        elif tool_name == "propose_enrollment_review":
-            proposal = tool_registry.propose_enrollment_review(
-                request_id=str(arguments.get("request_id", "REQ-001"))
-            )
-            return {"proposal": proposal.model_dump()}
-        elif tool_name == "propose_visitor_pass":
-            proposal = tool_registry.propose_visitor_pass(
-                visitor_name=arguments.get("visitor_name", "Visitor"),
-                purpose=arguments.get("purpose", "Official Campus Visit"),
-                host_department=arguments.get("host_department", "Administration")
-            )
-            return {"proposal": proposal.model_dump()}
-        else:
-            raise ValueError(f"Unknown tool: '{tool_name}'")
+        try:
+            if tool_name == "get_dashboard_summary":
+                res = tool_registry.get_dashboard_summary(db)
+            elif tool_name == "get_verification_trends":
+                timeframe = arguments.get("timeframe", "today")
+                start_date = arguments.get("start_date")
+                end_date = arguments.get("end_date")
+                res = tool_registry.get_verification_trends(db, timeframe=timeframe, start_date=start_date, end_date=end_date)
+            elif tool_name == "get_gate_activity_summary":
+                res = tool_registry.get_gate_activity_summary(db)
+            elif tool_name == "get_pending_enrollment_summary":
+                res = tool_registry.get_pending_enrollment_summary(db)
+            elif tool_name == "get_visitor_summary":
+                res = tool_registry.get_visitor_summary(db)
+            elif tool_name == "get_system_health_summary":
+                res = tool_registry.get_system_health_summary(db)
+            elif tool_name == "explain_application_workflow":
+                topic = arguments.get("topic", "overview")
+                res = tool_registry.explain_application_workflow(topic)
+            elif tool_name == "explain_status":
+                code = arguments.get("status_code", "VERIFIED_AUTHORIZED")
+                res = tool_registry.explain_status(code)
+            elif tool_name == "navigate_to_page":
+                target = arguments.get("target_page", "/admin")
+                res = tool_registry.navigate_to_page(target)
+            elif tool_name == "propose_gate_status_change":
+                proposal = tool_registry.propose_gate_status_change(
+                    gate_code=arguments.get("gate_code", "MAIN-01"),
+                    new_status=arguments.get("new_status", "MAINTENANCE"),
+                    reason=arguments.get("reason", "Administrative review")
+                )
+                res = {"proposal": proposal.model_dump()}
+            elif tool_name == "propose_enrollment_review":
+                proposal = tool_registry.propose_enrollment_review(
+                    request_id=str(arguments.get("request_id", "REQ-001"))
+                )
+                res = {"proposal": proposal.model_dump()}
+            elif tool_name == "propose_visitor_pass":
+                proposal = tool_registry.propose_visitor_pass(
+                    visitor_name=arguments.get("visitor_name", "Visitor"),
+                    purpose=arguments.get("purpose", "Official Campus Visit"),
+                    host_department=arguments.get("host_department", "Administration")
+                )
+                res = {"proposal": proposal.model_dump()}
+            else:
+                raise ValueError(f"Unknown tool: '{tool_name}'")
+
+            tool_registry.record_tool_audit(db, actor_id or "admin", tool_name, arguments, "SUCCESS")
+            return res
+        except Exception as e:
+            tool_registry.record_tool_audit(db, actor_id or "admin", tool_name, arguments, "FAILURE")
+            raise e
 
     async def stream_chat(
         self,
@@ -104,6 +115,9 @@ class GatewiseAgent:
             )
             yield sse_done(session_id or "new")
             return
+
+        # 2. Rate limiting check
+        rate_limiter.check_rate_limit(user_id)
 
         cleaned_query = sanitize_text(query)
         session = session_manager.get_or_create_session(session_id, user_id, user_role)
@@ -282,6 +296,25 @@ class GatewiseAgent:
         """
         q = query.lower()
 
+        # 0. Strict Security Invariants Enforcement
+        if any(term in q for term in ["raw identity", "photograph", "photo of", "student's photo", "face embedding", "biometric embedding", "raw embedding", "guard's credential", "credential", "password", "secret key"]):
+            yield sse_text_delta(
+                "Security Notice: Raw identity records, biometric photographs, facial embeddings, and credentials are encrypted institutional assets and are strictly isolated from the AI Assistant. Access is restricted to authorized personnel via secure admin modules."
+            )
+            return
+
+        if any(term in q for term in ["approve an identity", "approve identity", "grant entry", "grant access", "deny access", "override gate"]):
+            yield sse_text_delta(
+                "Security Violation: Autonomous identity approvals and entry grants are strictly prohibited by institutional policy. All gate interventions and enrollment determinations require manual review by authorized human personnel."
+            )
+            return
+
+        if any(term in q for term in ["unrestricted sql", "select * from", "drop table", "shell execution", "arbitrary shell", "bash", "exec "]):
+            yield sse_text_delta(
+                "Security Violation: Direct SQL execution and arbitrary command line shell operations are completely blocked by backend security controls."
+            )
+            return
+
         # 1. Navigation intents
         if "go to " in q or "open " in q or "navigate" in q:
             target = "/admin"
@@ -408,7 +441,8 @@ class GatewiseAgent:
 
                 gates = data.get("gates", [])
                 lines = [f"- **{g['name']}** (`{g['code']}`): Status **{g['status']}**, Scans: **{g['today_scans']}** (Verified: {g['verified_entries']}, Denied: {g['denied_entries']})" for g in gates]
-                msg = "### Gate Post Operational Status\n\n" + "\n".join(lines)
+                count_header = f"There are currently **{data.get('active_gate_count', len(gates))} active gates** operational on campus.\n\n"
+                msg = f"### Gate Post Operational Status\n\n{count_header}" + "\n".join(lines)
                 yield sse_text_delta(msg)
                 return
 
@@ -431,7 +465,7 @@ class GatewiseAgent:
                 yield sse_text_delta(msg)
                 return
 
-        if "health" in q or "system" in q or "status" in q:
+        if "health" in q or "system health" in q or "subsystem" in q:
             if is_tool_authorized("get_system_health_summary", user_role):
                 yield sse_tool_start("get_system_health_summary", {})
                 data = self._execute_tool("get_system_health_summary", {}, user_role, db)
@@ -439,26 +473,30 @@ class GatewiseAgent:
                 executed_tools.append({"tool": "get_system_health_summary", "args": {}, "result": data})
 
                 cv = data.get("computer_vision_engine", {})
+                drive = data.get("google_drive_sync", {})
                 msg = (
                     "### GATEWISE Subsystem Health Diagnostics\n\n"
                     f"- **FastAPI Backend:** **{data['backend_api']}**\n"
                     f"- **PostgreSQL DB:** **{data['database_postgresql']}**\n"
                     f"- **Computer Vision Pipeline:** YuNet ({cv.get('yunet_detector')}), SFace ({cv.get('sface_recognizer')})\n"
                     f"- **Biometric Vector Cache:** **{data['vector_cache']['cached_identities']}** enrolled identities loaded\n"
-                    f"- **Telemetry Stream:** **{data['event_telemetry']['active_subscribers']}** live terminal subscribers"
+                    f"- **Telemetry Stream:** **{data['event_telemetry']['active_subscribers']}** live terminal subscribers\n"
+                    f"- **Google Drive Sync:** **{drive.get('status', 'OPERATIONAL')}**"
                 )
                 yield sse_text_delta(msg)
                 return
 
-        if "trend" in q or "traffic" in q or "throughput" in q:
+        if any(term in q for term in ["seven-day", "7-day", "7 day", "week", "yesterday", "30-day", "30 day", "month", "trend", "traffic", "throughput"]):
+            timeframe = "previous_7_days" if ("seven" in q or "7" in q or "week" in q) else ("yesterday" if "yesterday" in q else ("previous_30_days" if ("30" in q or "month" in q) else "today"))
             if is_tool_authorized("get_verification_trends", user_role):
-                yield sse_tool_start("get_verification_trends", {"timeframe": "today"})
-                data = self._execute_tool("get_verification_trends", {"timeframe": "today"}, user_role, db)
+                yield sse_tool_start("get_verification_trends", {"timeframe": timeframe})
+                data = self._execute_tool("get_verification_trends", {"timeframe": timeframe}, user_role, db)
                 yield sse_tool_result("get_verification_trends", data)
-                executed_tools.append({"tool": "get_verification_trends", "args": {}, "result": data})
+                executed_tools.append({"tool": "get_verification_trends", "args": {"timeframe": timeframe}, "result": data})
 
                 msg = (
-                    "### Institutional Verification Trends\n\n"
+                    f"### Institutional Verification Trends ({data['timeframe']})\n\n"
+                    f"- **Total Verifications Evaluated:** **{data['total_verifications']}**\n"
                     f"- **Overall Admittance Rate:** **{data['admittance_rate_percent']}%**\n"
                     f"- **Denial / Exception Events:** **{data['denial_count']}**\n"
                     f"- **Peak Traffic Window:** **{data['peak_operational_window']}**\n"
@@ -468,20 +506,36 @@ class GatewiseAgent:
                 yield sse_text_delta(msg)
                 return
 
-        # 4. Institutional Workflow SOP Guidance
-        if is_tool_authorized("explain_application_workflow", user_role):
-            yield sse_tool_start("explain_application_workflow", {"topic": query})
-            res = self._execute_tool("explain_application_workflow", {"topic": query}, user_role, db)
-            yield sse_tool_result("explain_application_workflow", res)
-            executed_tools.append({"tool": "explain_application_workflow", "args": {"topic": query}, "result": res})
+        # 4. Status Explanation
+        if "explain status" in q or "explain the status" in q or "status code" in q:
+            code = "VERIFIED_AUTHORIZED"
+            for candidate in ["potential match", "no verified match", "authorization expired", "pending review", "image quality insufficient", "verification unavailable", "active maintenance"]:
+                if candidate in q:
+                    code = candidate.upper().replace(" ", "_")
+                    break
+            if is_tool_authorized("explain_status", user_role):
+                yield sse_tool_start("explain_status", {"status_code": code})
+                res = self._execute_tool("explain_status", {"status_code": code}, user_role, db)
+                yield sse_tool_result("explain_status", res)
+                executed_tools.append({"tool": "explain_status", "args": {"status_code": code}, "result": res})
+                yield sse_text_delta(f"### Status Definition: {res['status_code']}\n\n{res['explanation']}")
+                return
 
-            msg = (
-                f"### {res['topic']}\n\n"
-                f"{res['summary']}\n\n"
-                f"**Standard Operating Procedure:**\n{res['protocol']}"
-            )
-            yield sse_text_delta(msg)
-            return
+        # 5. Institutional Workflow SOP Guidance
+        if any(term in q for term in ["explain", "workflow", "sop", "process", "difference between", "matching and authorization", "unknown-person", "unknown person", "expiry", "blur", "quality", "drive"]):
+            if is_tool_authorized("explain_application_workflow", user_role):
+                yield sse_tool_start("explain_application_workflow", {"topic": query})
+                res = self._execute_tool("explain_application_workflow", {"topic": query}, user_role, db)
+                yield sse_tool_result("explain_application_workflow", res)
+                executed_tools.append({"tool": "explain_application_workflow", "args": {"topic": query}, "result": res})
+
+                msg = (
+                    f"### {res['topic']}\n\n"
+                    f"{res['summary']}\n\n"
+                    f"**Standard Operating Procedure:**\n{res['protocol']}"
+                )
+                yield sse_text_delta(msg)
+                return
 
         yield sse_text_delta(
             "I am the GATEWISE AI Operations Assistant. You can ask me to summarize today's gate operations, "
