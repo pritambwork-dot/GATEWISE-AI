@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: gatewise-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gatewise}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gatewise_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-gatewise_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gatewise} -d ${POSTGRES_DB:-gatewise_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

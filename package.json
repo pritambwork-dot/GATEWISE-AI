@@ -1,0 +1,17 @@
+{
+  "name": "gatewise-ai",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "scripts": {
+    "dev:backend": "cd backend && uvicorn app.main:app --reload --port 8000",
+    "dev:web": "pnpm --filter @gatewise/web dev",
+    "dev:mobile": "pnpm --filter @gatewise/mobile start",
+    "build": "pnpm --filter @gatewise/design-tokens build && pnpm --filter @gatewise/api-contracts build && pnpm --filter @gatewise/web build",
+    "test": "PYTHONPATH=. pytest backend/tests/test_gatewise.py -v",
+    "migrate": "cd backend && alembic upgrade head"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

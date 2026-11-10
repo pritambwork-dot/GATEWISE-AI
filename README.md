@@ -1,0 +1,175 @@
+# GATEWISE AI 1.0
+### Institutional Gate Verification & Visitor Identification Platform
+**Production Deployment for Indian Institute of Management Sambalpur**
+
+---
+
+## 1. Product Overview
+
+**GATEWISE AI** is an institutional security platform engineered for high-consequence educational campuses and research institutes. It replaces slow, error-prone paper visitor registers and visual-only ID checks with an edge-assisted, camera-verified identity matching workflow where:
+
+> **The AI assists the security officer; it never replaces the human decision.**
+
+### Core Capabilities
+* **Single-Shot Camera Capture**: Manual capture triggered exclusively by the stationed security officer. Zero continuous background video surveillance or ambient tracking.
+* **Decoupled Identity vs. Authorization**: Biometric comparison confirms *who* a person is ($\ge 90\%$ confidence); institutional records separately determine *whether* their term clearance permits entry.
+* **Immutable Cryptographic Audit Trail**: Every verification event and guard decision is sealed with a SHA-256 cryptographic signature.
+* **Zero Biometric Exposure to LLMs**: The embedded Gemini AI assistant operates purely on operational SOPs and text policies. Biometrics are never sent to external LLMs.
+
+---
+
+## 2. Monorepo Architecture
+
+```text
+gatewise-ai/
+│
+├── apps/
+│   ├── mobile/               # Android Guard Mobile App (Expo, React Native, TypeScript, Expo Router)
+│   │   ├── app/              # Expo Router routes (_layout, login, verify, activity, visitors, profile)
+│   │   ├── components/       # Shared mobile UI components
+│   │   ├── features/         # Feature modules (capture, review, processing, confirmation)
+│   │   ├── hooks/            # Custom hooks
+│   │   ├── services/         # Mobile API and SecureStore services
+│   │   ├── assets/           # App icon, splash screen, adaptive icon
+│   │   ├── constants/        # Design system tokens and geometry
+│   │   └── app.json          # Android application & camera permissions configuration
+│   │
+│   └── web/                  # Web App & Command Centre (Next.js 14 App Router, TypeScript, Tailwind)
+│       ├── app/
+│       │   ├── (public)/     # Public website routes (home, product, features, download)
+│       │   ├── (admin)/      # Institutional Command Centre (dashboard, activity, people, visitors, etc.)
+│       │   └── layout.tsx    # Root application shell
+│       ├── components/       # Reusable web components
+│       ├── lib/              # Client utilities and API service
+│       └── types/            # TypeScript data contracts
+│
+├── backend/                  # Modular FastAPI Core Backend
+│   ├── app/
+│   │   ├── api/v1/           # Versioned REST & SSE endpoints
+│   │   ├── core/             # Pydantic settings, database pool, structured logging
+│   │   ├── models/           # SQLAlchemy declarative models (User, Gate, Identity, Event, etc.)
+│   │   ├── schemas/          # Pydantic v2 validation models
+│   │   ├── repositories/     # Database access layer
+│   │   ├── services/         # Business logic & verification state machine
+│   │   ├── security/         # HMAC-SHA256 JWT tokens & password hashing
+│   │   ├── integrations/     # Google Drive & Gemini SOP interfaces
+│   │   ├── computer_vision/  # OpenCV YuNet/SFace & blur estimation pipeline
+│   │   └── main.py           # FastAPI entrypoint, CORS, lifespan handler
+│   ├── migrations/           # Alembic database migrations
+│   ├── tests/                # Automated Pytest suite
+│   ├── alembic.ini           # Alembic configuration
+│   └── requirements.txt      # Python dependencies
+│
+├── packages/
+│   ├── design-tokens/        # Canonical color palette, typography, spacing, radii, thresholds
+│   └── api-contracts/        # Shared TypeScript interfaces for auth, events, and visitor passes
+│
+├── docs/
+│   ├── architecture/         # REPOSITORY_AUDIT.md, SYSTEM_ARCHITECTURE.md, DEVELOPMENT_ROADMAP.md
+│   ├── design/               # DESIGN_IMPLEMENTATION.md
+│   ├── api/                  # API contracts & endpoint specifications
+│   ├── security/             # Security model & cryptographic signatures
+│   └── deployment/           # Deployment guides
+│
+├── scripts/                  # Development scripts (dev.sh, migrate.sh, test.sh)
+├── docker-compose.yml        # PostgreSQL service definition
+├── pnpm-workspace.yaml       # pnpm workspace configuration
+├── .env.example              # Environment variables template
+├── .gitignore                # Secret and build artifact exclusions
+├── package.json              # Monorepo root scripts
+└── README.md
+```
+
+---
+
+## 3. Technology Stack
+
+* **Mobile**: Expo SDK 51, React Native 0.74, TypeScript 5.3, Expo Router, Expo Camera, Expo SecureStore.
+* **Web**: Next.js 14.2 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons, Framer Motion.
+* **Backend**: Python 3.13, FastAPI, SQLAlchemy 2.0, Alembic, OpenCV (`cv2`) 5.0.0.
+* **Database**: PostgreSQL (with pgvector in production; SQLite development fallback).
+* **Package Manager**: `pnpm` 11.22+ workspaces.
+
+---
+
+## 4. Setup Instructions & Prerequisites
+
+### Prerequisites
+* **Node.js**: v18.0.0+ (Tested on v22.23.1)
+* **pnpm**: v9.0.0+ (Tested on v11.22.0)
+* **Python**: v3.10+ (Tested on v3.13.5)
+* **OpenCV (`cv2`)**: Pre-installed or via `opencv-python-headless`
+
+### 1. Clone & Install Dependencies
+```bash
+# Clone the repository
+git clone <repo-url>
+cd gatewise-ai
+
+# Install JavaScript/TypeScript dependencies across all workspace projects
+pnpm install
+
+# Install Python backend dependencies
+pip install -r backend/requirements.txt
+```
+
+### 2. Environment Setup
+```bash
+# Copy template to .env
+cp .env.example .env
+
+# Review and configure your environment variables:
+# - DATABASE_URL (defaults to sqlite:///./gatewise.db for instant zero-config dev)
+# - SECRET_KEY (generate via openssl rand -hex 32)
+```
+
+### 3. Run Database Migrations
+```bash
+# Apply initial Alembic migrations
+pnpm migrate
+```
+
+---
+
+## 5. Development Commands
+
+| Command | Action | Port / Environment |
+|---|---|---|
+| `pnpm dev:backend` | Start modular FastAPI backend server | `http://localhost:8000` |
+| `pnpm dev:web` | Start Next.js Web App & Command Centre | `http://localhost:3000` |
+| `pnpm dev:mobile` | Start Expo Metro Bundler for Android Guard app | Metro Bundler |
+| `pnpm test` | Run complete automated Pytest test suite | Pytest (8 tests) |
+| `pnpm build` | Type-check and build all workspace projects | Build validation |
+| `pnpm migrate` | Run Alembic database schema migrations | Database |
+
+### Startup Order
+1. **Start Core Backend**: `pnpm dev:backend` (Initializes database, seeds initial users and gates, serves `/health`).
+2. **Start Web Portal**: `pnpm dev:web` (Serves public website and admin portal on port 3000).
+3. **Start Mobile Terminal**: `pnpm dev:mobile` (Launches Expo Metro bundler for Android emulator or physical device).
+
+---
+
+## 6. Testing Instructions
+
+Execute the automated test suite:
+```bash
+# Run pytest tests
+pnpm test
+
+# Expected output:
+# backend/tests/test_gatewise.py ........ [100%]
+# ======================== 8 passed in 0.72s ========================
+```
+
+---
+
+## 7. Default Development Credentials
+
+* **Security Guard Station**:
+  * Employee ID: `SEC-G014`
+  * Password: `guard123`
+  * Assigned Gate: `Main Campus Gate · Post 02` (Station locked)
+* **Institutional Administrator**:
+  * Employee ID: `ADM-001`
+  * Password: `admin123`
+  * Full Name: `Dr. Rajesh Iyer`

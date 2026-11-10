@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "GATEWISE AI",
+    "slug": "gatewise-ai-guard",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "gatewise",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F8F5"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gatewiseai.guard",
+      "infoPlist": {
+        "NSCameraUsageDescription": "GATEWISE AI requires camera access to verify subject identity at campus gates."
+      }
+    },
+    "android": {
+      "package": "com.gatewiseai.guard",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#23865D"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "GATEWISE AI requires camera access to capture subject photographs for security verification."
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "gatewise-guard-prod"
+      }
+    }
+  }
+}
