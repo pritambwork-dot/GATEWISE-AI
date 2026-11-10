@@ -7,9 +7,9 @@
   "version_code": 1,
   "minimum_android_version": "Android 8.0 (API 26)+",
   "file_name": "gatewise-guard-v1.0.0-release.apk",
-  "file_size_bytes": 906433,
+  "file_size_bytes": 906440,
   "download_url": "/downloads/gatewise-guard-v1.0.0-release.apk",
-  "sha256": "73c5a11a975bac03d315bbfcf59f91f5903069d18dfdd2cfeaec44d9bcec6460",
+  "sha256": "f397221752236e04de2be91d4ba1b55a2a136a6e77f5022192ca4387ea6d8ddd",
   "release_date": "2026-11-10",
   "release_notes": [
     "Initial institutional release of GATEWISE AI Guard application.",

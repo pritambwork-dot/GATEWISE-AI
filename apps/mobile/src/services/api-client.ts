@@ -1,14 +1,21 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
+declare const process: {
+  env: Record<string, string | undefined>;
+};
+
 const SECURE_STORE_TOKEN_KEY = 'gatewise_auth_token';
 const SECURE_STORE_USER_KEY = 'gatewise_auth_user';
+const SECURE_STORE_SERVER_URL_KEY = 'gatewise_server_url';
 
-// Local development IP detection:
-// Android emulator uses 10.0.2.2 to reach host machine.
-// iOS simulator / Web uses localhost.
+// Priority order:
+// 1. Explicit EXPO_PUBLIC_API_URL env variable (for physical devices & production APKs)
+// 2. Android emulator host (10.0.2.2)
+// 3. Localhost fallback
+const ENV_API_URL = process.env.EXPO_PUBLIC_API_URL;
 const DEFAULT_HOST = Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
-export const API_BASE_URL = `${DEFAULT_HOST}/api/v1`;
+export const API_BASE_URL = ENV_API_URL || `${DEFAULT_HOST}/api/v1`;
 
 export class ApiClientError extends Error {
   statusCode: number;
