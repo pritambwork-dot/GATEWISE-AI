@@ -2,34 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from typing import Optional
 from ...core.database import get_db
-from ...core.security import create_access_token, decode_access_token
 from ...models.entities import User
-from ...schemas.auth import LoginRequest, TokenResponse, UserProfileSchema
-from ...services.auth_service import authenticate_user, build_user_profile
+from ...schemas.auth import (
+    LoginRequest, TokenResponse, UserProfileSchema,
+    RefreshTokenRequest, RevokeSessionRequest
+)
+from ...services.auth_service import (
+    authenticate_user, create_user_session, rotate_refresh_token,
+    revoke_session, build_user_profile
+)
+from ...security.permissions import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-def get_current_user(
-    authorization: Optional[str] = Header(None),
-    db: Session = Depends(get_db)
-) -> User:
-    if not authorization or not authorization.startswith("Bearer "):
-        # For testing / mock fallback if no header provided, return demo guard
-        demo_guard = db.query(User).filter(User.employee_id == "SEC-G014").first()
-        if demo_guard:
-            return demo_guard
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization header missing")
-    
-    token = authorization.split(" ")[1]
-    payload = decode_access_token(token)
-    if not payload or "sub" not in payload:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
-        
-    user_id = payload["sub"]
-    user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    return user
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
@@ -40,13 +24,37 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
             detail="Invalid Employee ID or security credentials."
         )
     
-    access_token = create_access_token(subject=user.id)
+    access_token, refresh_token = create_user_session(db, user)
     profile = build_user_profile(db, user)
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
         token_type="bearer",
         user=profile
     )
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh_token(payload: RefreshTokenRequest, db: Session = Depends(get_db)):
+    result = rotate_refresh_token(db, payload.refresh_token)
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token is invalid, expired, or has been revoked."
+        )
+    
+    new_access_token, new_refresh_token, user = result
+    profile = build_user_profile(db, user)
+    return TokenResponse(
+        access_token=new_access_token,
+        refresh_token=new_refresh_token,
+        token_type="bearer",
+        user=profile
+    )
+
+@router.post("/logout")
+def logout(payload: RevokeSessionRequest, db: Session = Depends(get_db)):
+    revoked = revoke_session(db, payload.refresh_token)
+    return {"status": "SUCCESS", "message": "Session successfully revoked." if revoked else "Session already inactive."}
 
 @router.get("/me", response_model=UserProfileSchema)
 def get_current_user_profile(

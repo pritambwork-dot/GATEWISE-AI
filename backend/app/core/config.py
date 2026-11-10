@@ -1,6 +1,8 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEFAULT_SQLITE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../gatewise.db"))
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "GATEWISE AI"
     VERSION: str = "1.0.0"
@@ -10,7 +12,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Database (PostgreSQL with graceful SQLite development fallback)
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./gatewise.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_SQLITE_PATH}")
     DATABASE_POOL_SIZE: int = int(os.getenv("DATABASE_POOL_SIZE", "10"))
     
     # Biometric thresholds

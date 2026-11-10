@@ -6,6 +6,12 @@ class LoginRequest(BaseModel):
     employee_id: str
     password: str
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+class RevokeSessionRequest(BaseModel):
+    refresh_token: str
+
 class AssignedGateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -32,5 +38,6 @@ class UserProfileSchema(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str = "bearer"
     user: UserProfileSchema

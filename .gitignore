@@ -49,6 +49,10 @@ htmlcov/
 *.sqlite3
 gatewise.db
 
+# Machine Learning Model Weights (OpenCV Zoo)
+*.onnx
+backend/app/computer_vision/weights/*.onnx
+
 # Next.js Build Output
 apps/web/.next/
 apps/web/out/

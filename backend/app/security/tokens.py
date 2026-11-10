@@ -2,6 +2,7 @@ import hmac
 import hashlib
 import base64
 import json
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Any, Dict
 from ..core.config import settings
@@ -13,14 +14,27 @@ def _b64_url_decode(data: str) -> bytes:
     padding = '=' * (4 - (len(data) % 4)) if len(data) % 4 != 0 else ''
     return base64.urlsafe_b64decode(data + padding)
 
-def create_access_token(subject: str | Any, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+    subject: str | Any,
+    role: Optional[str] = None,
+    employee_id: Optional[str] = None,
+    expires_delta: Optional[timedelta] = None
+) -> str:
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     header = {"alg": "HS256", "typ": "JWT"}
-    payload = {"sub": str(subject), "exp": int(expire.timestamp())}
+    payload = {
+        "sub": str(subject),
+        "exp": int(expire.timestamp()),
+        "iat": int(datetime.now(timezone.utc).timestamp())
+    }
+    if role:
+        payload["role"] = role
+    if employee_id:
+        payload["emp"] = employee_id
     
     header_b64 = _b64_url_encode(json.dumps(header, separators=(',', ':')).encode('utf-8'))
     payload_b64 = _b64_url_encode(json.dumps(payload, separators=(',', ':')).encode('utf-8'))
@@ -53,3 +67,11 @@ def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except Exception:
         return None
+
+def generate_refresh_token() -> str:
+    """Generates an unguessable 64-character hex refresh token."""
+    return secrets.token_hex(32)
+
+def hash_token(raw_token: str) -> str:
+    """Computes SHA-256 hash of refresh token for database persistence."""
+    return hashlib.sha256(raw_token.encode('utf-8')).hexdigest()

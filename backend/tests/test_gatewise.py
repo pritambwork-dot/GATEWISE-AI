@@ -47,16 +47,23 @@ def test_invalid_login_rejected(client):
     assert res.status_code == 401
 
 def test_identities_and_drive_sync(client):
+    # Login as Guard or Admin to query identities
+    login_res = client.post("/api/v1/auth/login", json={
+        "employee_id": "SEC-G014",
+        "password": "guard123"
+    })
+    token = login_res.json()["access_token"]
+    
     # Query identities
-    res = client.get("/api/v1/identities/")
+    res = client.get("/api/v1/identities/", headers={"Authorization": f"Bearer {token}"})
     assert res.status_code == 200
     identities = res.json()
     assert len(identities) >= 5
     
-    person_ids = [i["person_id"] for i in identities]
+    person_ids = [i.get("institutional_id") or i.get("person_id") for i in identities]
     assert "STU-2024-0492" in person_ids # Aarav Sharma
     assert "FAC-0219" in person_ids     # Prof. Devendra Kumar
-    assert "STU-2023-0182" in person_ids # Priya Patel (expired)
+    assert "STU-2022-0104" in person_ids # Priya Patel (expired)
 
 def test_face_verification_and_guard_decision(client):
     # 1. Login Guard
@@ -104,8 +111,24 @@ def test_face_verification_and_guard_decision(client):
     assert len(dec_data["cryptographic_signature"]) == 64 # SHA-256 hex string
 
 def test_visitor_pass_management(client):
+    # Admin login for pass creation
+    admin_login = client.post("/api/v1/auth/login", json={
+        "employee_id": "ADM-001",
+        "password": "admin123"
+    })
+    admin_token = admin_login.json()["access_token"]
+    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+    # Guard login for check-in / check-out
+    guard_login = client.post("/api/v1/auth/login", json={
+        "employee_id": "SEC-G014",
+        "password": "guard123"
+    })
+    guard_token = guard_login.json()["access_token"]
+    guard_headers = {"Authorization": f"Bearer {guard_token}"}
+
     # 1. Create Pre-approved visitor pass
-    pass_res = client.post("/api/v1/visitors/create-pass", json={
+    pass_res = client.post("/api/v1/visitors/create-pass", headers=admin_headers, json={
         "visitor_name": "Siddharth Sen",
         "phone": "+91 98450 11223",
         "id_type": "Passport",
@@ -122,12 +145,12 @@ def test_visitor_pass_management(client):
     assert pass_data["status"] == "EXPECTED"
 
     # 2. Check-in visitor
-    in_res = client.post(f"/api/v1/visitors/{pass_code}/check-in")
+    in_res = client.post(f"/api/v1/visitors/{pass_code}/check-in", headers=guard_headers)
     assert in_res.status_code == 200
     assert in_res.json()["status"] == "CHECKED_IN"
 
     # 3. Check-out visitor
-    out_res = client.post(f"/api/v1/visitors/{pass_code}/check-out")
+    out_res = client.post(f"/api/v1/visitors/{pass_code}/check-out", headers=guard_headers)
     assert out_res.status_code == 200
     assert out_res.json()["status"] == "CHECKED_OUT"
 

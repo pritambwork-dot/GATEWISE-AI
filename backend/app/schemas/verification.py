@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 class FaceVerificationRequest(BaseModel):
-    gate_id: str
+    gate_id: Optional[str] = None
     image_base64: str
     timestamp: Optional[str] = None
     ambient_light_score: Optional[float] = None

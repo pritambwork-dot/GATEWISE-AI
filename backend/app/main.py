@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from .core.config import settings
 from .core.database import engine, Base, SessionLocal
 from .core.logging import setup_logging, logger
-from .security import get_password_hash
+from .security.passwords import get_password_hash
 from .models.entities import (
     User, Gate, GuardGateAssignment, VisitorPass,
     VerificationEvent, EnrollmentRequest
@@ -13,51 +13,81 @@ from .models.entities import (
 from .services.drive_sync_service import run_drive_sync
 from .api.v1 import (
     auth, verification, identities, visitors,
-    enrollment, activity, gates, assistant, analytics
+    enrollment, activity, gates, assistant, analytics, repository
 )
 
 def seed_initial_data():
     db = SessionLocal()
     try:
-        # 1. Seed Users
-        guard = db.query(User).filter(User.employee_id == "SEC-G014").first()
-        if not guard:
-            guard = User(
-                id="user-guard-014",
-                email="vikram.singh@security.iimsambalpur.ac.in",
-                hashed_password=get_password_hash("guard123"),
-                full_name="Vikram Singh",
-                role="SECURITY_GUARD",
-                employee_id="SEC-G014",
-                avatar_url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
-                is_active=True
+        # 1. Seed Super Admin
+        super_admin = db.query(User).filter(User.employee_id == "SUPER-001").first()
+        if not super_admin:
+            super_admin = User(
+                id="user-super-001",
+                email="admin.super@iimsambalpur.ac.in",
+                password_hash=get_password_hash("super123"),
+                full_name="Director S. K. Mahapatra",
+                role="SUPER_ADMIN",
+                employee_id="SUPER-001",
+                account_status="ACTIVE",
+                mfa_enabled=True
             )
-            db.add(guard)
+            db.add(super_admin)
             db.commit()
-            db.refresh(guard)
 
+        # 2. Seed Admin
         admin = db.query(User).filter(User.employee_id == "ADM-001").first()
         if not admin:
             admin = User(
                 id="user-admin-001",
                 email="admin.security@iimsambalpur.ac.in",
-                hashed_password=get_password_hash("admin123"),
+                password_hash=get_password_hash("admin123"),
                 full_name="Dr. Rajesh Iyer",
                 role="ADMIN",
                 employee_id="ADM-001",
                 avatar_url="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
-                is_active=True
+                account_status="ACTIVE",
+                mfa_enabled=True
             )
             db.add(admin)
             db.commit()
+        else:
+            if not admin.password_hash.startswith("$argon2id$"):
+                admin.password_hash = get_password_hash("admin123")
+                db.commit()
 
-        # 2. Seed Gates
-        main_gate = db.query(Gate).filter(Gate.code == "GATE-MAIN-02").first()
+        # 3. Seed Security Guard
+        guard = db.query(User).filter(User.employee_id == "SEC-G014").first()
+        if not guard:
+            guard = User(
+                id="user-guard-014",
+                email="vikram.singh@security.iimsambalpur.ac.in",
+                password_hash=get_password_hash("guard123"),
+                full_name="Officer Ramesh Verma",
+                role="SECURITY_GUARD",
+                employee_id="SEC-G014",
+                avatar_url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+                account_status="ACTIVE",
+                mfa_enabled=False
+            )
+            db.add(guard)
+            db.commit()
+            db.refresh(guard)
+        else:
+            if not guard.password_hash.startswith("$argon2id$"):
+                guard.password_hash = get_password_hash("guard123")
+                guard.full_name = "Officer Ramesh Verma"
+                db.commit()
+
+        # 4. Seed Gates
+        main_gate = db.query(Gate).filter(Gate.gate_code == "GATE-MAIN-02").first()
+        if not main_gate:
+            main_gate = db.query(Gate).filter(Gate.id == "gate-main-02").first()
         if not main_gate:
             main_gate = Gate(
                 id="gate-main-02",
-                name="Main Campus Gate · Post 02",
-                code="GATE-MAIN-02",
+                gate_name="Main Campus Gate · Post 02",
+                gate_code="GATE-MAIN-02",
                 location="Ring Road North Entrance",
                 operating_hours="24/7 Continuous",
                 status="ACTIVE"
@@ -66,12 +96,12 @@ def seed_initial_data():
             db.commit()
             db.refresh(main_gate)
 
-        gate_acad = db.query(Gate).filter(Gate.code == "GATE-ACAD-01").first()
+        gate_acad = db.query(Gate).filter(Gate.gate_code == "GATE-ACAD-01").first()
         if not gate_acad:
             gate_acad = Gate(
                 id="gate-acad-01",
-                name="Academic Quad Gate · Post 01",
-                code="GATE-ACAD-01",
+                gate_name="Academic Quad Gate · Post 01",
+                gate_code="GATE-ACAD-01",
                 location="Management Block South",
                 operating_hours="06:00 - 23:00",
                 status="ACTIVE"
@@ -79,23 +109,10 @@ def seed_initial_data():
             db.add(gate_acad)
             db.commit()
 
-        gate_hostel = db.query(Gate).filter(Gate.code == "GATE-HOSTEL-04").first()
-        if not gate_hostel:
-            gate_hostel = Gate(
-                id="gate-hostel-04",
-                name="Executive Hostel Gate · Post 04",
-                code="GATE-HOSTEL-04",
-                location="Residential Enclave East",
-                operating_hours="06:00 - 22:00",
-                status="ACTIVE"
-            )
-            db.add(gate_hostel)
-            db.commit()
-
-        # 3. Assign Guard to Main Campus Gate Post 02
+        # 5. Mandatory Guard Gate Assignment: SEC-G014 to Post 02
         assignment = db.query(GuardGateAssignment).filter(
             GuardGateAssignment.guard_id == guard.id,
-            GuardGateAssignment.is_active == True
+            GuardGateAssignment.status == "ACTIVE"
         ).first()
         if not assignment:
             assignment = GuardGateAssignment(
@@ -103,31 +120,35 @@ def seed_initial_data():
                 guard_id=guard.id,
                 gate_id=main_gate.id,
                 shift_name="Shift A (Morning 06:00 - 14:00)",
-                is_active=True,
-                assigned_by="ADM-001"
+                status="ACTIVE",
+                assigned_by=admin.id
             )
             db.add(assignment)
             db.commit()
 
-        # 4. Synchronize Google Drive Identities & Reference Photos
-        run_drive_sync(db)
+        # 6. Synchronize Google Drive Identities & Reference Photos
+        run_drive_sync(db, admin_id=admin.id)
 
-        # 5. Seed Pre-approved Visitor Passes
+        # 7. Seed Pre-approved Visitor Passes
         existing_visitor = db.query(VisitorPass).first()
         if not existing_visitor:
             v1 = VisitorPass(
                 pass_code="PASS-8921",
                 visitor_name="Sanjay Khurana",
                 phone="+91 98200 12345",
+                contact_details="+91 98200 12345",
                 id_type="Aadhaar Card",
                 id_number="XXXX-XXXX-4912",
                 host_name="Prof. Devendra Kumar",
                 host_department="Operations & Supply Chain",
+                visit_purpose="Guest Lecture & Industry Advisory Board Meeting",
                 purpose="Guest Lecture & Industry Advisory Board Meeting",
                 valid_date=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                 valid_until_time="18:00",
+                approval_status="EXPECTED",
                 status="EXPECTED",
-                gate_id=main_gate.id
+                gate_id=main_gate.id,
+                created_by=admin.id
             )
             db.add(v1)
             db.commit()
@@ -161,6 +182,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # Register API v1 Routers
@@ -171,6 +193,7 @@ app.include_router(visitors.router, prefix=settings.API_V1_STR)
 app.include_router(enrollment.router, prefix=settings.API_V1_STR)
 app.include_router(activity.router, prefix=settings.API_V1_STR)
 app.include_router(gates.router, prefix=settings.API_V1_STR)
+app.include_router(repository.router, prefix=settings.API_V1_STR)
 app.include_router(assistant.router, prefix=settings.API_V1_STR)
 app.include_router(analytics.router, prefix=settings.API_V1_STR)
 
