@@ -14,7 +14,7 @@ from .services.drive_sync_service import run_drive_sync
 from .api.v1 import (
     auth, verification, identities, visitors,
     enrollment, activity, gates, assistant, analytics, repository,
-    guards, audit, notifications
+    guards, audit, notifications, releases
 )
 
 def seed_initial_data():
@@ -200,6 +200,7 @@ app.include_router(analytics.router, prefix=settings.API_V1_STR)
 app.include_router(guards.router, prefix=settings.API_V1_STR)
 app.include_router(audit.router, prefix=settings.API_V1_STR)
 app.include_router(notifications.router, prefix=settings.API_V1_STR)
+app.include_router(releases.router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():

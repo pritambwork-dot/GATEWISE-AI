@@ -138,7 +138,7 @@ pnpm migrate
 | `pnpm dev:backend` | Start modular FastAPI backend server | `http://localhost:8000` |
 | `pnpm dev:web` | Start Next.js Web App & Command Centre | `http://localhost:3000` |
 | `pnpm dev:mobile` | Start Expo Metro Bundler for Android Guard app | Metro Bundler |
-| `pnpm test` | Run complete automated Pytest test suite | Pytest (8 tests) |
+| `pnpm test` | Run complete automated Pytest test suite | Pytest (63 tests) |
 | `pnpm build` | Type-check and build all workspace projects | Build validation |
 | `pnpm migrate` | Run Alembic database schema migrations | Database |
 
@@ -149,21 +149,43 @@ pnpm migrate
 
 ---
 
-## 6. Testing Instructions
+## 6. Official Public Website & Android Download Centre
 
-Execute the automated test suite:
+* **Public Website**:
+  * Homepage: `http://localhost:3000/` (Features interactive 3D daylight campus model `<Campus3DView />`)
+  * Product Showcase: `http://localhost:3000/product`
+  * Features Matrix: `http://localhost:3000/features`
+  * How It Works: `http://localhost:3000/how-it-works`
+  * Security & Compliance: `http://localhost:3000/security`
+  * Android Download Centre: `http://localhost:3000/download` (Dynamic release metadata and QR code)
+  * Installation Guide: `http://localhost:3000/installation`
+  * FAQ & Support: `http://localhost:3000/faq` & `http://localhost:3000/support`
+* **Desktop Command Centre**: `http://localhost:3000/admin` (Protected institutional portal)
+* **Android Release Verification Tool**:
+  ```bash
+  python3 scripts/verify_and_publish_apk.py <path-to-apk> \
+    --version-name 1.0.0 \
+    --version-code 1 \
+    --download-url <https-url> \
+    --publish
+  ```
+
+---
+
+## 7. Testing Instructions
+
+Execute the comprehensive automated test suite:
 ```bash
 # Run pytest tests
-pnpm test
+pytest
 
 # Expected output:
-# backend/tests/test_gatewise.py ........ [100%]
-# ======================== 8 passed in 0.72s ========================
+# 63 passed in ~1.8s
 ```
 
 ---
 
-## 7. Default Development Credentials
+## 8. Default Development Credentials
 
 * **Security Guard Station**:
   * Employee ID: `SEC-G014`

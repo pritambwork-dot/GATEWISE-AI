@@ -6,19 +6,37 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "channel": "development",
       "android": {
         "buildType": "apk"
       }
     },
     "preview": {
       "distribution": "internal",
+      "channel": "preview",
       "android": {
         "buildType": "apk"
       }
     },
+    "production-apk": {
+      "distribution": "internal",
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ENV": "production",
+        "API_URL": "https://api.gatewiseai.internal/api/v1"
+      }
+    },
     "production": {
+      "channel": "production",
       "android": {
         "buildType": "app-bundle"
+      },
+      "env": {
+        "APP_ENV": "production",
+        "API_URL": "https://api.gatewiseai.internal/api/v1"
       }
     }
   },

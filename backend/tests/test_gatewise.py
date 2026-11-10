@@ -161,3 +161,42 @@ def test_guard_operational_assistant(client):
     assert res.status_code == 200
     ans = res.json()["response"]
     assert "Expired" in ans or "Deny" in ans or "Registrar" in ans
+
+def test_release_metadata_and_security(client):
+    # 1. Public can read latest release metadata
+    res = client.get("/api/v1/releases/android/latest")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["application"] == "GATEWISE AI"
+    assert data["package_identifier"] == "com.gatewiseai.guard"
+    assert "published" in data
+
+    # 2. Unauthenticated user cannot publish release
+    unauth_res = client.post("/api/v1/releases/android/publish", json={
+        "application": "GATEWISE AI",
+        "published": True,
+        "download_url": "https://example.com/fake.apk",
+        "sha256": "123456",
+        "package_identifier": "com.gatewiseai.guard"
+    })
+    assert unauth_res.status_code in [401, 403]
+
+    # 3. Guard cannot publish release
+    guard_login = client.post("/api/v1/auth/login", json={
+        "employee_id": "SEC-G014",
+        "password": "guard123"
+    })
+    guard_token = guard_login.json()["access_token"]
+    guard_res = client.post(
+        "/api/v1/releases/android/publish",
+        headers={"Authorization": f"Bearer {guard_token}"},
+        json={
+            "application": "GATEWISE AI",
+            "published": True,
+            "download_url": "https://example.com/fake.apk",
+            "sha256": "123456",
+            "package_identifier": "com.gatewiseai.guard"
+        }
+    )
+    assert guard_res.status_code == 403
+
