@@ -211,7 +211,19 @@ The complete production readiness, performance, security, and deployment documen
 
 ---
 
-## 9. Default Development Credentials
+## 9. Performance Optimization & Benchmark Catalog
+
+Comprehensive latency breakdowns, concurrency profiles, and micro-benchmarks are documented in `docs/performance/`:
+
+1. [**Performance Baseline Audit**](docs/performance/PERFORMANCE_BASELINE.md) — Pre vs. post-optimization empirical benchmarks across computer vision, vector search, and API endpoints.
+2. [**Verification Latency Breakdown**](docs/performance/VERIFICATION_LATENCY_BREAKDOWN.md) — 18-stage end-to-end request tracing waterfall from camera shutter tap to desktop SSE delivery.
+3. [**Performance Optimization Master Report**](docs/performance/PERFORMANCE_OPTIMIZATION_REPORT.md) — Technical report on vectorized in-memory embedding cache ($1,219\times$ speedup), SSE pub-sub broadcaster, and connection pooling.
+4. [**Load & Concurrency Benchmark Report**](docs/performance/LOAD_TEST_REPORT.md) — Multi-terminal stress testing up to 20 concurrent guard stations with $349.6\,\text{req/s}$ sustained throughput and 0% error rate.
+5. [**Performance Observability & Monitoring**](docs/performance/PERFORMANCE_MONITORING.md) — Safe logging specification, correlation IDs (`X-Request-ID`), and alerting thresholds.
+
+---
+
+## 10. Default Development Credentials
 
 * **Security Guard Station**:
   * Employee ID: `SEC-G014`

@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import time
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Response
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Dict, Tuple
 from ...core.database import get_db
 from ...models.entities import User, VerificationEvent, Gate
 from ...schemas.verification import (
@@ -14,16 +15,43 @@ from ...security.permissions import (
 
 router = APIRouter(prefix="/verification", tags=["Verification"])
 
+_IDEMPOTENCY_CACHE: Dict[str, Tuple[float, VerificationResultResponse]] = {}
+_IDEMPOTENCY_TTL_SEC = 60.0
+
+def _get_cached_idempotency(key: Optional[str]) -> Optional[VerificationResultResponse]:
+    if not key:
+        return None
+    now = time.time()
+    if key in _IDEMPOTENCY_CACHE:
+        ts, result = _IDEMPOTENCY_CACHE[key]
+        if now - ts <= _IDEMPOTENCY_TTL_SEC:
+            return result
+        del _IDEMPOTENCY_CACHE[key]
+    return None
+
+def _set_cached_idempotency(key: Optional[str], result: VerificationResultResponse):
+    if not key:
+        return
+    now = time.time()
+    if len(_IDEMPOTENCY_CACHE) > 500:
+        for k in list(_IDEMPOTENCY_CACHE.keys()):
+            if now - _IDEMPOTENCY_CACHE[k][0] > _IDEMPOTENCY_TTL_SEC:
+                del _IDEMPOTENCY_CACHE[k]
+    _IDEMPOTENCY_CACHE[key] = (now, result)
+
 @router.post("/verify", response_model=VerificationResultResponse)
 @router.post("/capture", response_model=VerificationResultResponse)
 def run_verification(
     payload: FaceVerificationRequest,
+    response: Response = None,
+    idempotency_key: Optional[str] = Header(None, alias="Idempotency-Key"),
     current_guard: User = Depends(require_roles([GatewiseRole.SECURITY_GUARD, GatewiseRole.ADMIN, GatewiseRole.SUPER_ADMIN])),
     assigned_gate: Gate = Depends(get_active_guard_gate),
     db: Session = Depends(get_db)
 ):
     """
     Core Verification Endpoint:
+    - Checks Idempotency-Key header to avoid duplicate inference on network retries.
     - Resolves guard's active station assignment server-side (never trusts client gate_id).
     - Decodes and validates still capture image.
     - Evaluates focus blur, illumination, and face geometry.
@@ -31,14 +59,25 @@ def run_verification(
     - Checks independent access clearance.
     - Creates immutable verification record awaiting human guard decision.
     """
-    # Enforce server-resolved assigned gate
-    return verify_face_capture(
+    if idempotency_key:
+        cached = _get_cached_idempotency(idempotency_key)
+        if cached:
+            if response:
+                response.headers["X-Cache"] = "HIT"
+            return cached
+
+    result = verify_face_capture(
         db=db,
         gate=assigned_gate,
         guard=current_guard,
         image_base64=payload.image_base64,
         ambient_light_score=payload.ambient_light_score
     )
+
+    if idempotency_key:
+        _set_cached_idempotency(idempotency_key, result)
+
+    return result
 
 @router.post("/decision", response_model=VerificationEventResponse)
 @router.post("/{event_id}/decision", response_model=VerificationEventResponse)

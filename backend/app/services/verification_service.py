@@ -1,6 +1,7 @@
 import uuid
 import hashlib
 import json
+import time
 from datetime import datetime, timezone
 from typing import Optional, List, Tuple, Dict, Any
 from sqlalchemy.orm import Session
@@ -15,6 +16,8 @@ from ..schemas.verification import (
     GuardDecisionRequest, VerificationEventResponse
 )
 from ..core.config import settings
+from .embedding_cache import embedding_cache
+from .broadcaster import broadcaster
 
 def compute_crypto_signature(
     event_id: str,
@@ -176,17 +179,13 @@ def verify_face_capture(
             live_photo_thumbnail_url=None
         )
 
-    # 4. Identity Matching: Query enrolled active embeddings from database
-    active_embeddings = db.query(FaceEmbedding).filter(FaceEmbedding.status == "ACTIVE").all()
-
+    # 4. Identity Matching: High-performance vectorized search over cached active embeddings
+    best_meta, best_similarity, vector_search_ms = embedding_cache.search_nearest(query_embedding, db)
     best_match_identity: Optional[InstitutionalIdentity] = None
-    best_similarity: float = 0.0
-
-    for emb in active_embeddings:
-        sim = cv_pipeline.cosine_similarity(query_embedding, emb.embedding_vector)
-        if sim > best_similarity:
-            best_similarity = sim
-            best_match_identity = emb.identity
+    if best_meta:
+        best_match_identity = db.query(InstitutionalIdentity).filter(
+            InstitutionalIdentity.id == best_meta["identity_id"]
+        ).first()
 
     # Determine match state by institutional threshold criteria
     # Auto-admit: >= 0.90 | Potential match: 0.70 - 0.899 | Unknown: < 0.70
@@ -408,6 +407,22 @@ def record_guard_decision(
 
     gate = db.query(Gate).filter(Gate.id == event.gate_id).first()
     guard = db.query(User).filter(User.id == guard_id).first()
+
+    # Real-time instant event broadcast to Desktop Command Centre SSE feed
+    broadcaster.publish_event({
+        "id": event.id,
+        "timestamp": event.timestamp.isoformat(),
+        "gate_id": event.gate_id,
+        "gate_name": gate.gate_name if gate else "Gate Post",
+        "guard_name": guard.full_name if guard else "Guard",
+        "person_id": event.person_id,
+        "person_name": event.person_name,
+        "person_category": event.person_category,
+        "outcome": event.identity_match_status,
+        "guard_decision": event.final_decision_status,
+        "similarity_score": event.similarity_score,
+        "cryptographic_signature": event.cryptographic_signature[:16] + "..."
+    })
 
     return VerificationEventResponse(
         id=event.id,

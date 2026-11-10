@@ -7,6 +7,7 @@ from typing import List, Optional
 from ...core.database import get_db, SessionLocal
 from ...models.entities import VerificationEvent, Gate, User
 from ...schemas.verification import VerificationEventResponse
+from ...services.broadcaster import broadcaster
 
 router = APIRouter(prefix="/activity", tags=["Activity & Live Feed"])
 
@@ -50,24 +51,23 @@ def get_recent_activity(
 async def stream_live_activity():
     """
     Server-Sent Events (SSE) feed for the Central Command Centre desktop portal.
-    Emits verification event telemetry in real time.
+    Emits verification event telemetry in real time immediately upon commit (< 1ms).
     """
     async def event_generator():
-        last_id = None
-        while True:
+        q = broadcaster.subscribe()
+        try:
+            # Yield initial latest event on connect
             db = SessionLocal()
             try:
-                query = db.query(VerificationEvent).order_by(VerificationEvent.timestamp.desc())
-                latest = query.first()
-                if latest and latest.id != last_id:
-                    last_id = latest.id
+                latest = db.query(VerificationEvent).order_by(VerificationEvent.timestamp.desc()).first()
+                if latest:
                     gate = db.query(Gate).filter(Gate.id == latest.gate_id).first()
                     guard = db.query(User).filter(User.id == latest.guard_id).first()
                     payload = {
                         "id": latest.id,
                         "timestamp": latest.timestamp.isoformat(),
                         "gate_id": latest.gate_id,
-                        "gate_name": gate.name if gate else "Gate Post",
+                        "gate_name": gate.gate_name if gate else "Gate Post",
                         "guard_name": guard.full_name if guard else "Guard",
                         "person_id": latest.person_id,
                         "person_name": latest.person_name,
@@ -80,6 +80,16 @@ async def stream_live_activity():
                     yield f"data: {json.dumps(payload)}\n\n"
             finally:
                 db.close()
-            await asyncio.sleep(2.0)
+
+            # Stream new events from broadcaster queue with periodic keepalive heartbeat
+            while True:
+                try:
+                    event_data = await asyncio.wait_for(q.get(), timeout=15.0)
+                    yield f"data: {json.dumps(event_data)}\n\n"
+                except asyncio.TimeoutError:
+                    # Keep-alive heartbeat comment
+                    yield ": heartbeat\n\n"
+        finally:
+            broadcaster.unsubscribe(q)
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

@@ -42,11 +42,41 @@ export default function LiveGateActivityPage() {
 
   useEffect(() => {
     loadData();
+
+    // Connect to real-time Server-Sent Events (SSE) feed
+    let eventSource: EventSource | null = null;
+    try {
+      eventSource = new EventSource('/api/v1/activity/stream');
+      eventSource.onmessage = (event) => {
+        try {
+          if (!event.data || event.data.startsWith(':')) return;
+          const newEvent: VerificationEvent = JSON.parse(event.data);
+          setEvents((prev) => {
+            if (prev.some((e) => e.id === newEvent.id)) {
+              return prev.map((e) => (e.id === newEvent.id ? newEvent : e));
+            }
+            return [newEvent, ...prev.slice(0, 99)];
+          });
+          setLastRefreshed(new Date().toLocaleTimeString());
+        } catch {
+          // Ignore heartbeat comments
+        }
+      };
+      eventSource.onerror = () => {
+        eventSource?.close();
+      };
+    } catch {
+      // EventSource fallback handled by polling below
+    }
+
+    return () => {
+      eventSource?.close();
+    };
   }, []);
 
   useEffect(() => {
     if (!isAutoRefresh) return;
-    const interval = setInterval(loadData, 4000);
+    const interval = setInterval(loadData, 10000); // Backoff polling to 10s since SSE handles real-time stream
     return () => clearInterval(interval);
   }, [isAutoRefresh]);
 

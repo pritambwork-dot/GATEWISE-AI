@@ -12,6 +12,7 @@ from ..models.entities import (
 from ..computer_vision.face_pipeline import cv_pipeline
 from ..integrations.google_drive import GoogleDriveClient
 from ..core.logging import logger
+from .embedding_cache import embedding_cache
 
 # Approved institutional reference repository catalog for IIM Sambalpur directory
 DEFAULT_DRIVE_FOLDER_ID = "IIM_Sambalpur_Approved_Identities_2024_2026"
@@ -317,6 +318,7 @@ def run_drive_sync(
         sync_job.identities_indexed = indexed_count
         sync_job.photos_processed = processed_count
         db.commit()
+        embedding_cache.invalidate()
 
         return {
             "status": "SUCCESS",

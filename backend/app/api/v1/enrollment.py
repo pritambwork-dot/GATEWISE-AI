@@ -14,6 +14,7 @@ from ...schemas.enrollment import (
 from ...security.permissions import (
     get_current_user, require_roles, get_active_guard_gate, GatewiseRole
 )
+from ...services.embedding_cache import embedding_cache
 
 router = APIRouter(tags=["Enrollment Referrals & Requests"])
 
@@ -187,6 +188,7 @@ def approve_enrollment_request(
     db.add(audit)
     db.commit()
     db.refresh(req)
+    embedding_cache.invalidate()
     return req
 
 @router.post("/enrollment-requests/{request_id}/reject", response_model=EnrollmentRequestResponse)
@@ -222,6 +224,7 @@ def reject_enrollment_request(
     db.add(audit)
     db.commit()
     db.refresh(req)
+    embedding_cache.invalidate()
     return req
 
 @router.post("/enrollment/referrals/{request_id}/review", response_model=EnrollmentRequestResponse)

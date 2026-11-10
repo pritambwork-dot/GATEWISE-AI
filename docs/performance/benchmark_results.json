@@ -1,0 +1,109 @@
+{
+  "timestamp": "2026-11-10T19:02:28Z",
+  "cv_micro_benchmarks": {
+    "blur_assessment": {
+      "p50": 0.2151664812117815,
+      "p95": 0.241462339181453,
+      "p99": 0.29014186235144773
+    },
+    "cosine_similarity_scalar": {
+      "p50": 0.004499917849898338,
+      "p95": 0.004667090252041817,
+      "p99": 0.006903323810547668
+    },
+    "hmac_sha256_seal": {
+      "p50": 0.00033352989703416824,
+      "p95": 0.00037509016692638397,
+      "p99": 0.0014197081327438793
+    }
+  },
+  "vector_scaling": {
+    "N_100": {
+      "dataset_size": 100,
+      "numpy_vectorized_p50_ms": 0.0014159595593810081,
+      "numpy_vectorized_p95_ms": 0.0017856364138424388,
+      "python_linear_p50_ms": 0.4518539644777775,
+      "speedup_factor": 319.1150209652224
+    },
+    "N_1000": {
+      "dataset_size": 1000,
+      "numpy_vectorized_p50_ms": 0.00400003045797348,
+      "numpy_vectorized_p95_ms": 0.004397658631205559,
+      "python_linear_p50_ms": 4.876791965216398,
+      "speedup_factor": 1219.1887077997671
+    },
+    "N_10000": {
+      "dataset_size": 10000,
+      "numpy_vectorized_p50_ms": 0.02868764568120241,
+      "numpy_vectorized_p95_ms": 0.029582995921373367,
+      "python_linear_p50_ms": 48.617896041832864,
+      "speedup_factor": 1694.73286801258
+    }
+  },
+  "api_endpoints": {
+    "auth_login": {
+      "p50": 26.106416597031057,
+      "p95": 32.98524798592554,
+      "p99": 44.81271586148066
+    },
+    "verification_verify": {
+      "p50": 5.011728964745998,
+      "p95": 5.87236249120906,
+      "p99": 8.199933441355816,
+      "min": 4.705750150606036,
+      "max": 10.378207778558135
+    },
+    "guard_decision": {
+      "p50": 2.707729465328157,
+      "p95": 2.9694232507608826,
+      "p99": 4.3069347110576945
+    },
+    "activity_recent": {
+      "p50": 4.434542031958699,
+      "p95": 4.57633757032454,
+      "p99": 9.63178070029242
+    }
+  },
+  "concurrency_testing": {
+    "concurrency_1": {
+      "concurrent_guards": 1,
+      "total_requests": 5,
+      "throughput_req_per_sec": 178.0,
+      "p50_latency_ms": 5.48,
+      "p95_latency_ms": 5.69,
+      "p99_latency_ms": 5.7,
+      "min_latency_ms": 5.29,
+      "max_latency_ms": 5.71
+    },
+    "concurrency_5": {
+      "concurrent_guards": 5,
+      "total_requests": 25,
+      "throughput_req_per_sec": 326.6,
+      "p50_latency_ms": 14.01,
+      "p95_latency_ms": 20.87,
+      "p99_latency_ms": 22.39,
+      "min_latency_ms": 9.16,
+      "max_latency_ms": 22.64
+    },
+    "concurrency_10": {
+      "concurrent_guards": 10,
+      "total_requests": 50,
+      "throughput_req_per_sec": 328.9,
+      "p50_latency_ms": 28.14,
+      "p95_latency_ms": 40.68,
+      "p99_latency_ms": 45.17,
+      "min_latency_ms": 15.22,
+      "max_latency_ms": 46.95
+    },
+    "concurrency_20": {
+      "concurrent_guards": 20,
+      "total_requests": 100,
+      "throughput_req_per_sec": 285.7,
+      "p50_latency_ms": 57.77,
+      "p95_latency_ms": 96.79,
+      "p99_latency_ms": 178.08,
+      "min_latency_ms": 23.09,
+      "max_latency_ms": 287.49
+    }
+  }
+}

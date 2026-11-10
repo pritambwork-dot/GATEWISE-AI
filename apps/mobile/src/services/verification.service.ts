@@ -33,6 +33,9 @@ export const VerificationService = {
     }
 
     try {
+      const idempotencyKey = `idemp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const requestId = `req-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
       const response = await apiClient.request<{
         event_id: string;
         gate_id: string;
@@ -63,6 +66,10 @@ export const VerificationService = {
         live_photo_thumbnail_url?: string;
       }>('/verification/verify', {
         method: 'POST',
+        headers: {
+          'Idempotency-Key': idempotencyKey,
+          'X-Request-ID': requestId,
+        },
         body: {
           gate_id: params.gateId,
           image_base64: params.imageBase64,
@@ -119,12 +126,17 @@ export const VerificationService = {
     timestamp: string;
   }> {
     try {
+      const decisionReqId = `dec-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       const response = await apiClient.request<{
         id: string;
         cryptographic_signature: string;
         timestamp: string;
       }>('/verification/decision', {
         method: 'POST',
+        headers: {
+          'X-Request-ID': decisionReqId,
+          'Idempotency-Key': `idemp-dec-${submission.eventId}`,
+        },
         body: {
           event_id: submission.eventId,
           action: submission.action,
