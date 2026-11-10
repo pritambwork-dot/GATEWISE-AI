@@ -132,7 +132,14 @@ def verify_face_capture(
         )
 
     # 3. Detect and extract SFace embedding
-    success, query_embedding, cv_error, _, diagnostics = cv_pipeline.detect_and_extract_feature(img)
+    try:
+        success, query_embedding, cv_error, _, diagnostics = cv_pipeline.detect_and_extract_feature(img)
+    except Exception as e:
+        success = False
+        query_embedding = None
+        cv_error = f"Computer vision engine error: {str(e)}"
+        diagnostics = {"exception": str(e)}
+
     if not success or not query_embedding:
         initial_sig = compute_crypto_signature(event_id, now_iso, gate_id, guard_id, "IMAGE_QUALITY_INSUFFICIENT", "PENDING")
         event = VerificationEvent(
@@ -235,7 +242,13 @@ def verify_face_capture(
 
             # Check validity dates and status
             now_dt = datetime.now(timezone.utc)
-            is_valid_period = auth_record.valid_from <= now_dt <= auth_record.valid_until
+            v_from = auth_record.valid_from
+            if v_from and v_from.tzinfo is None:
+                v_from = v_from.replace(tzinfo=timezone.utc)
+            v_until = auth_record.valid_until
+            if v_until and v_until.tzinfo is None:
+                v_until = v_until.replace(tzinfo=timezone.utc)
+            is_valid_period = bool(v_from and v_until and (v_from <= now_dt <= v_until))
             is_status_auth = auth_record.access_status == "AUTHORIZED"
             is_identity_active = best_match_identity.identity_status == "ACTIVE"
 

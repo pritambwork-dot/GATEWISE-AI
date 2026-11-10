@@ -25,7 +25,7 @@ INSTITUTIONAL_SEED_DIRECTORY: List[Dict[str, Any]] = [
         "email": "aarav.s24@iimsambalpur.ac.in",
         "phone": "+91 98765 43210",
         "valid_from": "2024-06-01T00:00:00Z",
-        "valid_until": "2026-06-30T23:59:59Z",
+        "valid_until": "2027-06-30T23:59:59Z",
         "clearance_level": "ALL_GATES_STANDARD",
         "drive_file_id": "drv-file-aarav-0492",
         "photo_file": "aarav_sharma_ref.jpg",
@@ -285,6 +285,11 @@ def run_drive_sync(
                     created_by=admin_id
                 )
                 db.add(auth_record)
+                db.commit()
+            else:
+                auth_record.valid_from = datetime.fromisoformat(item["valid_from"].replace("Z", "+00:00"))
+                auth_record.valid_until = datetime.fromisoformat(item["valid_until"].replace("Z", "+00:00"))
+                auth_record.access_status = item.get("access_status", "AUTHORIZED")
                 db.commit()
 
             processed_count += 1

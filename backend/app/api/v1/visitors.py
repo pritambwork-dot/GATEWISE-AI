@@ -181,6 +181,8 @@ def check_out_visitor(
     db.refresh(pass_record)
     return pass_record
 
+@router.post("", response_model=VisitorPassResponse)
+@router.post("/passes", response_model=VisitorPassResponse)
 @router.post("/create-pass", response_model=VisitorPassResponse)
 def create_pre_approved_pass(
     payload: VisitorPassCreate,

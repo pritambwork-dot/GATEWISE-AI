@@ -9,10 +9,17 @@ class VisitorPassCreate(BaseModel):
     id_number: str
     host_name: str
     host_department: str
-    purpose: str
+    purpose: Optional[str] = None
+    visit_purpose: Optional[str] = None
     valid_date: str
     valid_until_time: str
     gate_id: Optional[str] = None
+
+    def model_post_init(self, __context):
+        if not self.purpose and self.visit_purpose:
+            self.purpose = self.visit_purpose
+        if not self.purpose:
+            self.purpose = "Institutional Visit"
 
 class VisitorIntakeRequest(BaseModel):
     visitor_name: str

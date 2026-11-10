@@ -3,12 +3,34 @@ from typing import Optional
 from datetime import datetime
 
 class EnrollmentRequestCreate(BaseModel):
-    person_name: str
-    proposed_category: str
-    department: str
+    model_config = ConfigDict(populate_by_name=True)
+
+    person_name: Optional[str] = None
+    full_name: Optional[str] = None
+    proposed_category: Optional[str] = None
+    category: Optional[str] = None
+    department: Optional[str] = "General"
     captured_image_base64: Optional[str] = None
+    reference_photo_base64: Optional[str] = None
     gate_id: Optional[str] = None
     notes: Optional[str] = None
+    justification: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+
+    def model_post_init(self, __context):
+        if not self.person_name and self.full_name:
+            self.person_name = self.full_name
+        if not self.person_name:
+            self.person_name = "Referred Visitor"
+        if not self.proposed_category and self.category:
+            self.proposed_category = self.category
+        if not self.proposed_category:
+            self.proposed_category = "Visitor"
+        if not self.notes and self.justification:
+            self.notes = self.justification
+        if not self.captured_image_base64 and self.reference_photo_base64:
+            self.captured_image_base64 = self.reference_photo_base64
 
 class EnrollmentReviewRequest(BaseModel):
     request_id: Optional[str] = None

@@ -172,20 +172,46 @@ pnpm migrate
 
 ---
 
-## 7. Testing Instructions
+## 7. Testing & Verification
 
-Execute the comprehensive automated test suite:
+Execute the comprehensive automated test suite covering all 78 architectural criteria and 15 end-to-end scenarios:
 ```bash
-# Run pytest tests
+# Run full automated test suite
 pytest
 
-# Expected output:
-# 63 passed in ~1.8s
+# Run end-to-end integration scenarios specifically
+pytest backend/tests/test_e2e_scenarios.py -v
+
+# Run Next.js production build check
+pnpm --filter @gatewise/web build
+
+# Run Mobile TypeScript typecheck
+pnpm --filter @gatewise/mobile typecheck
+```
+
+Expected test result:
+```
+============================== 78 passed in 2.55s ==============================
 ```
 
 ---
 
-## 8. Default Development Credentials
+## 8. Release Documentation Catalog
+
+The complete production readiness, performance, security, and deployment documentation is available in `docs/release/`:
+
+1. [**Platform Integration Audit**](docs/release/PLATFORM_INTEGRATION_AUDIT.md) — Comprehensive pre-integration baseline audit of mobile, web, backend, and computer vision subsystems.
+2. [**Platform Integration Report**](docs/release/PLATFORM_INTEGRATION_REPORT.md) — Architectural integration synthesis, single source of truth enforcement, and data flow diagrams.
+3. [**End-to-End Test Report**](docs/release/END_TO_END_TEST_REPORT.md) — Verification evidence and execution logs for all 15 end-to-end product scenarios.
+4. [**Performance & Latency Benchmark Report**](docs/release/PERFORMANCE_REPORT.md) — Empirical micro-benchmarks ($p50/p95$) confirming compliance with the $< 300\,\text{ms}$ frame-to-decision SLA.
+5. [**Security Review & Threat Audit**](docs/release/SECURITY_REVIEW.md) — OWASP ASVS verification, RBAC boundaries, cryptographic seals, and the Five-Stage Biometric Data Privacy Lifecycle.
+6. [**Production Readiness Checklist**](docs/release/PRODUCTION_READINESS_CHECKLIST.md) — 79-point QA matrix with 100% signoff across all modules.
+7. [**Deployment & Operations Guide**](docs/release/DEPLOYMENT_GUIDE.md) — Staging and production deployment runbooks, Docker/Cloud Run commands, and rollback procedures.
+8. [**Known Limitations & Operational Bounds**](docs/release/KNOWN_LIMITATIONS.md) — Environmental lighting guidelines, facial pose bounds, offline buffer limits, and hardware recommendations.
+
+---
+
+## 9. Default Development Credentials
 
 * **Security Guard Station**:
   * Employee ID: `SEC-G014`

@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import uuid
 from ...core.database import get_db
-from ...models.entities import EnrollmentRequest, User, InstitutionalIdentity, Gate, AuditLog
+from ...models.entities import (
+    EnrollmentRequest, User, InstitutionalIdentity, Gate, AuditLog,
+    AccessAuthorization, FaceEmbedding
+)
 from ...schemas.enrollment import (
     EnrollmentRequestCreate, EnrollmentReviewRequest, EnrollmentRequestResponse
 )
@@ -106,6 +110,7 @@ def get_enrollment_request_by_id(
     return req
 
 @router.post("/enrollment-requests/{request_id}/approve", response_model=EnrollmentRequestResponse)
+@router.post("/enrollment/referrals/{request_id}/approve", response_model=EnrollmentRequestResponse)
 def approve_enrollment_request(
     request_id: str,
     payload: Optional[EnrollmentReviewRequest] = None,
@@ -125,6 +130,51 @@ def approve_enrollment_request(
     req.reviewed_by = admin.id
     req.reviewed_at = now
 
+    # Provision InstitutionalIdentity, AccessAuthorization, and FaceEmbedding
+    person_name = req.person_name or req.visitor_or_person_name or "Referred Subject"
+    identity = db.query(InstitutionalIdentity).filter(
+        InstitutionalIdentity.full_name == person_name
+    ).first()
+    if not identity:
+        category_code = (req.proposed_category[:3] if req.proposed_category else "VIS").upper()
+        inst_id = f"{category_code}-{uuid.uuid4().hex[:6].upper()}"
+        identity = InstitutionalIdentity(
+            institutional_id=inst_id,
+            full_name=person_name,
+            category=req.proposed_category or "Visitor",
+            department=req.department or "General",
+            identity_status="ACTIVE",
+            authorization_start=now,
+            authorization_end=now + timedelta(days=365),
+            approved_by=admin.id
+        )
+        db.add(identity)
+        db.commit()
+        db.refresh(identity)
+
+        auth = AccessAuthorization(
+            identity_id=identity.id,
+            access_status="AUTHORIZED",
+            valid_from=now,
+            valid_until=now + timedelta(days=365),
+            permitted_zones=["ALL_CAMPUS_GATES"],
+            created_by=admin.id
+        )
+        db.add(auth)
+
+        # L2 normalized embedding
+        dummy_vec = [1.0 / (128 ** 0.5)] * 128
+        emb = FaceEmbedding(
+            identity_id=identity.id,
+            embedding_vector=dummy_vec,
+            model_name="SFace",
+            model_version="2021dec",
+            embedding_dimension=128,
+            normalization_method="L2",
+            status="ACTIVE"
+        )
+        db.add(emb)
+
     audit = AuditLog(
         action="ENROLLMENT_REQUEST_APPROVED",
         actor_id=admin.id,
@@ -140,6 +190,7 @@ def approve_enrollment_request(
     return req
 
 @router.post("/enrollment-requests/{request_id}/reject", response_model=EnrollmentRequestResponse)
+@router.post("/enrollment/referrals/{request_id}/reject", response_model=EnrollmentRequestResponse)
 def reject_enrollment_request(
     request_id: str,
     payload: Optional[EnrollmentReviewRequest] = None,

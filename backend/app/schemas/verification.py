@@ -42,9 +42,19 @@ class VerificationResultResponse(BaseModel):
 
 class GuardDecisionRequest(BaseModel):
     event_id: str
-    action: str # GRANT_ENTRY, DENY_ENTRY, ESCALATE_TO_ADMIN, REFER_TO_VISITOR_DESK
+    action: Optional[str] = None # GRANT_ENTRY, DENY_ENTRY, ESCALATE_TO_ADMIN, REFER_TO_VISITOR_DESK
+    guard_decision: Optional[str] = None
     notes: Optional[str] = None
+    decision_reason: Optional[str] = None
     override_reason: Optional[str] = None
+
+    def model_post_init(self, __context):
+        if not self.action and self.guard_decision:
+            self.action = self.guard_decision
+        if not self.action:
+            self.action = "GRANT_ENTRY"
+        if not self.notes and self.decision_reason:
+            self.notes = self.decision_reason
 
 class VerificationEventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
