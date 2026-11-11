@@ -13,7 +13,6 @@ import { FeatureTriage } from '@/components/aura/sections/FeatureTriage';
 import { DownloadSection } from '@/components/aura/sections/DownloadSection';
 import { LogoCloud } from '@/components/aura/sections/LogoCloud';
 import { Testimonials } from '@/components/aura/sections/Testimonials';
-import { Pricing } from '@/components/aura/sections/Pricing';
 import { DataGovernance } from '@/components/aura/sections/DataGovernance';
 import { FinalCTA } from '@/components/aura/sections/FinalCTA';
 import { Footer } from '@/components/aura/sections/Footer';
@@ -101,16 +100,13 @@ export default function PublicHomePage() {
         {/* Section 12 — Executive Testimonials */}
         <Testimonials />
 
-        {/* Section 13 — Pricing & Deployment */}
-        <Pricing />
-
-        {/* Section 14 — Zero-Image Data Governance */}
+        {/* Section 13 — Zero-Image Data Governance */}
         <DataGovernance />
 
-        {/* Section 15 — Final CTA */}
+        {/* Section 14 — Final CTA */}
         <FinalCTA />
 
-        {/* Section 16 — Institutional Footer */}
+        {/* Section 15 — Institutional Footer */}
         <Footer />
       </div>
     </div>

@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { name: 'Live Operations', href: '#operations' },
   { name: 'Architecture', href: '#architecture' },
   { name: 'Downloads & Web App', href: '#downloads' },
-  { name: 'Pricing', href: '#pricing' },
+  { name: 'Security & Privacy', href: '#security' },
 ];
 
 export const Navbar: React.FC = () => {
