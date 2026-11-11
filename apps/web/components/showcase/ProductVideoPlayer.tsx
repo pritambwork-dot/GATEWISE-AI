@@ -343,14 +343,14 @@ export default function ProductVideoPlayer() {
 
           {/* Transcript View & Download Bar */}
           <div className="mt-6 border border-gatewise-border rounded-2xl bg-white p-4 shadow-2xs">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-2.5">
-                <FileText className="w-4 h-4 text-gatewise-primary" />
+                <FileText className="w-4 h-4 text-gatewise-primary shrink-0" />
                 <span className="text-xs font-semibold text-gatewise-text">
                   Synchronised Narrative Transcript &amp; Video Specification
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 self-start sm:self-auto">
                 <a
                   href="/media/videos/transcript.txt"
                   download="gatewise-showcase-transcript.txt"

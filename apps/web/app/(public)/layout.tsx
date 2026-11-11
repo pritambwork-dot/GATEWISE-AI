@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ShieldCheck, Smartphone, Menu, X, ArrowRight, Download,
-  Lock, CheckCircle2, ChevronRight, Activity, Terminal
+  Lock, CheckCircle2, ChevronRight, Activity, Terminal, Apple
 } from 'lucide-react';
 
 export default function PublicLayout({
@@ -23,7 +23,7 @@ export default function PublicLayout({
     { href: '/showcase', label: 'Motion Lab' },
     { href: '/how-it-works', label: 'Architecture' },
     { href: '/security', label: 'Privacy' },
-    { href: '/download', label: 'Guard APK' },
+    { href: '/download', label: 'Downloads' },
   ];
 
   return (
@@ -101,8 +101,8 @@ export default function PublicLayout({
               href="/download"
               className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gatewise-primary text-white text-xs font-semibold hover:bg-gatewise-deep active:scale-95 transition-all shadow-xs"
             >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Guard APK</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Downloads</span>
             </Link>
           </div>
 
@@ -110,9 +110,10 @@ export default function PublicLayout({
           <div className="flex lg:hidden items-center space-x-2">
             <Link
               href="/download"
-              className="px-3 py-1.5 rounded-full bg-gatewise-primary text-white text-xs font-semibold"
+              className="px-3 py-1.5 rounded-full bg-gatewise-primary text-white text-xs font-semibold flex items-center space-x-1"
             >
-              APK
+              <Download className="w-3 h-3" />
+              <span>Get App</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -144,6 +145,36 @@ export default function PublicLayout({
               ))}
             </nav>
             <div className="pt-2 border-t border-gatewise-border space-y-2">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary px-1">
+                Official Downloads
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                <Link
+                  href="/download?platform=android"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-slate-50 border border-slate-200/60 text-center hover:bg-slate-100 transition-colors"
+                >
+                  <Smartphone className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
+                  <span className="text-[10px] font-bold text-gatewise-text block">Android APK</span>
+                </Link>
+                <Link
+                  href="/download?platform=ios"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-slate-50 border border-slate-200/60 text-center hover:bg-slate-100 transition-colors"
+                >
+                  <Apple className="w-4 h-4 text-slate-800 mx-auto mb-1" />
+                  <span className="text-[10px] font-bold text-gatewise-text block">Apple iOS</span>
+                </Link>
+                <Link
+                  href="/download?platform=macos"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-xl bg-slate-50 border border-slate-200/60 text-center hover:bg-slate-100 transition-colors"
+                >
+                  <Terminal className="w-4 h-4 text-purple-600 mx-auto mb-1" />
+                  <span className="text-[10px] font-bold text-gatewise-text block">macOS DMG</span>
+                </Link>
+              </div>
+
               <Link
                 href="/admin/login"
                 onClick={() => setMobileMenuOpen(false)}
@@ -158,7 +189,7 @@ export default function PublicLayout({
                 className="w-full py-2.5 rounded-xl bg-gatewise-primary text-white text-xs font-bold flex items-center justify-center space-x-1.5"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download Android Guard App</span>
+                <span>Open Download Centre (APK · IPA · DMG)</span>
               </Link>
             </div>
           </div>
@@ -213,8 +244,23 @@ export default function PublicLayout({
                   </Link>
                 </li>
                 <li>
-                  <Link href="/download" className="text-gatewise-secondary hover:text-gatewise-text transition-colors">
-                    Android APK Release
+                  <Link href="/download" className="text-gatewise-secondary hover:text-gatewise-text transition-colors font-medium">
+                    Downloads Hub (All Platforms)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/download?platform=android" className="text-gatewise-secondary hover:text-gatewise-text transition-colors">
+                    Android Guard APK (v1.0.0)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/download?platform=ios" className="text-gatewise-secondary hover:text-gatewise-text transition-colors">
+                    Apple iOS Guard (IPA &amp; TestFlight)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/download?platform=macos" className="text-gatewise-secondary hover:text-gatewise-text transition-colors">
+                    macOS Admin Command Centre (DMG)
                   </Link>
                 </li>
               </ul>

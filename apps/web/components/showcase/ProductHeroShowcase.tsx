@@ -87,6 +87,33 @@ export default function ProductHeroShowcase({
               <span>Watch Product Teaser (28s)</span>
             </button>
           </div>
+
+          {/* Quick Platform Strip */}
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-gatewise-secondary">
+            <span className="font-medium text-slate-500">Available downloads:</span>
+            <Link
+              href="/download?platform=android"
+              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 transition-colors font-semibold text-[11px]"
+            >
+              <Smartphone className="w-3 h-3 text-emerald-600" />
+              <span>Android APK</span>
+            </Link>
+            <span className="text-slate-300">•</span>
+            <Link
+              href="/download?platform=ios"
+              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-sky-50 text-sky-800 border border-sky-200/80 hover:bg-sky-100 transition-colors font-semibold text-[11px]"
+            >
+              <span>Apple iOS (IPA)</span>
+            </Link>
+            <span className="text-slate-300">•</span>
+            <Link
+              href="/download?platform=macos"
+              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200/80 hover:bg-purple-100 transition-colors font-semibold text-[11px]"
+            >
+              <Monitor className="w-3 h-3 text-purple-600" />
+              <span>macOS (DMG)</span>
+            </Link>
+          </div>
         </div>
 
         {/* Real Metrics Ribbon */}
@@ -156,7 +183,7 @@ export default function ProductHeroShowcase({
               </picture>
 
               {/* Floating Callout Badges on Top of Image */}
-              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md border border-white/15 rounded-xl px-3 py-2 text-white shadow-lg pointer-events-none">
+              <div className="hidden sm:block absolute top-4 left-4 bg-black/75 backdrop-blur-md border border-white/15 rounded-xl px-3 py-2 text-white shadow-lg pointer-events-none">
                 <div className="flex items-center space-x-2">
                   <Monitor className="w-3.5 h-3.5 text-gatewise-mint" />
                   <span className="text-[11px] font-semibold tracking-wide uppercase text-slate-200">
@@ -168,7 +195,7 @@ export default function ProductHeroShowcase({
                 </p>
               </div>
 
-              <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md border border-white/15 rounded-xl px-3 py-2 text-white shadow-lg pointer-events-none">
+              <div className="hidden sm:block absolute bottom-4 right-4 bg-black/75 backdrop-blur-md border border-white/15 rounded-xl px-3 py-2 text-white shadow-lg pointer-events-none">
                 <div className="flex items-center space-x-2">
                   <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="text-[11px] font-semibold tracking-wide uppercase text-slate-200">

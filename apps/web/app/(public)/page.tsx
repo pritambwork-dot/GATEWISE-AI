@@ -115,8 +115,8 @@ export default function PublicHomePage() {
                 href="/download"
                 className="px-6 py-3.5 rounded-full bg-gatewise-primary text-white text-xs sm:text-sm font-semibold hover:bg-gatewise-deep active:scale-98 transition-all shadow-sm hover:shadow flex items-center space-x-2.5 group"
               >
-                <Smartphone className="w-4 h-4" />
-                <span>Install Guard APK</span>
+                <Download className="w-4 h-4" />
+                <span>Get Apps (APK · IPA · DMG)</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
 

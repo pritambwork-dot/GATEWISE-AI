@@ -565,7 +565,7 @@ export default function InteractiveProductGallery() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between p-3 sm:p-6 overflow-hidden animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
         >
           {/* Top Modal Bar */}
           <div className="flex items-center justify-between text-white pb-3 border-b border-white/10">
@@ -630,7 +630,7 @@ export default function InteractiveProductGallery() {
             {/* Displayed Image */}
             <div
               className={`transition-all duration-300 flex items-center justify-center ${
-                lightboxZoom === 'large' ? 'scale-150 cursor-grab max-w-none' : 'max-h-[75vh] max-w-[90vw]'
+                lightboxZoom === 'large' ? 'scale-150 cursor-grab max-w-none' : 'max-h-[50vh] sm:max-h-[72vh] max-w-[90vw]'
               }`}
             >
               <picture>
@@ -638,7 +638,7 @@ export default function InteractiveProductGallery() {
                 <img
                   src={activeLightboxItem.imagePng}
                   alt={activeLightboxItem.title}
-                  className="max-h-[75vh] max-w-[90vw] object-contain rounded-xl shadow-2xl border border-white/10"
+                  className="max-h-[50vh] sm:max-h-[72vh] max-w-[90vw] object-contain rounded-xl shadow-2xl border border-white/10"
                 />
               </picture>
             </div>
