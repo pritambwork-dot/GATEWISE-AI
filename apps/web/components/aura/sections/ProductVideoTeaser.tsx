@@ -10,6 +10,7 @@ const VIDEOS = [
   {
     id: 'teaser',
     label: '4K Sovereign Motion Teaser',
+    shortLabel: '4K Teaser',
     src: '/media/videos/gatewise-teaser-uploaded.mp4',
     badge: 'CINEMATIC 2X',
     tag: 'PRODUCTION PREVIEW',
@@ -24,6 +25,7 @@ const VIDEOS = [
   {
     id: 'admin',
     label: 'Command Centre Walkthrough',
+    shortLabel: 'Command Desk',
     src: '/media/videos/admin-portal-demo.mp4',
     badge: 'ADMIN PORTAL',
     tag: 'WEB COMMAND DESK',
@@ -38,6 +40,7 @@ const VIDEOS = [
   {
     id: 'guard',
     label: 'Android Guard App Demo',
+    shortLabel: 'Guard App',
     src: '/media/videos/guard-app-demo.mp4',
     badge: 'ANDROID GUARD',
     tag: 'FIELD TERMINAL',
@@ -52,6 +55,7 @@ const VIDEOS = [
   {
     id: 'overview',
     label: 'Full System Overview',
+    shortLabel: 'System Suite',
     src: '/media/videos/gatewise-overview.mp4',
     badge: 'SOVEREIGN STACK',
     tag: 'END-TO-END SUITE',
@@ -113,19 +117,19 @@ export const ProductVideoTeaser: React.FC = () => {
   };
 
   return (
-    <section id="motion-showcase" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-16 md:py-24">
+    <section id="motion-showcase" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
       {/* Eyebrow & Headline */}
-      <div className="flex flex-col items-center text-center mb-10 space-y-4">
+      <div className="flex flex-col items-center text-center mb-8 sm:mb-10 space-y-3 sm:space-y-4">
         <SectionEyebrow label="Product Motion Showcase" tag="GATEWISE AI 1.0" />
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-white">
+        <h2 className="text-2xl sm:text-4xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-white">
           Experience GATEWISE AI in Action
         </h2>
-        <p className="text-white/60 max-w-2xl text-sm sm:text-base leading-relaxed">
+        <p className="text-white/60 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
           High-definition screen recordings and live operational walkthroughs of our actual production software. Played at 2.0x operational speed.
         </p>
 
-        {/* Video selector tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+        {/* Video selector tabs - Responsive horizontal scrolling on mobile */}
+        <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 overflow-x-auto no-scrollbar pb-1 px-1">
           {VIDEOS.map((tab) => {
             const isActive = tab.id === activeVideoId;
             return (
@@ -133,16 +137,17 @@ export const ProductVideoTeaser: React.FC = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveVideoId(tab.id)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[38px] ${
                   isActive
-                    ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.25)]'
+                    ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.25)] font-bold'
                     : 'bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <Film className={`w-3.5 h-3.5 ${isActive ? 'text-black' : 'text-[#00d2ff]'}`} />
-                <span>{tab.label}</span>
+                <Film className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-black' : 'text-[#00d2ff]'}`} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
                 <span
-                  className={`text-[9px] font-mono px-1.5 py-0.2 rounded ${
+                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
                     isActive ? 'bg-black/10 text-black' : 'bg-white/10 text-white/50'
                   }`}
                 >
@@ -160,16 +165,16 @@ export const ProductVideoTeaser: React.FC = () => {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="liquid-glass relative rounded-3xl overflow-hidden border border-white/15 bg-black/80 shadow-[0_25px_80px_rgba(0,0,0,0.8)] aspect-video w-full group"
+        className="liquid-glass relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 bg-black/80 shadow-[0_25px_80px_rgba(0,0,0,0.8)] aspect-video w-full group"
       >
         {/* Glow backdrop */}
         <div className="absolute inset-0 bg-gradient-to-tr from-[#00d2ff]/10 via-transparent to-[#3D81E3]/10 pointer-events-none" />
 
         {/* HUD Corner Brackets */}
-        <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-[#00d2ff]/60 pointer-events-none z-20" />
-        <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-[#00d2ff]/60 pointer-events-none z-20" />
-        <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-[#00d2ff]/60 pointer-events-none z-20" />
-        <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-4 h-4 sm:w-6 sm:h-6 border-t-2 border-l-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-4 h-4 sm:w-6 sm:h-6 border-t-2 border-r-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 w-4 h-4 sm:w-6 sm:h-6 border-b-2 border-l-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 w-4 h-4 sm:w-6 sm:h-6 border-b-2 border-r-2 border-[#00d2ff]/60 pointer-events-none z-20" />
 
         {/* The Video Element */}
         <video
@@ -185,14 +190,15 @@ export const ProductVideoTeaser: React.FC = () => {
         />
 
         {/* Ambient Top Overlay Header */}
-        <div className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/85 via-black/40 to-transparent flex items-center justify-between pointer-events-none select-none z-10">
-          <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm font-bold text-white tracking-tight">
-                {currentVideo.label}
+        <div className="absolute top-0 inset-x-0 p-3 sm:p-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between pointer-events-none select-none z-10">
+          <div className="flex items-center gap-2 sm:gap-3 truncate pr-2">
+            <span className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+              <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">
+                <span className="hidden sm:inline">{currentVideo.label}</span>
+                <span className="sm:hidden">{currentVideo.shortLabel}</span>
               </span>
-              <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono text-[#00d2ff] border border-white/10">
+              <span className="px-1.5 sm:px-2 py-0.5 rounded bg-white/10 text-[9px] sm:text-[10px] font-mono text-[#00d2ff] border border-white/10 shrink-0">
                 {currentVideo.tag}
               </span>
             </div>
@@ -202,11 +208,11 @@ export const ProductVideoTeaser: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 pointer-events-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto shrink-0">
             <button
               type="button"
               onClick={toggleMute}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 text-white text-xs font-medium backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer"
+              className="p-1.5 sm:px-3 sm:py-1.5 rounded-full bg-black/75 hover:bg-black/95 border border-white/20 text-white text-xs font-medium backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer min-h-[36px] min-w-[36px] justify-center"
               aria-label={isMuted ? 'Unmute video' : 'Mute video'}
             >
               {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
@@ -216,7 +222,7 @@ export const ProductVideoTeaser: React.FC = () => {
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="p-2 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 text-white backdrop-blur-md transition-all cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-full bg-black/75 hover:bg-black/95 border border-white/20 text-white backdrop-blur-md transition-all cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center"
               aria-label="Fullscreen"
             >
               <Maximize2 className="w-4 h-4" />
@@ -224,7 +230,7 @@ export const ProductVideoTeaser: React.FC = () => {
           </div>
         </div>
 
-        {/* Real-time Biometric HUD Overlay Strip */}
+        {/* Real-time Biometric HUD Overlay Strip (desktop) */}
         <div className="absolute top-16 left-6 hidden lg:flex flex-col gap-1.5 pointer-events-none select-none z-10 font-mono text-[10px]">
           <div className="px-2.5 py-1 rounded bg-black/60 border border-white/10 text-white/80 backdrop-blur-md flex items-center gap-2">
             <Cpu className="w-3 h-3 text-[#00d2ff]" />
@@ -240,8 +246,20 @@ export const ProductVideoTeaser: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Description & Playback HUD */}
-        <div className="absolute bottom-4 inset-x-4 sm:inset-x-6 p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 select-none z-10">
+        {/* Mobile Minimal Floating Play/Pause Pill over video canvas */}
+        <div className="sm:hidden absolute bottom-3 right-3 pointer-events-auto z-10">
+          <button
+            type="button"
+            onClick={togglePlay}
+            className="px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-lg"
+          >
+            {isPlaying ? <Pause className="w-3 h-3 text-white" /> : <Play className="w-3 h-3 fill-white text-white" />}
+            <span>{isPlaying ? 'Pause' : 'Play 2x'}</span>
+          </button>
+        </div>
+
+        {/* Desktop Bottom Description & Playback HUD */}
+        <div className="hidden sm:flex absolute bottom-4 inset-x-6 p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/15 items-center justify-between gap-3 select-none z-10">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-[#00d2ff]" />
@@ -267,6 +285,26 @@ export const ProductVideoTeaser: React.FC = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Mobile Description Card - Rendered cleanly BELOW the video to prevent canvas occlusion */}
+      <div className="sm:hidden mt-3 liquid-glass rounded-2xl p-4 border border-white/10 bg-black/60 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#00d2ff]" />
+            <span className="text-xs font-bold text-white">{currentVideo.label}</span>
+          </div>
+          <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+            2.0X SPEED
+          </span>
+        </div>
+        <p className="text-xs text-white/70 leading-relaxed">
+          {currentVideo.desc}
+        </p>
+        <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/50">
+          <span>{currentVideo.telemetry.engine}</span>
+          <span className="text-emerald-400 font-semibold">{currentVideo.telemetry.status}</span>
+        </div>
+      </div>
     </section>
   );
 };

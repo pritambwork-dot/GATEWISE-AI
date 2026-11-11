@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Maximize2, X, ChevronLeft, ChevronRight, Smartphone, Monitor, Layers } from 'lucide-react';
+import { Maximize2, X, ChevronLeft, ChevronRight, Smartphone, Monitor, Layers, ChevronDown } from 'lucide-react';
 import { SectionEyebrow } from '../primitives/SectionEyebrow';
 
 interface ScreenItem {
@@ -118,62 +118,107 @@ const SCREENS: ScreenItem[] = [
     category: 'admin',
     title: 'Guard Management & Shifts',
     subtitle: 'Security roster deployment & active sessions',
-    src: '/media/screenshots/admin/08_guard_management.png',
+    src: '/media/screenshots/admin/08_guards_management.png',
+  },
+  {
+    id: 'a-09',
+    category: 'admin',
+    title: 'Security Audit & Cryptography',
+    subtitle: 'Tamper-evident HMAC ledger inspection',
+    src: '/media/screenshots/admin/09_security_audit_log.png',
   },
   {
     id: 'a-10',
     category: 'admin',
-    title: 'Analytics & Incident Audit',
-    subtitle: 'Peak throughput and exception forensics',
-    src: '/media/screenshots/admin/10_analytics_eval.png',
+    title: 'Emergency Lockdown Desk',
+    subtitle: 'Instant perimeter turnstile & gate override',
+    src: '/media/screenshots/admin/10_emergency_lockdown.png',
+  },
+  {
+    id: 'a-11',
+    category: 'admin',
+    title: 'System Settings & Config',
+    subtitle: 'Cosine thresholds & model parameters',
+    src: '/media/screenshots/admin/11_system_settings.png',
   },
 
-  // Workflows
+  // Security Workflows
   {
     id: 'w-01',
     category: 'workflow',
-    title: 'Connected Verification Flow',
-    subtitle: 'Edge terminal to central ledger synchronization',
-    src: '/media/screenshots/workflows/01_connected_verification_flow.png',
+    title: 'YuNet Alignment Workflow',
+    subtitle: 'Sub-300ms 5-point pupil and nose tracking',
+    src: '/media/screenshots/guard/03_guard_detecting_landmarks.png',
   },
   {
     id: 'w-02',
     category: 'workflow',
-    title: 'Device Pair Composition',
-    subtitle: 'Guard Android client + Command Centre macOS app',
-    src: '/media/screenshots/workflows/02_device_pair_composition.png',
+    title: 'SFace Cosine Calculation',
+    subtitle: 'Cosine distance computed against local SQLite vector db',
+    src: '/media/screenshots/guard/04_guard_biometric_match.png',
+  },
+  {
+    id: 'w-03',
+    category: 'workflow',
+    title: 'Automated Barrier Actuation',
+    subtitle: 'Relay pulse transmitted to hardware boom barrier',
+    src: '/media/screenshots/guard/05_guard_entry_granted.png',
+  },
+  {
+    id: 'w-04',
+    category: 'workflow',
+    title: 'Visitor Pass Intake',
+    subtitle: 'QR scanning and temporary RFID issuance',
+    src: '/media/screenshots/guard/10_guard_visitor_intake.png',
+  },
+  {
+    id: 'w-05',
+    category: 'workflow',
+    title: 'Multi-Gate Realtime Telemetry',
+    subtitle: 'Simultaneous WebSocket broadcast across campus network',
+    src: '/media/screenshots/admin/02_command_centre.png',
+  },
+  {
+    id: 'w-06',
+    category: 'workflow',
+    title: 'HMAC Non-Repudiation Audit',
+    subtitle: 'Cryptographic proof of entry for sovereign compliance',
+    src: '/media/screenshots/admin/09_security_audit_log.png',
   },
 ];
 
 export const InteractiveScreenshotGallery: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'guard' | 'admin' | 'workflow'>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [showAllMobile, setShowAllMobile] = useState(false);
 
   const filteredScreens = SCREENS.filter(
     (s) => activeCategory === 'all' || s.category === activeCategory
   );
 
+  const displayedScreens = showAllMobile ? filteredScreens : filteredScreens.slice(0, 8);
+
   const selectedScreen = lightboxIndex !== null ? filteredScreens[lightboxIndex] : null;
 
   return (
-    <section className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-16 md:py-24">
+    <section className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
       {/* Eyebrow & Headline */}
-      <div className="flex flex-col items-center text-center mb-10 space-y-4">
+      <div className="flex flex-col items-center text-center mb-8 sm:mb-10 space-y-3 sm:space-y-4">
         <SectionEyebrow label="Interface Gallery" tag="24 Verified Screens" />
-        <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
           Real Application Interface Gallery
         </h2>
-        <p className="text-white/60 max-w-xl text-sm sm:text-base leading-relaxed">
+        <p className="text-white/60 max-w-xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
           High-resolution captures from the operational Android Guard terminal and macOS Command Centre.
         </p>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+        {/* Filter Pills - Responsive Horizontal Scrolling */}
+        <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 overflow-x-auto no-scrollbar pb-1 px-1">
           {[
-            { id: 'all', label: 'All Screenshots', icon: Layers },
-            { id: 'guard', label: 'Guard Mobile App', icon: Smartphone },
-            { id: 'admin', label: 'Admin Command Centre', icon: Monitor },
-            { id: 'workflow', label: 'Security Workflows', icon: Layers },
+            { id: 'all', label: 'All Screens', icon: Layers },
+            { id: 'guard', label: 'Guard App', icon: Smartphone },
+            { id: 'admin', label: 'Command Desk', icon: Monitor },
+            { id: 'workflow', label: 'Workflows', icon: Layers },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeCategory === tab.id;
@@ -181,10 +226,13 @@ export const InteractiveScreenshotGallery: React.FC = () => {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveCategory(tab.id as any)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                onClick={() => {
+                  setActiveCategory(tab.id as any);
+                  setShowAllMobile(false);
+                }}
+                className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[38px] ${
                   isActive
-                    ? 'bg-white text-black shadow-md'
+                    ? 'bg-white text-black shadow-md font-bold'
                     : 'bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
@@ -197,14 +245,14 @@ export const InteractiveScreenshotGallery: React.FC = () => {
       </div>
 
       {/* Screen Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredScreens.map((screen, idx) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        {displayedScreens.map((screen, idx) => (
           <motion.div
             key={screen.id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: idx * 0.04 }}
+            transition={{ duration: 0.5, delay: (idx % 8) * 0.04 }}
             onClick={() => setLightboxIndex(idx)}
             className="liquid-glass rounded-2xl overflow-hidden border border-white/10 group cursor-pointer hover:border-[#00d2ff]/50 transition-all flex flex-col justify-between"
           >
@@ -227,12 +275,12 @@ export const InteractiveScreenshotGallery: React.FC = () => {
             </div>
 
             {/* Caption */}
-            <div className="p-4 bg-black/30 space-y-1">
-              <div className="flex items-center justify-between">
+            <div className="p-3.5 sm:p-4 bg-black/30 space-y-1">
+              <div className="flex items-center justify-between gap-2">
                 <h4 className="text-xs font-bold text-white group-hover:text-[#00d2ff] transition-colors truncate">
                   {screen.title}
                 </h4>
-                <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-white/10 text-white/60">
+                <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-white/10 text-white/60 shrink-0">
                   {screen.category}
                 </span>
               </div>
@@ -242,6 +290,20 @@ export const InteractiveScreenshotGallery: React.FC = () => {
         ))}
       </div>
 
+      {/* Mobile Show More Button */}
+      {filteredScreens.length > 8 && !showAllMobile && (
+        <div className="sm:hidden mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setShowAllMobile(true)}
+            className="w-full py-3 rounded-xl bg-white/10 border border-white/15 text-white text-xs font-semibold hover:bg-white/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>View All {filteredScreens.length} Screenshots</span>
+            <ChevronDown className="w-4 h-4 text-[#00d2ff]" />
+          </button>
+        </div>
+      )}
+
       {/* Lightbox Modal */}
       <AnimatePresence>
         {selectedScreen && (
@@ -249,39 +311,42 @@ export const InteractiveScreenshotGallery: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8"
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-3 sm:p-8"
             onClick={() => setLightboxIndex(null)}
           >
             <div
-              className="relative max-w-5xl w-full max-h-[90vh] liquid-glass rounded-3xl border border-white/20 overflow-hidden flex flex-col bg-black/95 shadow-2xl"
+              className="relative max-w-5xl w-full max-h-[92vh] liquid-glass rounded-2xl sm:rounded-3xl border border-white/20 overflow-hidden flex flex-col bg-black/95 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-black/50">
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-white">{selectedScreen.title}</h3>
-                  <p className="text-xs text-white/50">{selectedScreen.subtitle}</p>
+              <div className="p-3.5 sm:p-5 border-b border-white/10 flex items-center justify-between bg-black/50 gap-2">
+                <div className="truncate pr-2">
+                  <h3 className="text-xs sm:text-base font-bold text-white truncate">{selectedScreen.title}</h3>
+                  <p className="text-[11px] sm:text-xs text-white/50 truncate">{selectedScreen.subtitle}</p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={() => setLightboxIndex((idx) => (idx! > 0 ? idx! - 1 : filteredScreens.length - 1))}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
+                    aria-label="Previous screenshot"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setLightboxIndex((idx) => (idx! < filteredScreens.length - 1 ? idx! + 1 : 0))}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
+                    aria-label="Next screenshot"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setLightboxIndex(null)}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors ml-2"
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors ml-1 cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
+                    aria-label="Close lightbox"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -289,11 +354,11 @@ export const InteractiveScreenshotGallery: React.FC = () => {
               </div>
 
               {/* Main Image View */}
-              <div className="flex-1 overflow-auto p-4 sm:p-6 flex items-center justify-center bg-black/40">
+              <div className="flex-1 overflow-auto p-3 sm:p-6 flex items-center justify-center bg-black/40">
                 <img
                   src={selectedScreen.src}
                   alt={selectedScreen.title}
-                  className="max-h-[72vh] w-auto max-w-full rounded-xl object-contain shadow-2xl border border-white/10"
+                  className="max-h-[68vh] sm:max-h-[72vh] w-auto max-w-full rounded-xl object-contain shadow-2xl border border-white/10"
                 />
               </div>
             </div>

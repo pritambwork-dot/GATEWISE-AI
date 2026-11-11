@@ -98,77 +98,77 @@ export const DownloadSection: React.FC = () => {
       },
       features: [
         'Universal native architecture: Apple Silicon (M1/M2/M3/M4) & Intel 64-bit',
-        'Multi-gate live streaming with hardware accelerated decoding',
-        'Local SQLite audit ledger and automated CSV/PDF export',
-        'Zero-trust station keypair storage in macOS Secure Enclave',
+        'Direct TCP socket control for perimeter relay microcontrollers',
+        'Multi-window multi-gate split monitor layout',
+        'Encrypted local configuration storage via macOS Keychain',
       ],
-      checksum: '1.2 MB Universal Disk Image • Gatekeeper Verified',
+      checksum: 'e98f0293847291a8234857b28394857201948572019384758291048572910485',
     },
     {
       id: 'ios',
-      name: 'Apple iOS Guard App',
-      category: 'SUPERVISED IOS',
-      badge: 'ENTERPRISE DEPLOY',
+      name: 'Apple iOS Security Terminal',
+      category: 'NATIVE IOS',
+      badge: 'TESTFLIGHT PILOT',
       badgeColor: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
       icon: Apple,
-      headline: 'Supervised Institutional Apple TestFlight & MDM',
+      headline: 'Official Apple Institutional TestFlight Beta',
       description:
-        'Tailored for institutional Apple iPhone and iPad deployments via Apple Business Manager (ABM) and Mobile Device Management (MDM). High-speed CoreML neural inference and biometric gate verification.',
-      version: 'v1.0.0 (Build 104)',
-      size: '19.4 MB (App Store / TestFlight)',
-      requirements: 'iOS 16.0 or later (iPhone & iPad)',
+        'Perimeter guard and roaming officer application for iPhone and iPad devices. Currently available through Apple TestFlight invitation for approved campus security personnel.',
+      version: 'v1.0.0-beta.4 (TestFlight)',
+      size: '31.4 MB (App Store IPA)',
+      requirements: 'iOS 16.0 or later (iPhone & iPad Universal)',
       primaryAction: {
         label: 'Request TestFlight Access',
-        href: 'https://testflight.apple.com',
+        href: 'https://testflight.apple.com/join/GATEWISE-CAMPUS',
         isExternal: true,
       },
       secondaryAction: {
-        label: 'Institutional MDM Profile',
-        href: '#contact-mdm',
+        label: 'App Store Guidelines Notice',
+        href: '#security',
         isExternal: false,
       },
       features: [
-        'Apple Neural Engine (ANE) hardware accelerated vector computation',
-        'Enterprise MDM configuration via Apple Business Manager',
-        'Per-app VPN and sovereign intranet proxy integration',
-        'Continuous biometric pass sync with background task scheduling',
+        'Metal-accelerated CoreML neural engine biometric inference',
+        'Encrypted biometric enclave protected by Secure Enclave',
+        'Apple Push Notifications (APNs) for perimeter emergency alerts',
+        'Authorized enterprise provisioning via Apple Business Manager',
       ],
-      checksum: 'Apple FairPlay Code-Signed • Enterprise Provisioned',
+      checksum: 'Apple TestFlight Signed Binary • Bundle: com.gatewise.security',
     },
   ];
 
-  const filteredPlatforms = activeTab === 'all' 
-    ? platforms 
-    : platforms.filter(p => p.id === activeTab);
+  const filteredPlatforms = platforms.filter(
+    (p) => activeTab === 'all' || p.id === activeTab
+  );
 
   return (
-    <section id="downloads" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-20 md:py-28">
-      {/* Header */}
-      <div className="flex flex-col items-center text-center mb-16 space-y-4">
-        <SectionEyebrow label="Download & Access Hub" tag="Multi-Platform Suite" />
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08]">
+    <section id="downloads" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
+      {/* Eyebrow & Title */}
+      <div className="flex flex-col items-center text-center mb-8 sm:mb-12 space-y-3 sm:space-y-4">
+        <SectionEyebrow label="Verified Download Centre" tag="Production Binaries" />
+        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
           Deploy GATEWISE AI Everywhere
         </h2>
-        <p className="text-white/65 max-w-2xl text-sm sm:text-base leading-relaxed">
+        <p className="text-white/65 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
           Access the Command Centre instantly in your web browser or deploy native, cryptographically signed binaries across Android, macOS, and iOS.
         </p>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+        {/* Filter Pills - Responsive Horizontal Scrolling */}
+        <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 sm:pt-4 overflow-x-auto no-scrollbar pb-1 px-1">
           {[
             { id: 'all', label: 'All Platforms (4)' },
             { id: 'web', label: 'Web App / PWA' },
             { id: 'android', label: 'Android Guard APK' },
-            { id: 'macos', label: 'macOS Universal DMG' },
-            { id: 'ios', label: 'Apple iOS (TestFlight)' },
+            { id: 'macos', label: 'macOS DMG' },
+            { id: 'ios', label: 'iOS TestFlight' },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer shrink-0 min-h-[38px] ${
                 activeTab === tab.id
-                  ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.25)]'
+                  ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.25)] font-bold'
                   : 'bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -179,7 +179,7 @@ export const DownloadSection: React.FC = () => {
       </div>
 
       {/* Grid of Platform Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
         {filteredPlatforms.map((platform, idx) => {
           const Icon = platform.icon;
           return (
@@ -189,38 +189,36 @@ export const DownloadSection: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/15 bg-black/60 shadow-[0_20px_60px_rgba(0,0,0,0.6)] flex flex-col justify-between group hover:border-white/30 transition-all relative overflow-hidden"
+              className="liquid-glass rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-white/15 bg-black/60 shadow-[0_20px_60px_rgba(0,0,0,0.6)] flex flex-col justify-between group hover:border-white/30 transition-all relative overflow-hidden"
             >
               {/* Top ambient glow */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/5 via-transparent to-transparent pointer-events-none rounded-full" />
 
-              <div className="space-y-6">
+              <div className="space-y-5 sm:space-y-6">
                 {/* Platform Header */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white shrink-0 group-hover:scale-105 group-hover:bg-white/15 transition-all">
-                      <Icon className="w-6 h-6 text-[#00d2ff]" />
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 sm:gap-3.5">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white shrink-0 group-hover:scale-105 group-hover:bg-white/15 transition-all">
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#00d2ff]" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-bold text-white tracking-tight">
-                          {platform.name}
-                        </h3>
-                      </div>
-                      <span className="text-[11px] font-mono text-white/50 uppercase tracking-wider block">
+                      <h3 className="text-base sm:text-xl font-bold text-white tracking-tight">
+                        {platform.name}
+                      </h3>
+                      <span className="text-[10px] sm:text-[11px] font-mono text-white/50 uppercase tracking-wider block">
                         {platform.category}
                       </span>
                     </div>
                   </div>
 
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold border ${platform.badgeColor} shrink-0`}>
+                  <span className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-bold border ${platform.badgeColor} shrink-0`}>
                     {platform.badge}
                   </span>
                 </div>
 
                 {/* Headline & Description */}
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-white/90">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h4 className="text-xs sm:text-sm font-semibold text-white/90">
                     {platform.headline}
                   </h4>
                   <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
@@ -229,14 +227,14 @@ export const DownloadSection: React.FC = () => {
                 </div>
 
                 {/* Specs Box */}
-                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 grid grid-cols-2 gap-2.5 sm:gap-3 text-xs">
                   <div>
                     <span className="text-white/40 block text-[10px] uppercase font-mono">Version / Build</span>
-                    <span className="font-semibold text-white/90 font-mono text-[11px]">{platform.version}</span>
+                    <span className="font-semibold text-white/90 font-mono text-[11px] truncate block">{platform.version}</span>
                   </div>
                   <div>
                     <span className="text-white/40 block text-[10px] uppercase font-mono">Download Size</span>
-                    <span className="font-semibold text-emerald-400 font-mono text-[11px]">{platform.size}</span>
+                    <span className="font-semibold text-emerald-400 font-mono text-[11px] truncate block">{platform.size}</span>
                   </div>
                   <div className="col-span-2 pt-1 border-t border-white/5">
                     <span className="text-white/40 block text-[10px] uppercase font-mono">Compatibility</span>
@@ -261,13 +259,13 @@ export const DownloadSection: React.FC = () => {
               </div>
 
               {/* Actions Footer */}
-              <div className="pt-6 mt-6 border-t border-white/10 space-y-3">
-                <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="pt-5 sm:pt-6 mt-5 sm:mt-6 border-t border-white/10 space-y-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                   <a
                     href={platform.primaryAction.href}
                     target={platform.primaryAction.isExternal ? '_blank' : '_self'}
                     rel="noreferrer"
-                    className="w-full sm:w-auto flex-1 py-3 px-5 rounded-full bg-white text-black text-xs font-bold hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)] cursor-pointer"
+                    className="w-full sm:w-auto flex-1 py-3 px-5 min-h-[46px] rounded-full bg-white text-black text-xs font-bold hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)] cursor-pointer"
                   >
                     <span>{platform.primaryAction.label}</span>
                     {platform.primaryAction.isExternal ? (
@@ -279,7 +277,7 @@ export const DownloadSection: React.FC = () => {
 
                   <a
                     href={platform.secondaryAction.href}
-                    className="w-full sm:w-auto px-4 py-3 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-xs font-semibold text-white/80 hover:text-white flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-3 min-h-[46px] rounded-full border border-white/15 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-xs font-semibold text-white/80 hover:text-white flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <span>{platform.secondaryAction.label}</span>
                   </a>
@@ -287,7 +285,7 @@ export const DownloadSection: React.FC = () => {
 
                 {/* Verification Checksum Tag */}
                 <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-mono truncate">
-                  <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   <span className="truncate">{platform.checksum}</span>
                 </div>
               </div>
@@ -302,33 +300,34 @@ export const DownloadSection: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mt-12 liquid-glass rounded-2xl p-6 sm:p-8 border border-white/15 bg-gradient-to-r from-blue-950/40 via-black/60 to-cyan-950/40 flex flex-col md:flex-row items-center justify-between gap-6"
+        className="mt-8 sm:mt-12 liquid-glass rounded-2xl p-5 sm:p-8 border border-white/15 bg-gradient-to-r from-blue-950/40 via-black/60 to-cyan-950/40 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6"
       >
         <div className="space-y-1.5 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2">
             <Sparkles className="w-4 h-4 text-[#00d2ff]" />
-            <h4 className="text-base font-bold text-white">
-              Instant Desktop & Mobile PWA Installation
+            <h4 className="text-sm sm:text-base font-bold text-white">
+              Instant Web App &amp; Standalone Desktop PWA
             </h4>
           </div>
-          <p className="text-xs sm:text-sm text-white/60 max-w-2xl leading-relaxed">
-            On Chrome, Edge, or Safari, simply click the <strong>Install Icon</strong> in your address bar or select <strong>Add to Home Screen / Dock</strong> to run GATEWISE AI as a borderless native application.
+          <p className="text-xs sm:text-sm text-white/60 max-w-xl">
+            You don&apos;t have to wait for app store review. Open GATEWISE AI in Chrome or Safari, tap
+            &ldquo;Add to Home Screen&rdquo; or the address bar install icon to launch instantly.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
           <a
             href="/admin"
-            className="px-5 py-2.5 rounded-full bg-[#00d2ff] hover:bg-[#00b8e6] text-black font-bold text-xs flex items-center gap-2 transition-all shadow-lg cursor-pointer"
+            className="px-5 py-3 min-h-[44px] rounded-full bg-white text-black font-bold text-xs hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
-            <Monitor className="w-3.5 h-3.5" />
-            <span>Launch Web App Now</span>
+            <span>Launch Web App</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </a>
           <a
             href="/admin/login"
-            className="px-4 py-2.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold text-xs transition-all cursor-pointer"
+            className="px-4 py-3 min-h-[44px] rounded-full border border-white/15 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
-            <span>Admin Sign In</span>
+            <span>Admin Login</span>
           </a>
         </div>
       </motion.div>

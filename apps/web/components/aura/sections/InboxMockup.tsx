@@ -101,60 +101,37 @@ const LIVE_ENTRIES: EntryRecord[] = [
     decision: 'GRANTED',
     cosineScore: 0.941,
     mode: 'Pre-Approved QR',
-    hudImage: '/media/screenshots/guard/05_guard_entry_granted.png',
+    hudImage: '/media/screenshots/guard/10_guard_visitor_intake.png',
     summary:
-      'Digital guest invitation QR scanned. Identity matched against pre-uploaded sponsor clearance from Dean Office.',
-    hash: 'f9410cb23456a192837465bcde0912fa8745bcde1234567890abcdef12345678',
+      'Pre-scheduled QR access token cryptographically signed by Campus Registrar. Escort protocol waived per Dean authorization.',
+    hash: '7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456',
     details: {
-      enrollmentId: 'GST-2026-004',
+      enrollmentId: 'VIS-2026-092',
       department: 'Invited Keynote Speaker',
-      barrierStatus: 'Manual Guard Override Accepted',
+      barrierStatus: 'Escorted Entry Approved',
       guardOnDuty: 'Guard Vikram Singh (Post 01)',
     },
   },
   {
-    id: 'bluedart',
-    name: 'BlueDart Logistics Van',
-    role: 'Authorized Vendor (OD-15-B-4402)',
-    avatarLetter: 'V',
-    avatarGradient: 'from-[#10b981] to-[#064e3b]',
-    gate: 'Service & Logistics 04',
-    time: '9:28 AM',
-    decision: 'GRANTED',
-    cosineScore: 0.985,
-    mode: 'ANPR Vehicle',
-    vehiclePlate: 'OD-15-B-4402',
+    id: 'unknown-01',
+    name: 'Unidentified Individual',
+    role: 'Perimeter Boundary Anomaly',
+    avatarLetter: '?',
+    avatarGradient: 'from-rose-600 to-red-950',
+    gate: 'North Logistics Gate 04',
+    time: '9:31 AM',
+    decision: 'FLAGGED',
+    cosineScore: 0.382,
+    mode: 'YuNet + SFace',
     hudImage: '/media/screenshots/guard/08_guard_processing_hud.png',
     summary:
-      'ANPR high-speed camera matched license plate against daily commercial delivery schedule. Delivery bay access allocated.',
-    hash: '12480a9bcde1234567890abcdef9876543210fedcba0987654321fedcba12345',
+      'Cosine similarity 0.382 fell significantly below security threshold (0.72). Zero match across all campus directories. Perimeter lockdown alert dispatched.',
+    hash: 'cc9810a45f928e12b7a9041289fed1029487cbea123490812480928130491823',
     details: {
-      enrollmentId: 'VND-2026-440',
-      department: 'Campus Courier Dispatch',
-      barrierStatus: 'Heavy Vehicle Barrier Opened',
-      guardOnDuty: 'Guard Priya Patel (Post 04)',
-    },
-  },
-  {
-    id: 'unregistered',
-    name: 'Unregistered Individual',
-    role: 'Unidentified Perimeter Approach',
-    avatarLetter: '?',
-    avatarGradient: 'from-[#ef4444] to-[#7f1d1d]',
-    gate: 'Faculty Enclave Gate 03',
-    time: '9:15 AM',
-    decision: 'FLAGGED',
-    cosineScore: 0.381,
-    mode: 'YuNet + SFace',
-    hudImage: '/media/screenshots/guard/02_guard_viewfinder_idle.png',
-    summary:
-      'No enrolled biometrics found matching subject. Cosine distance 0.381 falls below safe 0.72 threshold. Perimeter barrier kept sealed.',
-    hash: '99887766554433221100aabbccddeeff00112233445566778899aabbccddeeff',
-    details: {
-      enrollmentId: 'UNKNOWN-INCIDENT-09',
-      department: 'Visitor Intake Required',
-      barrierStatus: 'SEALED — Guard Escalation Prompted',
-      guardOnDuty: 'Guard Ramesh Sen (Post 03)',
+      enrollmentId: 'UNREGISTERED_ENTITY',
+      department: 'External Visitor (No Active Pass)',
+      barrierStatus: 'LOCKED · INTERCEPTION ALERTED',
+      guardOnDuty: 'Guard Pradeep Jena (Post 04)',
     },
   },
 ];
@@ -162,12 +139,13 @@ const LIVE_ENTRIES: EntryRecord[] = [
 export const InboxMockup: React.FC = () => {
   const [activeEntryId, setActiveEntryId] = useState<string>('ananya');
   const [activeGateTab, setActiveGateTab] = useState<string>('all');
-  const [searchFilter, setSearchFilter] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'hud' | 'video'>('hud');
   const [barrierOverrideNotice, setBarrierOverrideNotice] = useState<string | null>(null);
+  const [searchFilter, setSearchFilter] = useState('');
+  const [viewMode, setViewMode] = useState<'hud' | 'video'>('hud');
+  const [mobileTab, setMobileTab] = useState<'stream' | 'hud' | 'gates'>('stream');
 
   const selectedRecord =
-    LIVE_ENTRIES.find((e) => e.id === activeEntryId) || LIVE_ENTRIES[0];
+    LIVE_ENTRIES.find((entry) => entry.id === activeEntryId) || LIVE_ENTRIES[0];
 
   const filteredEntries = LIVE_ENTRIES.filter((entry) => {
     const matchesSearch =
@@ -175,7 +153,6 @@ export const InboxMockup: React.FC = () => {
       entry.role.toLowerCase().includes(searchFilter.toLowerCase()) ||
       entry.gate.toLowerCase().includes(searchFilter.toLowerCase());
 
-    if (activeGateTab === 'all') return matchesSearch;
     if (activeGateTab === 'gate01') return matchesSearch && entry.gate.includes('Gate 01');
     if (activeGateTab === 'gate02') return matchesSearch && entry.gate.includes('Gate 02');
     if (activeGateTab === 'flagged') return matchesSearch && entry.decision === 'FLAGGED';
@@ -183,25 +160,45 @@ export const InboxMockup: React.FC = () => {
   });
 
   const triggerBarrierRelease = () => {
-    setBarrierOverrideNotice(`Manual Barrier Clearance Issued for ${selectedRecord.name}`);
-    setTimeout(() => setBarrierOverrideNotice(null), 3500);
+    setBarrierOverrideNotice(`BARRIER #01 AUTO-RELEASE COMMAND EXECUTED FOR ${selectedRecord.name}`);
+    setTimeout(() => {
+      setBarrierOverrideNotice(null);
+    }, 4000);
   };
 
   return (
-    <section id="operations" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-20">
+    <section id="operations" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
+      {/* Header Eyebrow */}
+      <div className="flex flex-col items-center text-center mb-8 sm:mb-12 space-y-3">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
+          <Activity className="w-3.5 h-3.5 text-[#00d2ff]" />
+          <span className="text-xs font-mono font-semibold text-white/80 uppercase tracking-wider">
+            Live Gate Operations Console
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        </div>
+        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+          On-Premise Biometric Telemetry &amp; Access Stream
+        </h2>
+        <p className="text-white/60 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
+          Experience the actual telemetry stream deployed across campus perimeter gates. Click through
+          live entry records to inspect real-time YuNet landmark crops, SFace cosine scores, and cryptographic signatures.
+        </p>
+      </div>
+
+      {/* Main Console Window */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-100px' }}
+        viewport={{ once: true, margin: '-50px' }}
         transition={{
-          duration: 0.9,
-          delay: 0.2,
+          duration: 0.8,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="liquid-glass relative rounded-2xl overflow-hidden border border-white/10 bg-[#0c0e12]/95 backdrop-blur-3xl shadow-[0_30px_100px_rgba(0,0,0,0.9)]"
+        className="liquid-glass relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-[#0c0e12]/95 backdrop-blur-3xl shadow-[0_30px_100px_rgba(0,0,0,0.9)]"
       >
         {/* Title Bar */}
-        <div className="h-11 px-4 sm:px-6 flex items-center justify-between border-b border-white/10 bg-black/40 select-none">
+        <div className="h-11 px-3 sm:px-6 flex items-center justify-between border-b border-white/10 bg-black/40 select-none">
           {/* Traffic lights */}
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]/40" />
@@ -210,18 +207,60 @@ export const InboxMockup: React.FC = () => {
           </div>
 
           {/* Center Title */}
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#00d2ff]" />
-            <span className="text-xs text-white/70 font-semibold tracking-tight">
-              GATEWISE AI — Perimeter Command Centre &amp; On-Device Guard Telemetry
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ShieldCheck className="w-4 h-4 text-[#00d2ff] shrink-0" />
+            <span className="text-[11px] sm:text-xs text-white/80 font-semibold tracking-tight truncate max-w-[200px] sm:max-w-none">
+              <span className="hidden sm:inline">GATEWISE AI — Perimeter Command Centre &amp; On-Device Guard Telemetry</span>
+              <span className="sm:hidden">GATEWISE AI — Command HUD</span>
             </span>
           </div>
 
           {/* Status indicators */}
-          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] text-white/50">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>SECURE ENCLAVE ACTIVE</span>
+          <div className="flex items-center gap-2 font-mono text-[10px] text-white/50">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="hidden sm:inline">SECURE ENCLAVE ACTIVE</span>
+            <span className="sm:hidden text-emerald-400 font-bold">ONLINE</span>
           </div>
+        </div>
+
+        {/* Mobile Tab Switcher for Phone/Tablet Screens (< lg) */}
+        <div className="lg:hidden flex items-center border-b border-white/10 bg-black/60 p-1.5 gap-1 select-none">
+          <button
+            type="button"
+            onClick={() => setMobileTab('stream')}
+            className={`flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              mobileTab === 'stream'
+                ? 'bg-white text-black shadow-sm font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Feed ({filteredEntries.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('hud')}
+            className={`flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              mobileTab === 'hud'
+                ? 'bg-white text-black shadow-sm font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>Biometric HUD</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('gates')}
+            className={`flex-1 py-2 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+              mobileTab === 'gates'
+                ? 'bg-white text-black shadow-sm font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Gates</span>
+          </button>
         </div>
 
         {/* Override Notification Banner */}
@@ -231,21 +270,25 @@ export const InboxMockup: React.FC = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="bg-emerald-500/15 border-b border-emerald-500/30 px-6 py-2.5 flex items-center justify-between text-xs text-emerald-300 font-mono"
+              className="bg-emerald-500/15 border-b border-emerald-500/30 px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-emerald-300 font-mono gap-1"
             >
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>{barrierOverrideNotice}</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="truncate">{barrierOverrideNotice}</span>
               </div>
               <span className="text-[10px] text-emerald-400/70">Cryptographically Signed · Ledger Updated</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Body Grid: 3-pane responsive desktop layout */}
-        <div className="grid grid-cols-12 h-[640px] text-xs">
+        {/* Body Grid: Responsive Desktop 3-pane & Adaptive Mobile Single-Pane */}
+        <div className="lg:grid lg:grid-cols-12 lg:h-[640px] text-xs">
           {/* 1. Left Column: Perimeter Infrastructure & Gate Posts */}
-          <div className="col-span-12 sm:col-span-4 lg:col-span-3 border-r border-white/10 bg-black/40 p-4 flex flex-col justify-between">
+          <div
+            className={`${
+              mobileTab === 'gates' ? 'flex' : 'hidden'
+            } lg:flex col-span-12 lg:col-span-3 border-b lg:border-b-0 lg:border-r border-white/10 bg-black/40 p-4 flex-col justify-between min-h-[440px] lg:min-h-0 space-y-4`}
+          >
             <div className="space-y-5">
               {/* Emergency Lockdown Action */}
               <button
@@ -254,9 +297,9 @@ export const InboxMockup: React.FC = () => {
                   setBarrierOverrideNotice('ALL PERIMETER BARRIERS LOCKED · ALERT TRANSMITTED');
                   setTimeout(() => setBarrierOverrideNotice(null), 3500);
                 }}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white text-xs font-semibold px-3 py-2.5 transition-all active:scale-[0.98] shadow-md shadow-red-950/40"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white text-xs font-semibold px-4 py-3 transition-all active:scale-[0.98] shadow-md shadow-red-950/40 cursor-pointer min-h-[44px]"
               >
-                <Lock className="w-3.5 h-3.5" />
+                <Lock className="w-4 h-4" />
                 <span>Perimeter Protocol Lock</span>
               </button>
 
@@ -277,8 +320,11 @@ export const InboxMockup: React.FC = () => {
                       <button
                         key={item.id}
                         type="button"
-                        onClick={() => setActiveGateTab(item.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                        onClick={() => {
+                          setActiveGateTab(item.id);
+                          if (window.innerWidth < 1024) setMobileTab('stream');
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors cursor-pointer min-h-[40px] ${
                           isActive
                             ? 'bg-white/10 text-white font-semibold'
                             : 'text-white/60 hover:bg-white/5 hover:text-white'
@@ -323,7 +369,7 @@ export const InboxMockup: React.FC = () => {
                   ].map((engine) => (
                     <div
                       key={engine.name}
-                      className="flex items-center justify-between text-xs text-white/70 py-1 px-1.5 rounded hover:bg-white/5 transition-colors"
+                      className="flex items-center justify-between text-xs text-white/70 py-1.5 px-2 rounded hover:bg-white/5 transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${engine.color}`} />
@@ -344,17 +390,21 @@ export const InboxMockup: React.FC = () => {
           </div>
 
           {/* 2. Center Column: Live Verification Event Stream */}
-          <div className="col-span-12 sm:col-span-8 lg:col-span-4 border-r border-white/10 flex flex-col bg-black/20 overflow-hidden">
+          <div
+            className={`${
+              mobileTab === 'stream' ? 'flex' : 'hidden'
+            } lg:flex col-span-12 lg:col-span-4 border-b lg:border-b-0 lg:border-r border-white/10 flex-col bg-black/20 overflow-hidden min-h-[440px] lg:min-h-0`}
+          >
             {/* Search Header */}
             <div className="p-3.5 border-b border-white/10 bg-black/30">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchFilter}
                   onChange={(e) => setSearchFilter(e.target.value)}
                   placeholder="Search identity, vehicle, roll..."
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
                 />
               </div>
             </div>
@@ -368,8 +418,11 @@ export const InboxMockup: React.FC = () => {
                 return (
                   <div
                     key={entry.id}
-                    onClick={() => setActiveEntryId(entry.id)}
-                    className={`p-3.5 cursor-pointer transition-all ${
+                    onClick={() => {
+                      setActiveEntryId(entry.id);
+                      if (window.innerWidth < 1024) setMobileTab('hud');
+                    }}
+                    className={`p-3.5 cursor-pointer transition-all active:bg-white/10 ${
                       isSelected
                         ? 'bg-white/10 border-l-2 border-[#00d2ff] text-white'
                         : 'hover:bg-white/5 text-white/80'
@@ -382,7 +435,7 @@ export const InboxMockup: React.FC = () => {
                             isGranted ? 'bg-emerald-400' : 'bg-rose-500 animate-ping'
                           }`}
                         />
-                        <span className="font-semibold">{entry.name}</span>
+                        <span className="font-semibold text-xs sm:text-sm">{entry.name}</span>
                       </div>
                       <span className="text-[11px] text-white/40 font-mono">{entry.time}</span>
                     </div>
@@ -393,15 +446,20 @@ export const InboxMockup: React.FC = () => {
                       <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/70 font-mono">
                         {entry.gate}
                       </span>
-                      <span
-                        className={`font-mono font-semibold ${
-                          isGranted ? 'text-emerald-400' : 'text-rose-400'
-                        }`}
-                      >
-                        {entry.decision === 'GRANTED'
-                          ? `Match: ${(entry.cosineScore * 100).toFixed(1)}%`
-                          : 'BREACH FLAGGED'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`font-mono font-semibold ${
+                            isGranted ? 'text-emerald-400' : 'text-rose-400'
+                          }`}
+                        >
+                          {entry.decision === 'GRANTED'
+                            ? `Match: ${(entry.cosineScore * 100).toFixed(1)}%`
+                            : 'BREACH FLAGGED'}
+                        </span>
+                        <span className="lg:hidden text-[#00d2ff] font-medium flex items-center">
+                          HUD <ChevronRight className="w-3 h-3 ml-0.5" />
+                        </span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -410,54 +468,64 @@ export const InboxMockup: React.FC = () => {
           </div>
 
           {/* 3. Right Column: Verification Dossier & Viewfinder HUD */}
-          <div className="hidden lg:flex col-span-5 flex-col bg-black/10 overflow-hidden">
+          <div
+            className={`${
+              mobileTab === 'hud' ? 'flex' : 'hidden'
+            } lg:flex col-span-12 lg:col-span-5 flex-col bg-black/10 overflow-hidden min-h-[440px] lg:min-h-0`}
+          >
             {/* Toolbar */}
-            <div className="h-11 px-5 border-b border-white/10 flex items-center justify-between bg-black/30">
+            <div className="h-11 px-4 sm:px-5 border-b border-white/10 flex items-center justify-between bg-black/30">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => setMobileTab('stream')}
+                  className="lg:hidden px-2.5 py-1 rounded text-xs font-semibold text-white/80 hover:text-white bg-white/10 flex items-center gap-1 cursor-pointer mr-1"
+                >
+                  <span>← Feed</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setViewMode('hud')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  className={`px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
                     viewMode === 'hud'
-                      ? 'bg-white/15 text-white'
+                      ? 'bg-white/15 text-white font-semibold'
                       : 'text-white/50 hover:text-white'
                   }`}
                 >
-                  Edge Viewfinder HUD
+                  HUD Viewfinder
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode('video')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                  className={`px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'video'
-                      ? 'bg-white/15 text-white'
+                      ? 'bg-white/15 text-white font-semibold'
                       : 'text-white/50 hover:text-white'
                   }`}
                 >
                   <Play className="w-3 h-3 text-[#00d2ff]" />
-                  <span>Real Video Demo</span>
+                  <span>Guard Demo</span>
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 font-mono text-[10px] text-white/40">
-                <span>GATE #01</span>
-                <span>•</span>
-                <span className="text-emerald-400">ONLINE</span>
+              <div className="flex items-center gap-1.5 font-mono text-[10px] text-white/40">
+                <span className="hidden sm:inline">GATE #01 •</span>
+                <span className="text-emerald-400 font-semibold">ONLINE</span>
               </div>
             </div>
 
             {/* Dossier Content */}
-            <div className="flex-1 p-5 overflow-y-auto space-y-4">
+            <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4">
               {/* Header Card */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-9 h-9 rounded-full bg-gradient-to-br ${selectedRecord.avatarGradient} flex items-center justify-center font-bold text-sm text-white shadow-md`}
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${selectedRecord.avatarGradient} flex items-center justify-center font-bold text-sm text-white shadow-md`}
                   >
                     {selectedRecord.avatarLetter}
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-white">{selectedRecord.name}</h3>
+                    <h3 className="font-bold text-sm sm:text-base text-white">{selectedRecord.name}</h3>
                     <p className="text-xs text-white/50">{selectedRecord.role}</p>
                   </div>
                 </div>
@@ -488,14 +556,14 @@ export const InboxMockup: React.FC = () => {
                         <span className="bg-black/60 px-2 py-0.5 rounded border border-white/10">
                           MODE: {selectedRecord.mode}
                         </span>
-                        <span className="bg-[#00d2ff]/20 text-[#00d2ff] px-2 py-0.5 rounded border border-[#00d2ff]/40">
+                        <span className="bg-[#00d2ff]/20 text-[#00d2ff] px-2 py-0.5 rounded border border-[#00d2ff]/40 font-bold">
                           SIMILARITY: {(selectedRecord.cosineScore * 100).toFixed(1)}%
                         </span>
                       </div>
 
                       <div className="flex items-center justify-between text-[10px] font-mono text-white/70">
                         <span>LATENCY: 242ms</span>
-                        <span>BARRIER: {selectedRecord.details.barrierStatus}</span>
+                        <span className="truncate max-w-[160px] sm:max-w-none">BARRIER: {selectedRecord.details.barrierStatus}</span>
                       </div>
                     </div>
                   </div>
@@ -526,7 +594,7 @@ export const InboxMockup: React.FC = () => {
               <div className="rounded-xl p-3 bg-white/[0.02] border border-white/10 space-y-1.5">
                 <div className="flex items-center justify-between text-[10px] text-white/50 font-mono">
                   <span>HMAC-SHA256 LEDGER SIGNATURE</span>
-                  <span className="text-emerald-400">NON-REPUDIATION VERIFIED</span>
+                  <span className="text-emerald-400 font-bold">VERIFIED</span>
                 </div>
                 <p className="text-[10px] font-mono text-white/60 break-all bg-black/40 p-2 rounded border border-white/5">
                   {selectedRecord.hash}
@@ -534,11 +602,11 @@ export const InboxMockup: React.FC = () => {
               </div>
 
               {/* Quick Actions */}
-              <div className="pt-2 flex items-center gap-3">
+              <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
                 <button
                   type="button"
                   onClick={triggerBarrierRelease}
-                  className="flex-1 py-2.5 rounded-lg bg-white text-black font-semibold text-xs hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-white text-black font-bold text-xs hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md min-h-[44px]"
                 >
                   <Unlock className="w-3.5 h-3.5" />
                   <span>Authorize Gate Barrier</span>
@@ -549,7 +617,7 @@ export const InboxMockup: React.FC = () => {
                     setBarrierOverrideNotice(`Secondary Inspection Requested for ${selectedRecord.name}`);
                     setTimeout(() => setBarrierOverrideNotice(null), 3500);
                   }}
-                  className="px-3.5 py-2.5 rounded-lg border border-white/15 text-white/80 hover:text-white hover:bg-white/5 text-xs font-medium transition-colors"
+                  className="w-full sm:w-auto px-4 py-3 rounded-xl border border-white/15 text-white/80 hover:text-white hover:bg-white/5 text-xs font-medium transition-colors cursor-pointer min-h-[44px]"
                 >
                   Flag for Inspection
                 </button>

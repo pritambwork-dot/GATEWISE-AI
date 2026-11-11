@@ -27,8 +27,8 @@ const TESTIMONIALS = [
 
 export const Testimonials: React.FC = () => {
   return (
-    <section className="relative z-10 w-full max-w-[1600px] mx-auto px-6 lg:px-12 py-20 md:py-28 border-t border-white/10">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-14 md:py-28 border-t border-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
         {TESTIMONIALS.map((t, index) => (
           <motion.figure
             key={t.author}
@@ -40,13 +40,13 @@ export const Testimonials: React.FC = () => {
               delay: index * 0.1,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="liquid-glass rounded-2xl p-7 border border-white/10 flex flex-col justify-between"
+            className="liquid-glass rounded-2xl p-5 sm:p-7 border border-white/10 flex flex-col justify-between"
           >
             <blockquote className="text-sm sm:text-base text-white/80 leading-[1.6]">
               &ldquo;{t.quote}&rdquo;
             </blockquote>
 
-            <figcaption className="mt-8 pt-5 border-t border-white/10">
+            <figcaption className="mt-6 sm:mt-8 pt-4 sm:pt-5 border-t border-white/10">
               <div className="text-sm font-semibold text-white">{t.author}</div>
               <div className="text-xs text-white/50 mt-0.5">{t.role}</div>
               <div className="text-xs text-[#00d2ff] font-semibold tracking-wider uppercase mt-2">

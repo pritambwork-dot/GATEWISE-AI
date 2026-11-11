@@ -73,14 +73,14 @@ export default function AdminLoginPage() {
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gatewise-text">Employee ID / Email</label>
               <div className="relative">
-                <User className="w-4 h-4 text-gatewise-secondary/60 absolute left-3.5 top-3" />
+                <User className="w-4 h-4 text-gatewise-secondary/60 absolute left-3.5 top-3.5 sm:top-3" />
                 <input
                   type="text"
                   required
                   value={employeeId}
                   onChange={(e) => setEmployeeId(e.target.value)}
                   placeholder="e.g. ADM-001"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gatewise-border bg-background/50 text-xs text-gatewise-text placeholder:text-gatewise-secondary/50 focus:border-gatewise-primary focus:ring-1 focus:ring-gatewise-primary outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 sm:py-2.5 rounded-xl border border-gatewise-border bg-background/50 text-base sm:text-xs text-gatewise-text placeholder:text-gatewise-secondary/50 focus:border-gatewise-primary focus:ring-1 focus:ring-gatewise-primary outline-none transition-all"
                 />
               </div>
             </div>
@@ -88,14 +88,14 @@ export default function AdminLoginPage() {
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gatewise-text">Security Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-gatewise-secondary/60 absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-gatewise-secondary/60 absolute left-3.5 top-3.5 sm:top-3" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gatewise-border bg-background/50 text-xs text-gatewise-text placeholder:text-gatewise-secondary/50 focus:border-gatewise-primary focus:ring-1 focus:ring-gatewise-primary outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 sm:py-2.5 rounded-xl border border-gatewise-border bg-background/50 text-base sm:text-xs text-gatewise-text placeholder:text-gatewise-secondary/50 focus:border-gatewise-primary focus:ring-1 focus:ring-gatewise-primary outline-none transition-all"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-xl bg-gatewise-primary text-white font-bold text-xs hover:bg-gatewise-deep flex items-center justify-center space-x-2 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+              className="w-full py-3.5 sm:py-3 min-h-[46px] rounded-xl bg-gatewise-primary text-white font-bold text-xs hover:bg-gatewise-deep flex items-center justify-center space-x-2 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
             >
               <span>{isLoading ? 'Verifying Credentials...' : 'Authenticate & Enter'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
               </span>
               <span className="text-[10px] text-emerald-600 font-bold">1-Click Auto Auth</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={async () => {
@@ -133,13 +133,13 @@ export default function AdminLoginPage() {
                     setIsLoading(false);
                   }
                 }}
-                className="p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 text-left transition-colors cursor-pointer group"
+                className="p-3 sm:p-2.5 min-h-[46px] rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 text-left transition-colors cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-gatewise-text block group-hover:text-emerald-700">Administrator</span>
-                  <ArrowRight className="w-3 h-3 text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  <span className="text-xs sm:text-[11px] font-bold text-gatewise-text block group-hover:text-emerald-700">Administrator</span>
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                 </div>
-                <span className="text-[10px] text-gatewise-secondary block font-mono">ADM-001 • Instant</span>
+                <span className="text-[10px] text-gatewise-secondary block font-mono">ADM-001 • Instant Access</span>
               </button>
               <button
                 type="button"
@@ -155,13 +155,13 @@ export default function AdminLoginPage() {
                     setIsLoading(false);
                   }
                 }}
-                className="p-2.5 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-left transition-colors cursor-pointer group"
+                className="p-3 sm:p-2.5 min-h-[46px] rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 text-left transition-colors cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-gatewise-text block group-hover:text-blue-700">Super Admin</span>
-                  <ArrowRight className="w-3 h-3 text-blue-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  <span className="text-xs sm:text-[11px] font-bold text-gatewise-text block group-hover:text-blue-700">Super Admin</span>
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-blue-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                 </div>
-                <span className="text-[10px] text-gatewise-secondary block font-mono">SUPER-001 • Instant</span>
+                <span className="text-[10px] text-gatewise-secondary block font-mono">SUPER-001 • Instant Access</span>
               </button>
             </div>
           </div>
