@@ -10,7 +10,7 @@
   "file_size_bytes": 906440,
   "download_url": "/downloads/gatewise-guard-v1.0.0-release.apk",
   "sha256": "f397221752236e04de2be91d4ba1b55a2a136a6e77f5022192ca4387ea6d8ddd",
-  "release_date": "2026-11-10",
+  "release_date": "2026-11-11",
   "release_notes": [
     "Initial institutional release of GATEWISE AI Guard application.",
     "Integrated single-shot camera capture with YuNet face detection and SFace 128-D embedding.",

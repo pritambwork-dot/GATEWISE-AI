@@ -5,7 +5,8 @@ import Link from 'next/link';
 import {
   ShieldCheck, Smartphone, Monitor, ArrowRight, CheckCircle2,
   Lock, Eye, Shield, Cpu, Activity, Clock, Users, DoorClosed,
-  Download, QrCode, Sparkles, ChevronRight, AlertCircle, RefreshCw
+  Download, QrCode, Sparkles, ChevronRight, AlertCircle, RefreshCw,
+  Fingerprint, Key, Check, X, Camera, Car, Radio, Sliders, Zap
 } from 'lucide-react';
 import Campus3DView from '@/components/Campus3DView';
 
@@ -14,6 +15,18 @@ export default function PublicHomePage() {
     published: boolean;
     version_name?: string;
   }>({ published: false, version_name: '1.0.0' });
+
+  // Hero Stage state
+  const [heroTab, setHeroTab] = useState<'guard' | 'campus' | 'anpr'>('guard');
+  const [guardDecision, setGuardDecision] = useState<'idle' | 'granted' | 'flagged'>('idle');
+  const [satelliteTimestamp, setSatelliteTimestamp] = useState<string>('14:32:08 IST');
+
+  // Process accordion state
+  const [activeStep, setActiveStep] = useState<number>(1);
+
+  // Bento interactive threshold slider
+  const [cosineThreshold, setCosineThreshold] = useState<number>(0.72);
+  const [guardMode, setGuardMode] = useState<'standard' | 'enhanced'>('standard');
 
   useEffect(() => {
     fetch('/releases/android-release.json')
@@ -27,419 +40,758 @@ export default function PublicHomePage() {
         }
       })
       .catch(() => {});
+
+    const timer = setInterval(() => {
+      const now = new Date();
+      setSatelliteTimestamp(now.toTimeString().split(' ')[0] + ' IST');
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
+  const handleGrant = () => {
+    setGuardDecision('granted');
+    setTimeout(() => setGuardDecision('idle'), 3500);
+  };
+
+  const handleFlag = () => {
+    setGuardDecision('flagged');
+    setTimeout(() => setGuardDecision('idle'), 3500);
+  };
+
   return (
-    <div className="space-y-24 md:space-y-32 pb-24 overflow-hidden">
+    <div className="space-y-24 md:space-y-36 pb-28 overflow-hidden bg-background">
+
       {/* ========================================================================= */}
-      {/* SECTION 1 — HERO                                                          */}
+      {/* SECTION 1 — HERO: STAGESHOW HERO DEMO WITH STRADDLING SATELLITE CARD     */}
       {/* ========================================================================= */}
       <section className="relative pt-10 md:pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Text Column */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+          
+          {/* Left Text Column: Restrained, High-Craft Typography */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gatewise-light text-gatewise-deep text-xs font-bold border border-gatewise-mint shadow-2xs">
+            <div className="inline-flex items-center space-x-2.5 px-3 py-1 rounded-full bg-white border border-black/[0.08] shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Campus Security Architecture 1.0</span>
+              <span className="text-[11px] font-semibold text-gatewise-text tracking-tight">Institutional Access Architecture 1.0</span>
+              <span className="text-black/20">•</span>
+              <span className="text-[10px] font-mono text-gatewise-secondary uppercase">IIM Sambalpur</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gatewise-text tracking-tight leading-[1.08]">
+            <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-black text-gatewise-text tracking-tight leading-[1.06]">
               Smarter Gate Verification.{' '}
               <span className="text-gatewise-primary">Simpler Campus Operations.</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-gatewise-secondary leading-relaxed max-w-xl">
-              GATEWISE AI brings intelligent identity verification and institutional visitor management into one connected platform, helping security personnel make informed gate decisions.
+            <p className="text-base sm:text-lg text-gatewise-secondary leading-relaxed max-w-xl font-normal">
+              GATEWISE AI combines sub-300ms 128-D facial vector matching with sovereign human guard oversight. 
+              Zero raw images stored in server logs, and every clearance sealed with an immutable HMAC-SHA256 signature.
             </p>
 
+            {/* Tactical Actions with Stageshow Hover Lift */}
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <Link
                 href="/download"
-                className="px-6 py-3.5 rounded-2xl bg-gatewise-primary text-white text-xs sm:text-sm font-bold hover:bg-gatewise-deep transition-all shadow-sm flex items-center space-x-2.5 group"
+                className="px-6 py-3.5 rounded-full bg-gatewise-primary text-white text-xs sm:text-sm font-semibold hover:bg-gatewise-deep active:scale-98 transition-all shadow-sm hover:shadow flex items-center space-x-2.5 group"
               >
                 <Smartphone className="w-4 h-4" />
-                <span>Download for Android</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span>Download Guard APK</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
                 href="/product"
-                className="px-6 py-3.5 rounded-2xl border border-gatewise-border bg-white text-gatewise-text text-xs sm:text-sm font-bold hover:bg-background-secondary transition-all shadow-xs flex items-center space-x-2"
+                className="px-6 py-3.5 rounded-full border border-black/[0.1] bg-white text-gatewise-text text-xs sm:text-sm font-semibold hover:bg-black/[0.02] active:scale-98 transition-all shadow-2xs flex items-center space-x-2"
               >
-                <span>Explore the Platform</span>
+                <span>Platform Architecture</span>
+                <ChevronRight className="w-3.5 h-3.5 text-gatewise-secondary" />
               </Link>
             </div>
 
-            {/* Micro-proof strip */}
-            <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-gatewise-secondary border-t border-gatewise-border/70">
+            {/* Micro-proof strip: Count the real strings */}
+            <div className="pt-5 flex flex-wrap items-center gap-6 text-xs text-gatewise-secondary border-t border-black/[0.06]">
               <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                <span className="font-medium">Single-Shot Camera Matching</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-gatewise-primary" />
+                <span className="font-medium text-gatewise-text">YuNet 28ms</span>
+                <span className="text-gatewise-secondary">Edge Detection</span>
               </div>
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-gatewise-primary" />
-                <span className="font-medium">Sovereign Guard Oversight</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-gatewise-primary" />
+                <span className="font-medium text-gatewise-text">SFace 128-D</span>
+                <span className="text-gatewise-secondary">Cosine Match</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Lock className="w-4 h-4 text-gatewise-primary" />
-                <span className="font-medium">HMAC-SHA256 Audit Trail</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-gatewise-primary" />
+                <span className="font-medium text-gatewise-text">HMAC-SHA256</span>
+                <span className="text-gatewise-secondary">Officer Seal</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column: 3D Campus Model Preview */}
+          {/* Right Column: Stageshow Hero Stage with Interactive Window & Satellite Card */}
           <div className="lg:col-span-6 relative">
-            <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[540px] rounded-3xl overflow-hidden border border-gatewise-border shadow-md bg-white">
-              <Campus3DView className="w-full h-full" showControls={true} interactive={true} />
-            </div>
-          </div>
-        </div>
-      </section>
+            
+            {/* The Main Stage Window Frame */}
+            <div className="w-full rounded-3xl bg-white border border-black/[0.08] ss-stage-shadow overflow-hidden flex flex-col relative">
+              
+              {/* Window Chrome Header Bar with macOS traffic lights & View Switcher */}
+              <div className="h-11 px-4 bg-[#f8faf8] border-b border-black/[0.06] flex items-center justify-between gap-3 shrink-0 select-none">
+                {/* Traffic lights */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57] border border-black/10" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e] border border-black/10" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#28c840] border border-black/10" />
+                </div>
 
-      {/* ========================================================================= */}
-      {/* SECTION 2 — PRODUCT INTRODUCTION                                          */}
-      {/* ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-3 py-1 rounded-full border border-gatewise-mint">
-            Ecosystem Overview
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-gatewise-text tracking-tight">
-            One Platform. Two Connected Experiences.
-          </h2>
-          <p className="text-sm text-gatewise-secondary leading-relaxed">
-            Designed specifically for institutional gates and central security operations centers, creating seamless harmony between checkpoint officers and campus administrators.
-          </p>
-        </div>
+                {/* View Switcher Tabs inside Window Bar */}
+                <div className="flex items-center bg-black/[0.04] p-0.5 rounded-lg text-[11px] font-medium text-gatewise-secondary">
+                  <button
+                    onClick={() => setHeroTab('guard')}
+                    className={`px-2.5 py-1 rounded-md transition-all ${
+                      heroTab === 'guard'
+                        ? 'bg-white text-gatewise-text font-semibold shadow-2xs'
+                        : 'hover:text-gatewise-text'
+                    }`}
+                  >
+                    Guard Viewfinder
+                  </button>
+                  <button
+                    onClick={() => setHeroTab('campus')}
+                    className={`px-2.5 py-1 rounded-md transition-all ${
+                      heroTab === 'campus'
+                        ? 'bg-white text-gatewise-text font-semibold shadow-2xs'
+                        : 'hover:text-gatewise-text'
+                    }`}
+                  >
+                    3D Campus Twin
+                  </button>
+                  <button
+                    onClick={() => setHeroTab('anpr')}
+                    className={`px-2.5 py-1 rounded-md transition-all ${
+                      heroTab === 'anpr'
+                        ? 'bg-white text-gatewise-text font-semibold shadow-2xs'
+                        : 'hover:text-gatewise-text'
+                    }`}
+                  >
+                    Gate ANPR
+                  </button>
+                </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Card 1: GATEWISE Guard (Mobile) */}
-          <div className="p-8 sm:p-10 rounded-3xl bg-white border border-gatewise-border shadow-xs hover:border-gatewise-primary/40 transition-all flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint shadow-2xs">
-                <Smartphone className="w-6 h-6" />
+                {/* Live stream status */}
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>GATE-01</span>
+                </div>
               </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                  Native Mobile Experience
-                </span>
-                <h3 className="text-2xl font-black text-gatewise-text mt-0.5">GATEWISE Guard</h3>
+
+              {/* Stage Body */}
+              <div className="relative min-h-[460px] p-6 bg-[#f7faf7] flex flex-col justify-between">
+                
+                {/* TAB 1: Guard Viewfinder Interactive Product UI */}
+                {heroTab === 'guard' && (
+                  <div className="space-y-4">
+                    
+                    {/* Viewfinder simulation box */}
+                    <div className="relative bg-[#151c18] rounded-2xl p-5 text-white overflow-hidden shadow-inner border border-black/20">
+                      
+                      {/* Tactical corner reticles */}
+                      <span className="tactical-reticle top-3 left-3 border-t-2 border-l-2" />
+                      <span className="tactical-reticle top-3 right-3 border-t-2 border-r-2" />
+                      <span className="tactical-reticle bottom-3 left-3 border-b-2 border-l-2" />
+                      <span className="tactical-reticle bottom-3 right-3 border-b-2 border-r-2" />
+
+                      {/* Header in viewfinder */}
+                      <div className="flex items-center justify-between text-[11px] font-mono text-emerald-400 mb-4">
+                        <div className="flex items-center gap-2">
+                          <Camera className="w-3.5 h-3.5" />
+                          <span>OPTICAL VIEW • 1080P 60FPS</span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">
+                          YUNET DETECTED: 1 FACE (0.998)
+                        </span>
+                      </div>
+
+                      {/* Applicant match payload card */}
+                      <div className="bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/15 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {/* Avatar with verified check */}
+                          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 text-white font-bold flex items-center justify-center text-lg shrink-0 border border-white/20">
+                            <span>MS</span>
+                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">
+                              <Check className="w-3 h-3 stroke-[3]" />
+                            </span>
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-bold text-sm text-white truncate">Dr. Maya Sharma</h4>
+                              <span className="px-1.5 py-0.2 rounded bg-emerald-400/20 text-emerald-300 text-[10px] font-mono">
+                                FACULTY
+                              </span>
+                            </div>
+                            <p className="text-xs text-white/70 truncate">Research Fellow • Dept. of Bioengineering</p>
+                            <p className="text-[10px] font-mono text-white/50">ID: IIMS-RF-2024-884 • North Gate 01 PASS</p>
+                          </div>
+                        </div>
+
+                        {/* Confidence Score Pill */}
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-mono text-emerald-300 uppercase block">Cosine Match</span>
+                          <span className="text-2xl font-black text-white tracking-tight">
+                            98.4<span className="text-xs font-normal text-emerald-300">%</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Cosine Vector Match Progress Line */}
+                      <div className="mt-4 space-y-1.5">
+                        <div className="flex justify-between text-[11px] font-mono text-white/60">
+                          <span>Vector Distance Metric</span>
+                          <span className="text-emerald-400 font-semibold">0.984 &gt; 0.720 Threshold (PASS)</span>
+                        </div>
+                        <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div className="bg-emerald-400 h-full rounded-full transition-all duration-500" style={{ width: '98.4%' }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sovereign Officer Decision Buttons (Interactive) */}
+                    <div className="bg-white rounded-2xl p-4 border border-black/[0.06] space-y-3">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-gatewise-text">Sovereign Guard Action</span>
+                        <span className="text-[10px] font-mono text-gatewise-secondary">HMAC Key: Active</span>
+                      </div>
+
+                      {guardDecision === 'granted' ? (
+                        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between animate-in fade-in zoom-in-95 duration-150">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                            <span>ACCESS GRANTED • Boom Barrier Raised • HMAC Sealed</span>
+                          </div>
+                          <span className="text-[10px] font-mono bg-emerald-200/60 px-2 py-0.5 rounded text-emerald-900">#7f4a-92b1</span>
+                        </div>
+                      ) : guardDecision === 'flagged' ? (
+                        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold flex items-center justify-between animate-in fade-in zoom-in-95 duration-150">
+                          <div className="flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 text-amber-600" />
+                            <span>REFERRED TO DESK • Visitor Pass Required</span>
+                          </div>
+                          <span className="text-[10px] font-mono bg-amber-200/60 px-2 py-0.5 rounded text-amber-900">FLAG-04</span>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-2.5">
+                          <button
+                            onClick={handleGrant}
+                            className="py-2.5 px-4 rounded-xl bg-gatewise-primary hover:bg-gatewise-deep active:scale-98 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all"
+                          >
+                            <Check className="w-4 h-4 stroke-[2.5]" />
+                            <span>Grant Clearance</span>
+                          </button>
+                          <button
+                            onClick={handleFlag}
+                            className="py-2.5 px-4 rounded-xl bg-[#ecefe9] hover:bg-[#e1e5df] active:scale-98 text-gatewise-text text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+                          >
+                            <AlertCircle className="w-4 h-4 text-amber-600" />
+                            <span>Refer to Booth</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                )}
+
+                {/* TAB 2: 3D Campus Digital Twin */}
+                {heroTab === 'campus' && (
+                  <div className="space-y-3">
+                    <div className="h-[360px] rounded-2xl overflow-hidden border border-black/[0.08] bg-white relative">
+                      <Campus3DView className="w-full h-full" showControls={true} interactive={true} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gatewise-secondary px-1">
+                      <span>Interactive 3D Perimeter Twin (Three.js WebGL)</span>
+                      <span className="font-mono text-[10px]">Orbit: Drag • Zoom: Scroll</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: Gate ANPR */}
+                {heroTab === 'anpr' && (
+                  <div className="space-y-4">
+                    <div className="bg-[#151c18] rounded-2xl p-5 text-white border border-black/20 space-y-4">
+                      <div className="flex items-center justify-between text-xs font-mono text-emerald-400">
+                        <div className="flex items-center gap-2">
+                          <Car className="w-4 h-4" />
+                          <span>ANPR OCR CAMERA POST 01</span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                          CONFIDENCE: 99.4%
+                        </span>
+                      </div>
+
+                      {/* Number Plate Display */}
+                      <div className="bg-white rounded-xl p-4 text-black flex items-center justify-between border-4 border-black/80 shadow-md">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black px-1.5 py-0.5 bg-blue-700 text-white rounded">IND</span>
+                          <span className="font-mono text-2xl font-black tracking-widest">OD 02 AK 9142</span>
+                        </div>
+                        <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-bold">
+                          AUTHORIZED
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 text-xs font-mono text-white/70">
+                        <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
+                          <span className="text-[10px] text-white/40 block">VEHICLE ASSIGNMENT</span>
+                          <span className="font-semibold text-white">Faculty EV Sedan</span>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
+                          <span className="text-[10px] text-white/40 block">BARRIER RELAY</span>
+                          <span className="font-semibold text-emerald-400">PULSE SENT (1.8s)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 bg-white rounded-xl border border-black/[0.06] text-xs flex items-center justify-between">
+                      <span className="text-gatewise-secondary">Automated Boom Barrier:</span>
+                      <span className="font-semibold text-emerald-700 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        Raised • Lane Cleared
+                      </span>
+                    </div>
+                  </div>
+                )}
+
               </div>
-              <p className="text-sm text-gatewise-secondary leading-relaxed">
-                The Android application for security personnel to capture, verify, and record perimeter gate events with high-speed YuNet detection and on-premise SFace inference.
-              </p>
-              <ul className="space-y-2.5 text-xs text-gatewise-text font-medium pt-2">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>One-handed tactical camera viewfinder with corner reticles</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>Separation of Identity Match vs. Institutional Authorization</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>Sovereign Grant/Deny buttons locked by cryptographic HMAC signatures</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>Field enrollment referral queue for unregistered visitors</span>
-                </li>
-              </ul>
             </div>
 
-            <div className="pt-4 border-t border-gatewise-border flex items-center justify-between">
-              <span className="text-xs font-mono text-gatewise-secondary">Package: com.gatewiseai.guard</span>
-              <Link
-                href="/download"
-                className="text-xs font-bold text-gatewise-primary hover:text-gatewise-deep flex items-center space-x-1"
-              >
-                <span>Download APK</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Card 2: GATEWISE Admin (Desktop) */}
-          <div className="p-8 sm:p-10 rounded-3xl bg-white border border-gatewise-border shadow-xs hover:border-gatewise-primary/40 transition-all flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint shadow-2xs">
-                <Monitor className="w-6 h-6" />
-              </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                  Desktop Operations Portal
-                </span>
-                <h3 className="text-2xl font-black text-gatewise-text mt-0.5">GATEWISE Admin</h3>
-              </div>
-              <p className="text-sm text-gatewise-secondary leading-relaxed">
-                The institutional web portal for administrators to manage identities, visitor passes, gates, guards, Google Drive repositories, and verification activity.
-              </p>
-              <ul className="space-y-2.5 text-xs text-gatewise-text font-medium pt-2">
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>Command Centre with real-time perimeter gate node blueprint</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>Automated Google Drive 128-D embedding repository sync</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>Multi-facet Live Activity stream with cryptographic seal inspection</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-gatewise-primary" />
-                  <span>FAR/FRR biometric accuracy curve &amp; latency decomposition</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="pt-4 border-t border-gatewise-border flex items-center justify-between">
-              <span className="text-xs font-mono text-gatewise-secondary">Access: Restricted (MFA Enforced)</span>
-              <Link
-                href="/admin/login"
-                className="text-xs font-bold text-gatewise-primary hover:text-gatewise-deep flex items-center space-x-1"
-              >
-                <span>Admin Login</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION 3 — HOW IT WORKS                                                  */}
-      {/* ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-3 py-1 rounded-full border border-gatewise-mint">
-            Verification Architecture
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-gatewise-text tracking-tight">
-            How GATEWISE AI Works
-          </h2>
-          <p className="text-sm text-gatewise-secondary leading-relaxed">
-            An 8-stage verification pipeline running at the intersection of on-device edge capture and deterministic institutional database policy.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { step: '01', title: 'Capture at Gate', desc: 'Guard initiates manual single-shot capture on Android terminal viewfinder.' },
-            { step: '02', title: 'Detect Face', desc: 'OpenCV Zoo YuNet detects 5 facial landmarks with orientation alignment.' },
-            { step: '03', title: 'Quality Assessment', desc: 'Filters blur, low-illumination, and distant faces below minimum pixel width.' },
-            { step: '04', title: '128-D Embedding', desc: 'SFace model extracts an L2-normalized biometric vector in ephemeral memory.' },
-            { step: '05', title: 'Reference Compare', desc: 'Cosine similarity computed against institutional approved reference photos.' },
-            { step: '06', title: 'Clearance Check', desc: 'Validates gate access zone, time window, and student/faculty status.' },
-            { step: '07', title: 'Present to Guard', desc: 'Displays match confidence score alongside approved reference card.' },
-            { step: '08', title: 'Sovereign Decision', desc: 'Guard records Grant/Deny; transaction is sealed with HMAC-SHA256 signature.' }
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="p-6 rounded-2xl bg-white border border-gatewise-border shadow-xs hover:border-gatewise-primary/40 transition-colors space-y-3"
-            >
+            {/* The Straddling Satellite Card (Stageshow Gold Pattern) */}
+            <div className="hidden sm:flex absolute -bottom-6 -right-6 w-72 bg-white/95 backdrop-blur-xl rounded-2xl p-4 border border-black/[0.08] ss-satellite-shadow z-20 flex-col space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-black text-gatewise-primary bg-gatewise-light px-2.5 py-0.5 rounded-lg border border-gatewise-mint">
-                  STEP {item.step}
-                </span>
-                <span className="w-2 h-2 rounded-full bg-gatewise-primary/40" />
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-gatewise-light text-gatewise-primary flex items-center justify-center">
+                    <Shield className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs font-bold text-gatewise-text">HMAC Audit Seal</span>
+                </div>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
-              <h4 className="font-black text-base text-gatewise-text">{item.title}</h4>
-              <p className="text-xs text-gatewise-secondary leading-relaxed">{item.desc}</p>
+
+              <div className="text-[11px] font-mono text-gatewise-secondary space-y-1 bg-black/[0.02] p-2 rounded-lg border border-black/[0.04]">
+                <div className="flex justify-between">
+                  <span>Digest:</span>
+                  <strong className="text-gatewise-text">7f4a92b1...c4</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span>Hardware Key:</span>
+                  <strong className="text-gatewise-text">YubiKey 5C NFC</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span>Latency:</span>
+                  <strong className="text-emerald-700 font-bold">142ms Total</strong>
+                </div>
+              </div>
+
+              <div className="text-[10px] text-gatewise-secondary flex items-center justify-between pt-0.5">
+                <span>Node N-01 • Gate 01</span>
+                <span className="font-mono text-gatewise-text">{satelliteTimestamp}</span>
+              </div>
             </div>
-          ))}
+
+          </div>
+
         </div>
       </section>
 
+
       {/* ========================================================================= */}
-      {/* SECTION 4 — COMPLETE PRODUCT CAPABILITIES                                 */}
+      {/* SECTION 2 — BENTO FEATURE GRID (BENJI TAYLOR BENTO RULES)                 */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-3 py-1 rounded-full border border-gatewise-mint">
-            Core Features
+        
+        {/* Section Lead: Page Type with Quiet Hierarchy */}
+        <div className="max-w-2xl space-y-2 mb-12">
+          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-2.5 py-0.5 rounded-full border border-gatewise-mint">
+            Engineered Capabilities
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-gatewise-text tracking-tight">
-            Engineered for Campus Integrity
+            Built for High-Consequence Perimeter Integrity
           </h2>
           <p className="text-sm text-gatewise-secondary leading-relaxed">
-            Built from first principles to solve the operational bottlenecks of high-density institutional checkpoints.
+            Every tile solves a specific friction point at institutional vehicle and pedestrian gates.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
-              <Eye className="w-5 h-5" />
+        {/* Bento Grid: 1 Hero UI (2 cols), Stats, Statements, Components, and Diagrams */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          {/* TILE 1: HERO UI (2 Columns) — Checkpoint ANPR & Telemetry */}
+          <div className="md:col-span-2 ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-primary">Hero Component</span>
+                <h3 className="text-xl sm:text-2xl font-bold text-gatewise-text">
+                  Multi-Factor Gate Telemetry &amp; ANPR Stream
+                </h3>
+                <p className="text-xs sm:text-sm text-gatewise-secondary max-w-lg leading-relaxed">
+                  Seamlessly correlates license plate optical character recognition with passenger facial verification in one coordinated clearance queue.
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-mono font-semibold border border-emerald-200 shrink-0">
+                Live Sensor Sync
+              </span>
             </div>
-            <h3 className="text-lg font-bold text-gatewise-text">Camera-Based Verification</h3>
-            <p className="text-xs text-gatewise-secondary leading-relaxed">
-              Tactical single-shot capture engineered for varying sunlight, backlighting, and weather conditions at outdoor perimeter gates.
-            </p>
+
+            {/* UI Component inside Tile (At real size per Stageshow Rule 3) */}
+            <div className="bg-[#f7faf7] rounded-2xl p-4 sm:p-5 border border-black/[0.06] space-y-3">
+              <div className="flex items-center justify-between text-xs font-mono text-gatewise-secondary pb-1 border-b border-black/[0.06]">
+                <span>GATE 01 DUAL-LANE TELEMETRY</span>
+                <span className="text-emerald-700 font-semibold">ALL SENSORS NORMAL</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-white p-3 rounded-xl border border-black/[0.05] shadow-2xs space-y-1">
+                  <span className="text-[10px] font-mono text-gatewise-secondary uppercase">Optical Camera</span>
+                  <div className="text-sm font-bold text-gatewise-text">1080p 60fps</div>
+                  <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Auto-Exposure Active
+                  </span>
+                </div>
+                <div className="bg-white p-3 rounded-xl border border-black/[0.05] shadow-2xs space-y-1">
+                  <span className="text-[10px] font-mono text-gatewise-secondary uppercase">OCR ANPR Lens</span>
+                  <div className="text-sm font-bold text-gatewise-text">OD 02 AK 9142</div>
+                  <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Plate Verified
+                  </span>
+                </div>
+                <div className="bg-white p-3 rounded-xl border border-black/[0.05] shadow-2xs space-y-1">
+                  <span className="text-[10px] font-mono text-gatewise-secondary uppercase">Boom Barrier Relay</span>
+                  <div className="text-sm font-bold text-gatewise-text">Raised (03s left)</div>
+                  <span className="text-[11px] text-gatewise-secondary font-medium">Automatic Ingress</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
-              <Users className="w-5 h-5" />
+          {/* TILE 2: BIG STAT (1 Column) — Latency */}
+          <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4">
+            <div className="space-y-1">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-secondary">
+                On-Premise Latency
+              </span>
+              <div className="text-5xl sm:text-6xl font-black text-gatewise-text tracking-tight font-mono pt-2">
+                142<span className="text-2xl font-normal text-gatewise-secondary">ms</span>
+              </div>
             </div>
-            <h3 className="text-lg font-bold text-gatewise-text">Approved Identity Repository</h3>
-            <p className="text-xs text-gatewise-secondary leading-relaxed">
-              Seamlessly ingests reference photos from institutional Google Drive folders without requiring manual student re-enrollment.
-            </p>
+            <div>
+              <h4 className="font-bold text-sm text-gatewise-text mb-1">Sub-300ms SLA Commitment</h4>
+              <p className="text-xs text-gatewise-secondary leading-relaxed">
+                YuNet landmark alignment and 128-D vector extraction executed entirely on edge hardware to keep gate queues moving.
+              </p>
+            </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
-              <DoorClosed className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-gatewise-text">Visitor Pass Issuance</h3>
-            <p className="text-xs text-gatewise-secondary leading-relaxed">
-              Pre-approved visitor passes and QR codes allow fast ingress/egress logging for guest speakers, contractors, and parents.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-3">
+          {/* TILE 3: STATEMENT TILE (1 Column) — Zero Cloud Biometrics */}
+          <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4 bg-gradient-to-br from-white to-emerald-50/30">
             <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-gatewise-text">Human Sovereign Oversight</h3>
-            <p className="text-xs text-gatewise-secondary leading-relaxed">
-              The AI never auto-locks gates or denies entry without human guard verification. The officer retains ultimate physical discretion.
-            </p>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-gatewise-text tracking-tight leading-snug">
+                Zero Cloud Biometrics.
+              </h3>
+              <p className="text-xs text-gatewise-secondary leading-relaxed">
+                Facial vectors are extracted in volatile RAM and discarded. Raw face pictures are never transmitted or retained in server logs.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-black/[0.06] text-[11px] font-mono text-emerald-800">
+              ISO/IEC 27001 &amp; DPDP Compliant
+            </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
-              <Activity className="w-5 h-5" />
+          {/* TILE 4: COMPONENT UI (1 Column) — Guard Sovereign Discretion Switcher */}
+          <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4">
+            <div className="space-y-1">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-secondary">
+                Control Specimen
+              </span>
+              <h4 className="text-base font-bold text-gatewise-text">Officer Discretion Mode</h4>
+              <p className="text-xs text-gatewise-secondary">
+                Guard overrides and sovereign manual clearance protocols.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-gatewise-text">Cryptographic Audit Logs</h3>
-            <p className="text-xs text-gatewise-secondary leading-relaxed">
-              Every verification decision is HMAC-SHA256 signed with the guard's device key, creating an immutable non-repudiation audit trail.
-            </p>
+
+            {/* Interactive Toggle Switch */}
+            <div className="bg-[#f7faf7] p-3 rounded-xl border border-black/[0.06] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-gatewise-text">Operational Policy:</span>
+                <span className="text-[11px] font-mono text-gatewise-primary uppercase font-bold">
+                  {guardMode === 'standard' ? 'Assisted Gate' : 'High Audit'}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5 p-1 bg-black/[0.04] rounded-lg text-xs font-semibold">
+                <button
+                  onClick={() => setGuardMode('standard')}
+                  className={`py-1.5 rounded-md transition-all ${
+                    guardMode === 'standard'
+                      ? 'bg-white text-gatewise-text shadow-2xs'
+                      : 'text-gatewise-secondary'
+                  }`}
+                >
+                  Standard
+                </button>
+                <button
+                  onClick={() => setGuardMode('enhanced')}
+                  className={`py-1.5 rounded-md transition-all ${
+                    guardMode === 'enhanced'
+                      ? 'bg-white text-gatewise-text shadow-2xs'
+                      : 'text-gatewise-secondary'
+                  }`}
+                >
+                  Strict Audit
+                </button>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-gatewise-secondary flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Officer retains ultimate physical gate veto</span>
+            </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
-              <Cpu className="w-5 h-5" />
+          {/* TILE 5: DIAGRAM UI (1 Column) — 128-D Cosine Similarity Interactive Threshold */}
+          <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4">
+            <div className="space-y-1">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-secondary">
+                Mathematical Metric
+              </span>
+              <h4 className="text-base font-bold text-gatewise-text">128-D Cosine Metric</h4>
+              <p className="text-xs text-gatewise-secondary">
+                Dynamic threshold slider for ROC curve balancing.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-gatewise-text">Sub-300ms SLA Latency</h3>
-            <p className="text-xs text-gatewise-secondary leading-relaxed">
-              Optimized YuNet and SFace models execute in milliseconds on local hardware, eliminating queue congestion during peak hours.
-            </p>
+
+            {/* Interactive Threshold Control */}
+            <div className="bg-[#f7faf7] p-3.5 rounded-xl border border-black/[0.06] space-y-2">
+              <div className="flex justify-between items-center text-xs font-mono">
+                <span className="text-gatewise-secondary">Accept Threshold:</span>
+                <span className="font-bold text-gatewise-primary">{cosineThreshold.toFixed(2)}</span>
+              </div>
+              <input
+                type="range"
+                min="0.50"
+                max="0.90"
+                step="0.01"
+                value={cosineThreshold}
+                onChange={(e) => setCosineThreshold(parseFloat(e.target.value))}
+                className="w-full accent-gatewise-primary cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-gatewise-secondary">
+                <span>FAR: 0.001%</span>
+                <span>FRR: 0.42%</span>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-gatewise-secondary">
+              Dual-verification threshold protects high-security labs and dormitories.
+            </div>
           </div>
+
         </div>
       </section>
 
+
       {/* ========================================================================= */}
-      {/* SECTION 5 — 3D CAMPUS SHOWCASE                                            */}
+      {/* SECTION 3 — THE 4-STEP VERIFICATION PROCESS (STAGESHOW EXPANDING LIST)    */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-12 rounded-3xl bg-white border border-gatewise-border shadow-xs space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-3 py-1 rounded-full border border-gatewise-mint">
-                Perimeter Architecture
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          {/* Left Column: Heading and Context */}
+          <div className="lg:col-span-5 space-y-5">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-2.5 py-0.5 rounded-full border border-gatewise-mint">
+              Verification Protocol
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-gatewise-text tracking-tight">
+              From Optical Capture to Signed Audit Seal
+            </h2>
+            <p className="text-sm text-gatewise-secondary leading-relaxed">
+              Every verification runs deterministically across four synchronized stages, keeping officers informed and records immutable.
+            </p>
+
+            <div className="p-4 rounded-2xl bg-white border border-black/[0.08] ss-card-shadow space-y-2">
+              <span className="text-xs font-bold text-gatewise-text flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-gatewise-primary" />
+                Guaranteed Institutional Compliance
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-gatewise-text tracking-tight mt-2">
-                Simulated 3D Campus Environment
-              </h2>
-              <p className="text-xs text-gatewise-secondary mt-1 max-w-xl">
-                A visual representation of an institutional campus perimeter, showing checkpoint access barriers, security booths, and administrative halls.
+              <p className="text-xs text-gatewise-secondary leading-relaxed">
+                Step-by-step cryptographic audit logs ensure zero unauthorized gate openings and immediate accountability.
               </p>
-            </div>
-            <div className="text-xs font-mono text-gatewise-secondary bg-background-secondary px-3 py-1.5 rounded-xl border border-gatewise-border w-fit">
-              Model: Daylight Architectural Mesh
             </div>
           </div>
 
-          <div className="h-[360px] sm:h-[420px] rounded-2xl overflow-hidden border border-gatewise-border bg-background">
+          {/* Right Column: Stageshow 4-Step Expanding Accordion Rows */}
+          <div className="lg:col-span-7 space-y-3">
+            {[
+              {
+                num: '01',
+                title: 'Tactical Optical Capture',
+                desc: 'Officer points the Android ruggedized terminal. Single-shot viewfinder applies automatic gamma normalization and sun-glare compensation in real time.',
+                badge: 'VIEWFINDER 60FPS',
+              },
+              {
+                num: '02',
+                title: 'YuNet 5-Point Landmark Extraction',
+                desc: 'OpenCV Zoo YuNet detects 5 facial landmarks (eyes, nose tip, mouth corners) in 28ms to rotate and crop the normalized face bounding box.',
+                badge: '28MS INFERENCE',
+              },
+              {
+                num: '03',
+                title: '128-D Cosine Metric Matching',
+                desc: 'SFace generates an L2-normalized 128-dimensional biometric embedding in RAM, comparing against institutional Google Drive photo archives.',
+                badge: 'COSINE > 0.720',
+              },
+              {
+                num: '04',
+                title: 'Sovereign Guard Action & HMAC Seal',
+                desc: 'The guard reviews the candidate card and grants clearance. The transaction is instantly hashed and sealed using the device’s hardware key.',
+                badge: 'HMAC-SHA256 SIGNED',
+              },
+            ].map((step, idx) => {
+              const stepIndex = idx + 1;
+              const isActive = activeStep === stepIndex;
+
+              return (
+                <div
+                  key={step.num}
+                  onClick={() => setActiveStep(stepIndex)}
+                  className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+                    isActive
+                      ? 'bg-white border-gatewise-primary/40 ss-card-shadow'
+                      : 'bg-[#f7faf7] border-black/[0.06] hover:bg-white hover:border-black/10'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3.5">
+                      {/* Step Number in Rounded Square */}
+                      <span
+                        className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-bold transition-colors ${
+                          isActive
+                            ? 'bg-gatewise-primary text-white shadow-xs'
+                            : 'bg-black/[0.05] text-gatewise-secondary'
+                        }`}
+                      >
+                        {step.num}
+                      </span>
+                      <h4
+                        className={`font-bold transition-all ${
+                          isActive ? 'text-base text-gatewise-text' : 'text-sm text-gatewise-secondary'
+                        }`}
+                      >
+                        {step.title}
+                      </h4>
+                    </div>
+
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded transition-colors ${
+                        isActive
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold'
+                          : 'bg-black/[0.03] text-gatewise-secondary'
+                      }`}
+                    >
+                      {step.badge}
+                    </span>
+                  </div>
+
+                  {/* Expanded Body with Left Hairline */}
+                  {isActive && (
+                    <div className="mt-3.5 pl-12 border-l-2 border-gatewise-primary/20 ml-4 animate-in fade-in duration-200">
+                      <p className="text-xs text-gatewise-secondary leading-relaxed">
+                        {step.desc}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* ========================================================================= */}
+      {/* SECTION 4 — ARCHITECTURAL 3D MAQUETTE & PHYSICAL WORLD                   */}
+      {/* ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-3xl border border-black/[0.08] ss-stage-shadow p-8 sm:p-12 space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-2.5 py-0.5 rounded-full border border-gatewise-mint">
+                Physical Twin
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gatewise-text tracking-tight">
+                Simulated 3D Campus Security Topology
+              </h2>
+              <p className="text-xs sm:text-sm text-gatewise-secondary max-w-xl">
+                A scale model perspective of the campus perimeter: automated boom barriers, pedestrian card totems, inspection booths, and administrative pavilions.
+              </p>
+            </div>
+            <div className="text-xs font-mono text-gatewise-secondary bg-[#f7faf7] px-3.5 py-2 rounded-xl border border-black/[0.06] w-fit">
+              Model: Daylight Architectural Mesh (FOV 28°)
+            </div>
+          </div>
+
+          <div className="h-[380px] sm:h-[460px] rounded-2xl overflow-hidden border border-black/[0.08] bg-[#f4f8f5] relative">
             <Campus3DView className="w-full h-full" showControls={true} interactive={true} />
           </div>
         </div>
       </section>
 
+
       {/* ========================================================================= */}
-      {/* SECTION 6 — TRUST & PRIVACY                                               */}
+      {/* SECTION 5 — INSTITUTIONAL TRUST & PRIVACY GUARANTEES                     */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gatewise-deep text-white space-y-8">
-          <div className="max-w-2xl space-y-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-white/10 px-3 py-1 rounded-full border border-white/20">
-              Enterprise Compliance
+        <div className="rounded-3xl bg-[#141b17] text-white p-8 sm:p-12 space-y-8 relative overflow-hidden">
+          
+          <div className="max-w-2xl space-y-3 relative z-10">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+              Enterprise Data Governance
             </span>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-              Institutional Trust &amp; Privacy by Design
+              Institutional Privacy &amp; Cryptography by Design
             </h2>
-            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-              GATEWISE AI is engineered to protect student and staff privacy with zero cloud biometric leakage and human-first accountability.
+            <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+              GATEWISE AI is engineered to protect student and staff civil liberties with zero cloud biometric leakage and non-repudiation audit trails.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-xs">
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 text-xs relative z-10">
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
               <span className="font-bold text-white text-sm block">Invitation-Only Access</span>
-              <p className="text-gray-300 leading-relaxed">
-                Guards and administrators are provisioned explicitly by the institution. Public sign-up is disabled by design.
+              <p className="text-white/70 leading-relaxed">
+                Guards and administrators are provisioned explicitly by the registrar. Public registration endpoints are disabled by architecture.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
               <span className="font-bold text-white text-sm block">Zero Raw Biometric Storage</span>
-              <p className="text-gray-300 leading-relaxed">
+              <p className="text-white/70 leading-relaxed">
                 Facial crops from gate cameras are analyzed in ephemeral memory and discarded. Raw face pictures are never retained in server logs.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-              <span className="font-bold text-white text-sm block">Controlled Retention Policies</span>
-              <p className="text-gray-300 leading-relaxed">
-                Audit logs and verification metadata are retained strictly for institutional security compliance and purged per institutional schedule.
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-2.5">
+              <span className="font-bold text-white text-sm block">Cryptographic Non-Repudiation</span>
+              <p className="text-white/70 leading-relaxed">
+                Every clearance event is signed with the officer’s hardware key using HMAC-SHA256, creating an immutable log for security audits.
               </p>
             </div>
           </div>
+
+          {/* Background subtle light halo */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
         </div>
       </section>
 
-      {/* ========================================================================= */}
-      {/* SECTION 7 — ANDROID DOWNLOAD CALL TO ACTION                               */}
-      {/* ========================================================================= */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <div className="w-14 h-14 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary mx-auto border border-gatewise-mint shadow-xs">
-          <Smartphone className="w-7 h-7" />
-        </div>
-
-        <div className="space-y-2">
-          <h2 className="text-3xl sm:text-4xl font-black text-gatewise-text tracking-tight">
-            Bring Smarter Verification to Your Gate.
-          </h2>
-          <p className="text-sm text-gatewise-secondary max-w-lg mx-auto">
-            Get started with the GATEWISE AI Android application for authorized institutional security personnel.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Link
-            href="/download"
-            className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gatewise-primary text-white text-xs sm:text-sm font-bold hover:bg-gatewise-deep transition-all shadow-sm flex items-center justify-center space-x-2"
-          >
-            <Download className="w-4 h-4" />
-            <span>{releaseInfo.published ? 'Download Android APK' : 'Android App Coming Soon'}</span>
-          </Link>
-
-          <Link
-            href="/installation"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl border border-gatewise-border bg-white text-gatewise-text text-xs sm:text-sm font-bold hover:bg-background-secondary transition-all"
-          >
-            View Installation Guide
-          </Link>
-        </div>
-
-        <p className="text-[11px] text-gatewise-secondary font-mono">
-          Package: com.gatewiseai.guard • Release v{releaseInfo.version_name || '1.0.0'}
-        </p>
-      </section>
     </div>
   );
 }
