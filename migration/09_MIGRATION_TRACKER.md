@@ -32,6 +32,24 @@
 3. **Automated Test Suite Runner**:
    - Command: `swift run GatewiseGuardRunner`
    - Result: 10 / 10 test suites passed (100% success rate).
+   - Log Saved: `migration/qa/test_execution_report.log`
 4. **Backend Local Pairing**:
    - Command: `curl http://localhost:8000/health`
    - Result: `{"status":"HEALTHY","service":"GATEWISE AI","version":"1.0.0"}`
+
+---
+
+### Agent Execution Registry
+
+| Agent Name | Phase | Assigned Task | Files Created / Owned | Status |
+|---|---|---|---|---|
+| `react_auditor` | Round 1 | Read-only React/Next.js/Expo discovery | `migration/reports/react-audit.md` | COMPLETE |
+| `supabase_auditor` | Round 1 | Schema, RLS, Storage, Realtime discovery | `migration/reports/supabase-audit.md` | COMPLETE |
+| `design_researcher` | Round 1 | UI tokens & Liquid Glass HIG research | `migration/reports/design-research.md` | COMPLETE |
+| `security_reviewer` | Round 1 | Threat model & Keychain/session audit | `migration/reports/security-review.md` | COMPLETE |
+| `lead_orchestrator` | Round 2 | Contract synthesis & architectural freeze | `migration/*.md` (6 contracts) | COMPLETE |
+| `ios_architect` | Round 3 | Package setup, App coordinator, Domain layer | `Package.swift`, `App/`, `Domain/` | COMPLETE |
+| `design_system_builder` | Round 3 | iOS 26 Liquid Glass tokens & components | `Core/DesignSystem/` | COMPLETE |
+| `supabase_integrator` | Round 3 | Hardware Keychain, API client, DTOs & repos | `Core/Supabase/`, `Core/Security/`, `Data/` | COMPLETE |
+| `feature_implementer` | Round 3 | Vertical slices (Auth, Verify, Visitors, Dashboard) | `Features/`, `Presentation/` | COMPLETE |
+| `qa_engineer` | Round 4 | Automated test suite & glass AST validation | `GatewiseGuardRunner`, `migration/qa/` | COMPLETE |

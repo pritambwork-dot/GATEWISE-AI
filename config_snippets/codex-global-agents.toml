@@ -1,0 +1,5 @@
+# Optional snippet for ~/.codex/config.toml.
+# Merge with existing configuration; do not overwrite unrelated settings.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 6
