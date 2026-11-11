@@ -18,7 +18,10 @@ let package = Package(
             targets: ["GatewiseGuardRunner"]
         ),
     ],
-    dependencies: [],
+    dependencies: [
+        // Optional Supabase Swift SDK (v2.14+) for direct BaaS connection:
+        // .package(url: "https://github.com/supabase/supabase-swift.git", from: "2.14.0")
+    ],
     targets: [
         .target(
             name: "GatewiseGuard",

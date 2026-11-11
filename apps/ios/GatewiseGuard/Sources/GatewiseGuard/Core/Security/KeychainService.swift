@@ -97,3 +97,27 @@ public enum KeychainError: Error, LocalizedError {
         }
     }
 }
+
+public final class MockKeychainService: @unchecked Sendable, KeychainServiceProtocol {
+    private var storage: [String: String] = [:]
+    
+    public init(initialValues: [String: String] = [:]) {
+        self.storage = initialValues
+    }
+    
+    public func save(key: String, value: String) throws {
+        storage[key] = value
+    }
+    
+    public func get(key: String) -> String? {
+        return storage[key]
+    }
+    
+    public func delete(key: String) throws {
+        storage.removeValue(forKey: key)
+    }
+    
+    public func clearAll() throws {
+        storage.removeAll()
+    }
+}

@@ -26,6 +26,8 @@ apps/ios/GatewiseGuard/
 │   │   │   ├── Theme/             # GatewiseColors, GatewiseTypography, GatewiseIcons
 │   │   │   ├── Security/          # CryptoService, KeychainService, BiometricAuthService
 │   │   │   ├── Network/           # GatewiseAPIClient, APIEndpoint, NetworkError
+│   │   │   ├── Supabase/          # SupabaseManager, AuthManager, RealtimeManager, StorageManager
+│   │   │   ├── DesignSystem/      # Reusable iOS 26 Liquid Glass components (Buttons, TextFields, Cards)
 │   │   │   └── Camera/            # CameraCaptureController
 │   │   ├── Domain/
 │   │   │   ├── Models/            # UserProfile, GateStation, VerificationResult, VisitorPass
@@ -33,16 +35,10 @@ apps/ios/GatewiseGuard/
 │   │   │   └── Repositories/      # Domain Repository Interfaces
 │   │   ├── Data/
 │   │   │   ├── Repositories/      # Remote HTTP Repositories
+│   │   │   ├── DTOs/              # DashboardTelemetryDTO, DashboardMapper, DashboardModel
 │   │   │   └── Fixtures/          # Deterministic 7-State Fixtures & Mock Repositories
-│   │   └── Presentation/
-│   │       ├── Components/        # Buttons, Cards, Badges, Headers, Steppers
-│   │       ├── Onboarding/        # 5-Step Orientation Flow
-│   │       ├── Auth/              # Guard Login & Gate Lock
-│   │       ├── Verify/            # Viewfinder, Reticle, Review, Result, Decision
-│   │       ├── Activity/          # Real-Time Event Timeline & Filters
-│   │       ├── Visitors/          # Walk-in Registration & Departure Checkout
-│   │       ├── Profile/           # Diagnostics, AI SOP Assistant, Replay Orientation
-│   │       └── Admin/             # Central Security Command Dashboard
+│   │   ├── Presentation/          # Feature Views (Verify, Visitors, Profile, Activity, Admin, Auth)
+│   │   └── Features/              # Clean Architecture Modular Feature Slices (Dashboard, Authentication)
 │   └── GatewiseGuardRunner/       # Native Test Suite Runner Executable
 │       └── main.swift
 └── docs/ios/                      # Complete iOS Architecture & Audit Documentation
@@ -100,8 +96,20 @@ swift run GatewiseGuardRunner
 [6] SOP Knowledge Assistant Protocol Matcher...
   ✓ PASS
 
+[7] MockKeychainService CRUD Operations...
+  ✓ PASS
+
+[8] AuthenticationViewModel Sign-In & Credential Validation...
+  ✓ PASS
+
+[9] DashboardMapper DTO Transformation & Fallback Handling...
+  ✓ PASS
+
+[10] DashboardViewModel Live Telemetry Stream Simulation...
+  ✓ PASS
+
 ======================================================================
- TEST SUMMARY: 6 / 6 PASSED (100% SUCCESS RATE)
+ TEST SUMMARY: 10 / 10 PASSED (100% SUCCESS RATE)
 ======================================================================
 ```
 
