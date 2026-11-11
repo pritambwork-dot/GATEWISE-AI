@@ -2,19 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   Play, Pause, Volume2, VolumeX, Maximize2, Sparkles, Film,
-  ShieldCheck, Cpu, Activity, Fingerprint, Lock, CheckCircle2
+  ShieldCheck, Cpu, Activity, Fingerprint, Lock, CheckCircle2, Gauge
 } from 'lucide-react';
 import { SectionEyebrow } from '../primitives/SectionEyebrow';
 
 const VIDEOS = [
   {
     id: 'teaser',
-    label: '4K Sovereign Motion Teaser',
-    shortLabel: '4K Teaser',
-    src: '/media/videos/gatewise-teaser-uploaded.mp4',
-    badge: 'CINEMATIC 2X',
-    tag: 'PRODUCTION PREVIEW',
-    desc: 'Official 4K kinetic product motion showcase: YuNet 28ms face landmark detection, SFace 128-D cosine vectors, and HMAC-SHA256 ledger integrity.',
+    label: 'Official Product Launch Film',
+    shortLabel: 'Launch Film',
+    src: '/media/videos/gatewise-launch-film.mp4',
+    badge: 'OFFICIAL 720P',
+    tag: 'CINEMATIC LAUNCH',
+    desc: 'Official GATEWISE AI product launch film: sub-300ms on-device edge biometric verification, sovereign perimeter defense, and real-time institutional command desk.',
     telemetry: {
       engine: 'YuNet + SFace 128-D',
       latency: '142ms Total Edge Pipeline',
@@ -73,19 +73,19 @@ export const ProductVideoTeaser: React.FC = () => {
   const [activeVideoId, setActiveVideoId] = useState('teaser');
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const currentVideo = VIDEOS.find((v) => v.id === activeVideoId) || VIDEOS[0];
 
-  // Enforce 2.0x playback speed as requested
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.playbackRate = 2.0;
+      videoRef.current.playbackRate = playbackSpeed;
       if (isPlaying) {
         videoRef.current.play().catch(() => {});
       }
     }
-  }, [activeVideoId, isPlaying]);
+  }, [activeVideoId, isPlaying, playbackSpeed]);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -116,16 +116,24 @@ export const ProductVideoTeaser: React.FC = () => {
     }
   };
 
+  const cycleSpeed = () => {
+    setPlaybackSpeed((prev) => {
+      if (prev === 1.0) return 1.5;
+      if (prev === 1.5) return 2.0;
+      return 1.0;
+    });
+  };
+
   return (
     <section id="motion-showcase" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
       {/* Eyebrow & Headline */}
       <div className="flex flex-col items-center text-center mb-8 sm:mb-10 space-y-3 sm:space-y-4">
-        <SectionEyebrow label="Product Motion Showcase" tag="GATEWISE AI 1.0" />
+        <SectionEyebrow label="Official Product Showcase" tag="GATEWISE AI 1.0" />
         <h2 className="text-2xl sm:text-4xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-white">
           Experience GATEWISE AI in Action
         </h2>
         <p className="text-white/60 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
-          High-definition screen recordings and live operational walkthroughs of our actual production software. Played at 2.0x operational speed.
+          Official product launch film and live operational walkthroughs of our actual production software.
         </p>
 
         {/* Video selector tabs - Responsive horizontal scrolling on mobile */}
@@ -204,11 +212,23 @@ export const ProductVideoTeaser: React.FC = () => {
             </div>
             <span className="text-xs text-white/40 hidden md:inline">•</span>
             <span className="text-xs text-white/50 font-mono hidden md:inline">
-              Locked 2.0x Playback
+              {playbackSpeed === 1.0 ? 'Cinematic 1.0x' : `${playbackSpeed}x Speed`}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto shrink-0">
+            {/* Speed toggle pill */}
+            <button
+              type="button"
+              onClick={cycleSpeed}
+              className="px-2.5 py-1 rounded-full bg-black/75 hover:bg-black/95 border border-white/20 text-white text-[11px] font-mono font-bold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer min-h-[36px]"
+              title="Toggle speed (1.0x, 1.5x, 2.0x)"
+            >
+              <Gauge className="w-3 h-3 text-[#00d2ff]" />
+              <span>{playbackSpeed}x</span>
+            </button>
+
+            {/* Audio Mute/Unmute toggle */}
             <button
               type="button"
               onClick={toggleMute}
@@ -219,6 +239,7 @@ export const ProductVideoTeaser: React.FC = () => {
               <span className="hidden sm:inline">{isMuted ? 'Unmute Audio' : 'Muted'}</span>
             </button>
 
+            {/* Fullscreen */}
             <button
               type="button"
               onClick={toggleFullscreen}
@@ -247,14 +268,14 @@ export const ProductVideoTeaser: React.FC = () => {
         </div>
 
         {/* Mobile Minimal Floating Play/Pause Pill over video canvas */}
-        <div className="sm:hidden absolute bottom-3 right-3 pointer-events-auto z-10">
+        <div className="sm:hidden absolute bottom-3 right-3 pointer-events-auto z-10 flex items-center gap-1.5">
           <button
             type="button"
             onClick={togglePlay}
             className="px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-lg"
           >
             {isPlaying ? <Pause className="w-3 h-3 text-white" /> : <Play className="w-3 h-3 fill-white text-white" />}
-            <span>{isPlaying ? 'Pause' : 'Play 2x'}</span>
+            <span>{isPlaying ? 'Pause' : 'Play'}</span>
           </button>
         </div>
 
@@ -265,7 +286,7 @@ export const ProductVideoTeaser: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5 text-[#00d2ff]" />
               <span className="text-xs font-bold text-white">{currentVideo.label}</span>
               <span className="text-[10px] text-emerald-400 font-mono font-semibold">
-                ● 2.0X SPEED
+                ● {playbackSpeed}X SPEED
               </span>
             </div>
             <p className="text-xs text-white/70 max-w-3xl leading-relaxed">
@@ -294,7 +315,7 @@ export const ProductVideoTeaser: React.FC = () => {
             <span className="text-xs font-bold text-white">{currentVideo.label}</span>
           </div>
           <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-            2.0X SPEED
+            {playbackSpeed}X SPEED
           </span>
         </div>
         <p className="text-xs text-white/70 leading-relaxed">

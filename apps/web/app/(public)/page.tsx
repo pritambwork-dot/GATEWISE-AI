@@ -50,7 +50,7 @@ export default function PublicHomePage() {
           muted
           playsInline
           className="w-full h-full object-cover pointer-events-none opacity-40 filter saturate-150 brightness-75"
-          src="/media/videos/gatewise-teaser-uploaded.mp4"
+          src="/media/videos/gatewise-launch-film.mp4"
         />
         {/* Dark subtle gradient overlay to ensure perfect contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c0c0c]/85 via-[#0c0c0c]/70 to-[#0c0c0c]/95 pointer-events-none" />
