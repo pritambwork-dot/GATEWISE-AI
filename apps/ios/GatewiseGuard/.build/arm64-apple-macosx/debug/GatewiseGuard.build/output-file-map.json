@@ -1,0 +1,208 @@
+{
+  "": {
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/primary.swiftdeps"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/App/AppState.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AppState.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AppState.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AppState~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AppState.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AppState.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/App/RootContentView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RootContentView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RootContentView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RootContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RootContentView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RootContentView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Network/GatewiseAPIClient.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseAPIClient.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseAPIClient.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseAPIClient~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseAPIClient.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseAPIClient.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Network/NetworkError.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/NetworkError.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/NetworkError.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/NetworkError~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/NetworkError.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/NetworkError.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Security/BiometricAuthService.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/BiometricAuthService.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/BiometricAuthService.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/BiometricAuthService~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/BiometricAuthService.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/BiometricAuthService.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Security/CryptoService.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CryptoService.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CryptoService.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CryptoService~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CryptoService.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CryptoService.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Security/KeychainService.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/KeychainService.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/KeychainService.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/KeychainService~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/KeychainService.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/KeychainService.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Theme/GatewiseColors.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseColors.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseColors.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseColors~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseColors.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseColors.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Core/Theme/GatewiseTypography.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseTypography.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseTypography.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseTypography~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseTypography.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseTypography.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Data/Fixtures/MockDataFixtures.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockDataFixtures.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockDataFixtures.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockDataFixtures~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockDataFixtures.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockDataFixtures.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Data/Fixtures/MockRepositories.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockRepositories.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockRepositories.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockRepositories~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockRepositories.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/MockRepositories.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Data/Repositories/RemoteRepositories.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RemoteRepositories.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RemoteRepositories.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RemoteRepositories~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RemoteRepositories.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RemoteRepositories.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Domain/Enums/VerificationOutcome.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationOutcome.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationOutcome.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationOutcome~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationOutcome.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationOutcome.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Domain/Models/DomainModels.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/DomainModels.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/DomainModels.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/DomainModels~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/DomainModels.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/DomainModels.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Domain/Repositories/RepositoryProtocols.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RepositoryProtocols.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RepositoryProtocols.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RepositoryProtocols~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RepositoryProtocols.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RepositoryProtocols.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/GatewiseGuardApp.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseGuardApp.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseGuardApp.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseGuardApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseGuardApp.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseGuardApp.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Activity/ActivityFeedView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ActivityFeedView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ActivityFeedView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ActivityFeedView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ActivityFeedView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ActivityFeedView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Admin/AdminDashboardView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AdminDashboardView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AdminDashboardView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AdminDashboardView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AdminDashboardView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/AdminDashboardView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Auth/LoginView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/LoginView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/LoginView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/LoginView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/LoginView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/LoginView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Components/GatewiseUIComponents.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseUIComponents.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseUIComponents.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseUIComponents~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseUIComponents.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GatewiseUIComponents.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Onboarding/OnboardingView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/OnboardingView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/OnboardingView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/OnboardingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/OnboardingView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/OnboardingView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Profile/GuardProfileView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GuardProfileView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GuardProfileView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GuardProfileView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GuardProfileView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/GuardProfileView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Verify/CameraCaptureView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CameraCaptureView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CameraCaptureView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CameraCaptureView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CameraCaptureView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/CameraCaptureView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Verify/ProcessingView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ProcessingView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ProcessingView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ProcessingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ProcessingView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ProcessingView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Verify/RecordDecisionView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RecordDecisionView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RecordDecisionView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RecordDecisionView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RecordDecisionView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/RecordDecisionView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Verify/ReviewCaptureView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ReviewCaptureView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ReviewCaptureView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ReviewCaptureView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ReviewCaptureView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/ReviewCaptureView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Verify/VerificationResultView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationResultView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationResultView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationResultView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationResultView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerificationResultView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Verify/VerifyHomeView.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerifyHomeView.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerifyHomeView.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerifyHomeView~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerifyHomeView.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VerifyHomeView.dia"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Sources/GatewiseGuard/Presentation/Visitors/VisitorViews.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VisitorViews.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VisitorViews.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VisitorViews~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VisitorViews.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuard.build/VisitorViews.dia"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuardTests.build/primary.swiftdeps"
+  },
+  "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/Tests/GatewiseGuardTests/GatewiseGuardTests.swift": {
+    "dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuardTests.build/GatewiseGuardTests.d",
+    "object": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuardTests.build/GatewiseGuardTests.swift.o",
+    "swiftmodule": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuardTests.build/GatewiseGuardTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuardTests.build/GatewiseGuardTests.swiftdeps",
+    "diagnostics": "/Users/pritambiswas/antigravity/NORVA/apps/ios/GatewiseGuard/.build/arm64-apple-macosx/debug/GatewiseGuardTests.build/GatewiseGuardTests.dia"
+  }
+}
