@@ -7,8 +7,9 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  Vibration,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, BorderRadius } from '../../src/theme';
 import { useAuth } from '../../src/providers/AuthProvider';
@@ -16,15 +17,24 @@ import { InputField, PasswordField, PrimaryButton, SurfaceCard } from '../../src
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, isLoading, toggleDemoMode, demoMode } = useAuth();
+  const params = useLocalSearchParams<{ reason?: string }>();
+  const { login, isLoading } = useAuth();
 
   const [employeeId, setEmployeeId] = useState('SEC-G014');
   const [password, setPassword] = useState('guard123');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const isSessionExpired = params.reason === 'session_expired';
+
   const handleSignIn = async () => {
+    try {
+      Vibration.vibrate(25);
+    } catch {
+      // Ignore vibration error
+    }
+
     if (!employeeId.trim() || !password.trim()) {
-      setErrorMessage('Please enter both Employee ID and station password.');
+      setErrorMessage('Please enter both Officer ID and terminal access password.');
       return;
     }
 
@@ -38,6 +48,11 @@ export default function LoginScreen() {
   };
 
   const handleQuickDemoFill = () => {
+    try {
+      Vibration.vibrate(15);
+    } catch {
+      // Ignore vibration error
+    }
     setEmployeeId('SEC-G014');
     setPassword('guard123');
     setErrorMessage(null);
@@ -51,12 +66,13 @@ export default function LoginScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.cardWrapper}>
           {/* Institution Brand Header */}
           <View style={styles.brandHeader}>
             <View style={styles.shieldIconContainer}>
-              <Ionicons name="shield-checkmark" size={32} color={Colors.primary} />
+              <Ionicons name="shield-checkmark" size={34} color={Colors.primary} />
             </View>
             <Text style={styles.brandTitle}>GATEWISE AI</Text>
             <Text style={styles.brandSubtitle}>
@@ -68,6 +84,16 @@ export default function LoginScreen() {
               <Text style={styles.gateLockText}>Main Campus Gate · Post 02</Text>
             </View>
           </View>
+
+          {/* Session Expired Banner if applicable */}
+          {isSessionExpired && (
+            <View style={styles.sessionExpiredBanner}>
+              <Ionicons name="time-outline" size={16} color={Colors.warning} />
+              <Text style={styles.sessionExpiredText}>
+                Terminal session expired for security. Please sign in again.
+              </Text>
+            </View>
+          )}
 
           {/* Login Card */}
           <SurfaceCard variant="elevated" padding={Spacing.xl}>
@@ -92,6 +118,9 @@ export default function LoginScreen() {
                 if (errorMessage) setErrorMessage(null);
               }}
               autoCapitalize="characters"
+              autoCorrect={false}
+              textContentType="username"
+              autoComplete="username"
               leftIcon={<Ionicons name="card-outline" size={18} color={Colors.textSecondary} />}
             />
 
@@ -103,6 +132,8 @@ export default function LoginScreen() {
                 setPassword(text);
                 if (errorMessage) setErrorMessage(null);
               }}
+              textContentType="password"
+              autoComplete="password"
             />
 
             <PrimaryButton
@@ -128,9 +159,15 @@ export default function LoginScreen() {
           <View style={styles.securityNoteCard}>
             <Ionicons name="lock-closed-outline" size={16} color={Colors.textSecondary} />
             <Text style={styles.securityNoteText}>
-              Security guards cannot create or approve permanent identities. Single-shot camera
-              scans only. Zero video recording or permanent biometric storage.
+              Officers cannot create or approve permanent identities. Single-shot camera scans
+              only. Zero video recording or permanent biometric storage.
             </Text>
+          </View>
+
+          {/* Technical Support Footer */}
+          <View style={styles.supportFooter}>
+            <Text style={styles.supportText}>Need terminal assistance? Contact Command Centre</Text>
+            <Text style={styles.supportContact}>Ext: 4401 · security-ops@gatewise.ac.in</Text>
           </View>
         </View>
       </ScrollView>
@@ -147,6 +184,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     padding: Spacing.xl,
+    paddingVertical: Spacing['2xl'],
   },
   cardWrapper: {
     width: '100%',
@@ -158,26 +196,32 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   shieldIconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     backgroundColor: Colors.lightGreen,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,
     borderWidth: 1.5,
     borderColor: Colors.mint,
+    elevation: 2,
+    shadowColor: Colors.deep,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
   },
   brandTitle: {
     ...Typography.titleLarge,
     color: Colors.deep,
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   brandSubtitle: {
     ...Typography.caption,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: 4,
+    fontSize: 12,
   },
   gateLockBadge: {
     flexDirection: 'row',
@@ -195,6 +239,24 @@ const styles = StyleSheet.create({
     color: Colors.deep,
     fontSize: 11,
     marginLeft: 4,
+    fontWeight: '700',
+  },
+  sessionExpiredBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEFCBF',
+    borderWidth: 1,
+    borderColor: '#ECC94B',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.base,
+    gap: Spacing.xs,
+  },
+  sessionExpiredText: {
+    fontSize: 12,
+    color: '#744210',
+    fontWeight: '600',
+    flex: 1,
   },
   formTitle: {
     ...Typography.titleSmall,
@@ -255,5 +317,20 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     flex: 1,
     lineHeight: 16,
+  },
+  supportFooter: {
+    marginTop: Spacing.xl,
+    alignItems: 'center',
+  },
+  supportText: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    fontWeight: '500',
+  },
+  supportContact: {
+    fontSize: 11,
+    color: Colors.deep,
+    fontWeight: '700',
+    marginTop: 2,
   },
 });

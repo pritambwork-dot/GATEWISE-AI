@@ -2,7 +2,7 @@
   "application": "GATEWISE AI",
   "platform": "android",
   "release_channel": "production",
-  "published": true,
+  "published": false,
   "version_name": "1.0.0",
   "version_code": 1,
   "minimum_android_version": "Android 8.0 (API 26)+",
@@ -19,7 +19,7 @@
     "Offline caching and sync queue for transient connectivity drops."
   ],
   "package_identifier": "com.gatewiseai.guard",
-  "verification_status": "PUBLISHED_OFFICIAL",
+  "verification_status": "VERIFIED_PENDING_PUBLICATION",
   "signing_certificate": {
     "issuer": "GATEWISE AI Institutional Release Authority",
     "fingerprint_sha256": null,

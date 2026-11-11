@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, TextInputProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { InputField } from './InputField';
 import { Colors } from '../theme';
 
-interface PasswordFieldProps {
+interface PasswordFieldProps extends TextInputProps {
   label?: string;
   value: string;
   onChangeText: (text: string) => void;
@@ -18,6 +18,7 @@ export function PasswordField({
   onChangeText,
   placeholder = '••••••••',
   error,
+  ...props
 }: PasswordFieldProps) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -44,6 +45,7 @@ export function PasswordField({
           />
         </TouchableOpacity>
       }
+      {...props}
     />
   );
 }

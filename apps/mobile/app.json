@@ -35,7 +35,8 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "GATEWISE AI requires camera access to capture subject photographs for security verification."
+          "cameraPermission": "GATEWISE AI requires camera access to capture subject photographs for security verification.",
+          "recordAudioAndroid": false
         }
       ],
       "expo-secure-store"

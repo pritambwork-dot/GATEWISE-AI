@@ -135,6 +135,21 @@ export default function GuardProfileScreen() {
             <Text style={styles.diagValue}>v1.0.0-rc3 (Build 104 · Android)</Text>
           </View>
 
+          {/* Replay Onboarding / Orientation */}
+          <TouchableOpacity
+            style={styles.orientationReplayRow}
+            onPress={() => router.push('/(auth)/onboarding')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.demoToggleTextCol}>
+              <Text style={styles.demoToggleTitle}>Replay Institutional Briefing</Text>
+              <Text style={styles.demoToggleSubtitle}>
+                Review 5-step terminal protocols and privacy safeguards
+              </Text>
+            </View>
+            <Ionicons name="school-outline" size={22} color={Colors.deep} />
+          </TouchableOpacity>
+
           {/* Demo Mode Toggle for Guard */}
           <TouchableOpacity
             style={styles.demoToggleRow}
@@ -370,6 +385,14 @@ const styles = StyleSheet.create({
     ...Typography.captionBold,
     color: Colors.textPrimary,
     fontSize: 12,
+  },
+  orientationReplayRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderSubtle,
   },
   demoToggleRow: {
     flexDirection: 'row',
