@@ -9,6 +9,10 @@ import {
   Fingerprint, Key, Check, X, Camera, Car, Radio, Sliders, Zap
 } from 'lucide-react';
 import Campus3DView from '@/components/Campus3DView';
+import ProductHeroShowcase from '@/components/showcase/ProductHeroShowcase';
+import ProductVideoPlayer from '@/components/showcase/ProductVideoPlayer';
+import InteractiveProductGallery from '@/components/showcase/InteractiveProductGallery';
+import ProductExperienceSections from '@/components/showcase/ProductExperienceSections';
 
 export default function PublicHomePage() {
   const [releaseInfo, setReleaseInfo] = useState<{
@@ -16,7 +20,7 @@ export default function PublicHomePage() {
     version_name?: string;
   }>({ published: false, version_name: '1.0.0' });
 
-  // Hero Stage state
+  // Interactive Stage state
   const [heroTab, setHeroTab] = useState<'guard' | 'campus' | 'anpr'>('guard');
   const [guardDecision, setGuardDecision] = useState<'idle' | 'granted' | 'flagged'>('idle');
   const [satelliteTimestamp, setSatelliteTimestamp] = useState<string>('14:32:08 IST');
@@ -59,54 +63,73 @@ export default function PublicHomePage() {
   };
 
   return (
-    <div className="space-y-24 md:space-y-36 pb-28 overflow-hidden bg-background">
+    <div className="space-y-20 md:space-y-32 pb-28 overflow-hidden bg-background">
 
       {/* ========================================================================= */}
-      {/* SECTION 1 — HERO: STAGESHOW HERO DEMO WITH STRADDLING SATELLITE CARD     */}
+      {/* 1. MASTER PRODUCT HERO: REAL DEVICE-PAIR COMPOSITION & KEY METRICS        */}
       {/* ========================================================================= */}
-      <section className="relative pt-10 md:pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <ProductHeroShowcase />
+
+      {/* ========================================================================= */}
+      {/* 2. CINEMATIC PRODUCT WALKTHROUGH VIDEO (H.264 + WEBM + WEBVTT CAPTIONS)  */}
+      {/* ========================================================================= */}
+      <ProductVideoPlayer />
+
+      {/* ========================================================================= */}
+      {/* 3. INTERACTIVE 24-SCREEN PRODUCT GALLERY WITH LIGHTBOX MODAL & CATEGORIES */}
+      {/* ========================================================================= */}
+      <InteractiveProductGallery />
+
+      {/* ========================================================================= */}
+      {/* 4. DEDICATED PRODUCT EXPERIENCE SECTIONS (SECTIONS A, B, C, D)            */}
+      {/* ========================================================================= */}
+      <ProductExperienceSections />
+
+      {/* ========================================================================= */}
+      {/* 5. INTERACTIVE LIVE SIMULATION STAGE (GUARD HUD / 3D TWIN / ANPR)         */}
+      {/* ========================================================================= */}
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           
-          {/* Left Text Column: Restrained, High-Craft Typography */}
-          <div className="lg:col-span-6 space-y-6">
+          {/* Left Text Column */}
+          <div className="lg:col-span-5 space-y-6">
             <div className="inline-flex items-center space-x-2.5 px-3 py-1 rounded-full bg-white border border-black/[0.08] shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-semibold text-gatewise-text tracking-tight">Institutional Access Architecture 1.0</span>
+              <span className="text-[11px] font-semibold text-gatewise-text tracking-tight">Interactive Simulation Deck</span>
               <span className="text-black/20">•</span>
-              <span className="text-[10px] font-mono text-gatewise-secondary uppercase">IIM Sambalpur</span>
+              <span className="text-[10px] font-mono text-gatewise-secondary uppercase">Live Hardware Sandbox</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-black text-gatewise-text tracking-tight leading-[1.06]">
-              Smarter Gate Verification.{' '}
-              <span className="text-gatewise-primary">Simpler Campus Operations.</span>
-            </h1>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gatewise-text tracking-tight leading-[1.08]">
+              Experience Real-Time{' '}
+              <span className="text-gatewise-primary">Perimeter Operations.</span>
+            </h2>
 
-            <p className="text-base sm:text-lg text-gatewise-secondary leading-relaxed max-w-xl font-normal">
-              GATEWISE AI combines sub-300ms 128-D facial vector matching with sovereign human guard oversight. 
-              Zero raw images stored in server logs, and every clearance sealed with an immutable HMAC-SHA256 signature.
+            <p className="text-sm sm:text-base text-gatewise-secondary leading-relaxed font-normal">
+              Switch between the on-device guard viewfinder, the 3D campus twin, and optical character recognition for vehicle license plates. Test the sovereign guard override button below.
             </p>
 
-            {/* Tactical Actions with Stageshow Hover Lift */}
+            {/* Tactical Action Buttons */}
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <Link
                 href="/download"
                 className="px-6 py-3.5 rounded-full bg-gatewise-primary text-white text-xs sm:text-sm font-semibold hover:bg-gatewise-deep active:scale-98 transition-all shadow-sm hover:shadow flex items-center space-x-2.5 group"
               >
                 <Smartphone className="w-4 h-4" />
-                <span>Download Guard APK</span>
+                <span>Install Guard APK</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
-                href="/product"
+                href="/showcase"
                 className="px-6 py-3.5 rounded-full border border-black/[0.1] bg-white text-gatewise-text text-xs sm:text-sm font-semibold hover:bg-black/[0.02] active:scale-98 transition-all shadow-2xs flex items-center space-x-2"
               >
-                <span>Platform Architecture</span>
+                <span>Launch Motion Lab</span>
                 <ChevronRight className="w-3.5 h-3.5 text-gatewise-secondary" />
               </Link>
             </div>
 
-            {/* Micro-proof strip: Count the real strings */}
+            {/* Micro-proof strip */}
             <div className="pt-5 flex flex-wrap items-center gap-6 text-xs text-gatewise-secondary border-t border-black/[0.06]">
               <div className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-gatewise-primary" />
@@ -126,10 +149,8 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* Right Column: Stageshow Hero Stage with Interactive Window & Satellite Card */}
-          <div className="lg:col-span-6 relative">
-            
-            {/* The Main Stage Window Frame */}
+          {/* Right Column: Interactive Stage Window Frame */}
+          <div className="lg:col-span-7 relative">
             <div className="w-full rounded-3xl bg-white border border-black/[0.08] ss-stage-shadow overflow-hidden flex flex-col relative">
               
               {/* Window Chrome Header Bar with macOS traffic lights & View Switcher */}
@@ -188,7 +209,6 @@ export default function PublicHomePage() {
                 {/* TAB 1: Guard Viewfinder Interactive Product UI */}
                 {heroTab === 'guard' && (
                   <div className="space-y-4">
-                    
                     {/* Viewfinder simulation box */}
                     <div className="relative bg-[#151c18] rounded-2xl p-5 text-white overflow-hidden shadow-inner border border-black/20">
                       
@@ -212,7 +232,6 @@ export default function PublicHomePage() {
                       {/* Applicant match payload card */}
                       <div className="bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/15 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
-                          {/* Avatar with verified check */}
                           <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 text-white font-bold flex items-center justify-center text-lg shrink-0 border border-white/20">
                             <span>MS</span>
                             <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">
@@ -232,7 +251,6 @@ export default function PublicHomePage() {
                           </div>
                         </div>
 
-                        {/* Confidence Score Pill */}
                         <div className="text-right shrink-0">
                           <span className="text-[10px] font-mono text-emerald-300 uppercase block">Cosine Match</span>
                           <span className="text-2xl font-black text-white tracking-tight">
@@ -280,14 +298,14 @@ export default function PublicHomePage() {
                         <div className="grid grid-cols-2 gap-2.5">
                           <button
                             onClick={handleGrant}
-                            className="py-2.5 px-4 rounded-xl bg-gatewise-primary hover:bg-gatewise-deep active:scale-98 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all"
+                            className="py-2.5 px-4 rounded-xl bg-gatewise-primary hover:bg-gatewise-deep active:scale-98 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
                           >
                             <Check className="w-4 h-4 stroke-[2.5]" />
                             <span>Grant Clearance</span>
                           </button>
                           <button
                             onClick={handleFlag}
-                            className="py-2.5 px-4 rounded-xl bg-[#ecefe9] hover:bg-[#e1e5df] active:scale-98 text-gatewise-text text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+                            className="py-2.5 px-4 rounded-xl bg-[#ecefe9] hover:bg-[#e1e5df] active:scale-98 text-gatewise-text text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                           >
                             <AlertCircle className="w-4 h-4 text-amber-600" />
                             <span>Refer to Booth</span>
@@ -326,7 +344,6 @@ export default function PublicHomePage() {
                         </span>
                       </div>
 
-                      {/* Number Plate Display */}
                       <div className="bg-white rounded-xl p-4 text-black flex items-center justify-between border-4 border-black/80 shadow-md">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-black px-1.5 py-0.5 bg-blue-700 text-white rounded">IND</span>
@@ -362,7 +379,7 @@ export default function PublicHomePage() {
               </div>
             </div>
 
-            {/* The Straddling Satellite Card (Stageshow Gold Pattern) */}
+            {/* Straddling Satellite Card */}
             <div className="hidden sm:flex absolute -bottom-6 -right-6 w-72 bg-white/95 backdrop-blur-xl rounded-2xl p-4 border border-black/[0.08] ss-satellite-shadow z-20 flex-col space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -400,13 +417,11 @@ export default function PublicHomePage() {
         </div>
       </section>
 
-
       {/* ========================================================================= */}
-      {/* SECTION 2 — BENTO FEATURE GRID (BENJI TAYLOR BENTO RULES)                 */}
+      {/* 6. BENTO FEATURE GRID (BENJI TAYLOR BENTO RULES)                          */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Lead: Page Type with Quiet Hierarchy */}
         <div className="max-w-2xl space-y-2 mb-12">
           <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-2.5 py-0.5 rounded-full border border-gatewise-mint">
             Engineered Capabilities
@@ -415,14 +430,13 @@ export default function PublicHomePage() {
             Built for High-Consequence Perimeter Integrity
           </h2>
           <p className="text-sm text-gatewise-secondary leading-relaxed">
-            Every tile solves a specific friction point at institutional vehicle and pedestrian gates.
+            Every component addresses a specific operational requirement at institutional vehicle and pedestrian checkpoints.
           </p>
         </div>
 
-        {/* Bento Grid: 1 Hero UI (2 cols), Stats, Statements, Components, and Diagrams */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           
-          {/* TILE 1: HERO UI (2 Columns) — Checkpoint ANPR & Telemetry */}
+          {/* TILE 1: HERO UI (2 Columns) */}
           <div className="md:col-span-2 ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-6">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
@@ -439,7 +453,6 @@ export default function PublicHomePage() {
               </span>
             </div>
 
-            {/* UI Component inside Tile (At real size per Stageshow Rule 3) */}
             <div className="bg-[#f7faf7] rounded-2xl p-4 sm:p-5 border border-black/[0.06] space-y-3">
               <div className="flex items-center justify-between text-xs font-mono text-gatewise-secondary pb-1 border-b border-black/[0.06]">
                 <span>GATE 01 DUAL-LANE TELEMETRY</span>
@@ -470,7 +483,7 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* TILE 2: BIG STAT (1 Column) — Latency */}
+          {/* TILE 2: BIG STAT (1 Column) */}
           <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4">
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-secondary">
@@ -488,7 +501,7 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* TILE 3: STATEMENT TILE (1 Column) — Zero Cloud Biometrics */}
+          {/* TILE 3: STATEMENT TILE (1 Column) */}
           <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4 bg-gradient-to-br from-white to-emerald-50/30">
             <div className="w-10 h-10 rounded-xl bg-gatewise-light text-gatewise-primary flex items-center justify-center font-bold">
               <ShieldCheck className="w-5 h-5" />
@@ -506,7 +519,7 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* TILE 4: COMPONENT UI (1 Column) — Guard Sovereign Discretion Switcher */}
+          {/* TILE 4: COMPONENT UI (1 Column) */}
           <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4">
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-secondary">
@@ -518,7 +531,6 @@ export default function PublicHomePage() {
               </p>
             </div>
 
-            {/* Interactive Toggle Switch */}
             <div className="bg-[#f7faf7] p-3 rounded-xl border border-black/[0.06] space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-gatewise-text">Operational Policy:</span>
@@ -529,7 +541,7 @@ export default function PublicHomePage() {
               <div className="grid grid-cols-2 gap-1.5 p-1 bg-black/[0.04] rounded-lg text-xs font-semibold">
                 <button
                   onClick={() => setGuardMode('standard')}
-                  className={`py-1.5 rounded-md transition-all ${
+                  className={`py-1.5 rounded-md transition-all cursor-pointer ${
                     guardMode === 'standard'
                       ? 'bg-white text-gatewise-text shadow-2xs'
                       : 'text-gatewise-secondary'
@@ -539,7 +551,7 @@ export default function PublicHomePage() {
                 </button>
                 <button
                   onClick={() => setGuardMode('enhanced')}
-                  className={`py-1.5 rounded-md transition-all ${
+                  className={`py-1.5 rounded-md transition-all cursor-pointer ${
                     guardMode === 'enhanced'
                       ? 'bg-white text-gatewise-text shadow-2xs'
                       : 'text-gatewise-secondary'
@@ -556,7 +568,7 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* TILE 5: DIAGRAM UI (1 Column) — 128-D Cosine Similarity Interactive Threshold */}
+          {/* TILE 5: DIAGRAM UI (1 Column) */}
           <div className="ss-bento-tile p-6 sm:p-8 flex flex-col justify-between space-y-4">
             <div className="space-y-1">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-secondary">
@@ -568,7 +580,6 @@ export default function PublicHomePage() {
               </p>
             </div>
 
-            {/* Interactive Threshold Control */}
             <div className="bg-[#f7faf7] p-3.5 rounded-xl border border-black/[0.06] space-y-2">
               <div className="flex justify-between items-center text-xs font-mono">
                 <span className="text-gatewise-secondary">Accept Threshold:</span>
@@ -597,14 +608,12 @@ export default function PublicHomePage() {
         </div>
       </section>
 
-
       {/* ========================================================================= */}
-      {/* SECTION 3 — THE 4-STEP VERIFICATION PROCESS (STAGESHOW EXPANDING LIST)    */}
+      {/* 7. THE 4-STEP VERIFICATION PROCESS (STAGESHOW EXPANDING LIST)             */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left Column: Heading and Context */}
           <div className="lg:col-span-5 space-y-5">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-gatewise-primary bg-gatewise-light px-2.5 py-0.5 rounded-full border border-gatewise-mint">
               Verification Protocol
@@ -627,7 +636,6 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* Right Column: Stageshow 4-Step Expanding Accordion Rows */}
           <div className="lg:col-span-7 space-y-3">
             {[
               {
@@ -670,7 +678,6 @@ export default function PublicHomePage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3.5">
-                      {/* Step Number in Rounded Square */}
                       <span
                         className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono text-xs font-bold transition-colors ${
                           isActive
@@ -700,7 +707,6 @@ export default function PublicHomePage() {
                     </span>
                   </div>
 
-                  {/* Expanded Body with Left Hairline */}
                   {isActive && (
                     <div className="mt-3.5 pl-12 border-l-2 border-gatewise-primary/20 ml-4 animate-in fade-in duration-200">
                       <p className="text-xs text-gatewise-secondary leading-relaxed">
@@ -716,9 +722,8 @@ export default function PublicHomePage() {
         </div>
       </section>
 
-
       {/* ========================================================================= */}
-      {/* SECTION 4 — ARCHITECTURAL 3D MAQUETTE & PHYSICAL WORLD                   */}
+      {/* 8. ARCHITECTURAL 3D MAQUETTE & PHYSICAL WORLD                             */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl border border-black/[0.08] ss-stage-shadow p-8 sm:p-12 space-y-8">
@@ -745,9 +750,8 @@ export default function PublicHomePage() {
         </div>
       </section>
 
-
       {/* ========================================================================= */}
-      {/* SECTION 5 — INSTITUTIONAL TRUST & PRIVACY GUARANTEES                     */}
+      {/* 9. INSTITUTIONAL TRUST & PRIVACY GUARANTEES                               */}
       {/* ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-[#141b17] text-white p-8 sm:p-12 space-y-8 relative overflow-hidden">
@@ -787,7 +791,6 @@ export default function PublicHomePage() {
             </div>
           </div>
 
-          {/* Background subtle light halo */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
         </div>
       </section>

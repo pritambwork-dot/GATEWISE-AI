@@ -18,11 +18,11 @@ export default function PublicLayout({
 
   const navLinks = [
     { href: '/', label: 'Overview' },
-    { href: '/showcase', label: 'Stageshow Demo' },
-    { href: '/product', label: 'Product' },
+    { href: '/#product-video', label: 'Video Demo' },
+    { href: '/#product-gallery', label: 'Screenshots' },
+    { href: '/showcase', label: 'Motion Lab' },
     { href: '/how-it-works', label: 'Architecture' },
-    { href: '/features', label: 'Capabilities' },
-    { href: '/security', label: 'Cryptography & Privacy' },
+    { href: '/security', label: 'Privacy' },
     { href: '/download', label: 'Guard APK' },
   ];
 

@@ -1,0 +1,26 @@
+GATEWISE AI 1.0 — COMPLETE PRODUCT WALKTHROUGH TRANSCRIPT
+Duration: 65 seconds
+Target Platform: GATEWISE Guard Android App & GATEWISE Admin Portal
+
+[Scene 1: Introduction (00:00 - 00:06)]
+Title: GATEWISE AI 1.0
+Headline: Smarter Gate Operations. One Connected Platform.
+Institution: Indian Institute of Management Sambalpur
+
+[Scene 2: GATEWISE Guard Android Application (00:06 - 00:22)]
+Stage 1: Tactical Optical Capture (60 FPS viewfinder with automatic exposure compensation).
+Stage 2: YuNet 5-Point Landmark Extraction (28ms inference time on edge hardware).
+Stage 3: 128-D Cosine Metric Matching (SFace neural pipeline, cosine score 0.984 > 0.720 threshold).
+Stage 4: Sovereign Guard Action & HMAC-SHA256 Digital Seal (Hardware non-repudiation signature).
+
+[Scene 3: GATEWISE Admin Portal (00:22 - 00:40)]
+Central Security Command: Real-time telemetry, 4-gate post relay health, and throughput charts.
+Live Gate Activity Feed: Server-Sent Events (SSE) streaming live verification events and cryptographic badges.
+
+[Scene 4: Connected Multi-Gate Real-Time Workflow (00:40 - 00:55)]
+Synchronization: Immediate field guard decision dispatch to central administrator dashboard.
+Zero Raw Biometrics: Ephemeral RAM extraction ensures privacy and compliance with DPDP and ISO/IEC 27001.
+
+[Scene 5: Conclusion & Calls to Action (00:55 - 01:05)]
+GATEWISE AI: One platform. Connected institutional operations.
+CTAs: Explore the Platform / Download Android APK.
