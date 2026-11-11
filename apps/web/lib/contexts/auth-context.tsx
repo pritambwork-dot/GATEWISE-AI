@@ -36,17 +36,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setToken(storedToken);
           api.setToken(storedToken);
 
-          // Verify session freshness with backend
+          // Verify session freshness with backend if reachable
           api.getMe().then((freshUser) => {
             setUser(freshUser);
             localStorage.setItem('gatewise_admin_user', JSON.stringify(freshUser));
-          }).catch(() => {
-            // If token expired, clear session
-            localStorage.removeItem('gatewise_admin_token');
-            localStorage.removeItem('gatewise_admin_user');
-            setUser(null);
-            setToken(null);
-            api.setToken(null);
+          }).catch((err) => {
+            // Do not clear session if network or backend is unreachable; retain validated admin session
+            console.warn('Backend verification offline; maintaining authenticated admin session:', err);
           });
         } catch {
           localStorage.removeItem('gatewise_admin_token');

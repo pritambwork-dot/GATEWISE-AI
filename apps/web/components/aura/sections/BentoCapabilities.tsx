@@ -1,4 +1,3 @@
-'use client';
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Cpu, Sliders, Check, Zap, Camera, Car } from 'lucide-react';

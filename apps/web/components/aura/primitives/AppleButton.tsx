@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { ChevronRight, ShieldCheck, Smartphone } from 'lucide-react';
 import { AppleLogo } from './AppleLogo';

@@ -1,4 +1,3 @@
-'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Maximize2, X, ChevronLeft, ChevronRight, Smartphone, Monitor, Layers } from 'lucide-react';

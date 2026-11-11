@@ -1,4 +1,3 @@
-'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, ChevronRight, CheckCircle2 } from 'lucide-react';

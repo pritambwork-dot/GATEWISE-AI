@@ -10,6 +10,7 @@ import { BentoCapabilities } from '@/components/aura/sections/BentoCapabilities'
 import { VerificationProtocol } from '@/components/aura/sections/VerificationProtocol';
 import { InteractiveScreenshotGallery } from '@/components/aura/sections/InteractiveScreenshotGallery';
 import { FeatureTriage } from '@/components/aura/sections/FeatureTriage';
+import { DownloadSection } from '@/components/aura/sections/DownloadSection';
 import { LogoCloud } from '@/components/aura/sections/LogoCloud';
 import { Testimonials } from '@/components/aura/sections/Testimonials';
 import { Pricing } from '@/components/aura/sections/Pricing';
@@ -49,11 +50,11 @@ export default function PublicHomePage() {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover pointer-events-none opacity-80"
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260508_064122_c4750c0e-7476-4b44-94a2-a85a65c63bf2.mp4"
+          className="w-full h-full object-cover pointer-events-none opacity-40 filter saturate-150 brightness-75"
+          src="/media/videos/gatewise-teaser-uploaded.mp4"
         />
-        {/* Subtle dark gradient overlay to ensure perfect contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0c0c0c]/70 via-[#0c0c0c]/45 to-[#0c0c0c]/90 pointer-events-none" />
+        {/* Dark subtle gradient overlay to ensure perfect contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c0c0c]/85 via-[#0c0c0c]/70 to-[#0c0c0c]/95 pointer-events-none" />
       </div>
 
       {/* Fullscreen expansive guide lines */}
@@ -91,22 +92,25 @@ export default function PublicHomePage() {
         {/* Section 9 — Perimeter Defense Architecture */}
         <FeatureTriage />
 
-        {/* Section 10 — Institutional Trust Cloud */}
+        {/* Section 10 — Download & Web App Access Hub */}
+        <DownloadSection />
+
+        {/* Section 11 — Institutional Trust Cloud */}
         <LogoCloud />
 
-        {/* Section 11 — Executive Testimonials */}
+        {/* Section 12 — Executive Testimonials */}
         <Testimonials />
 
-        {/* Section 12 — Pricing & Deployment */}
+        {/* Section 13 — Pricing & Deployment */}
         <Pricing />
 
-        {/* Section 13 — Data Governance & Privacy by Design */}
+        {/* Section 14 — Zero-Image Data Governance */}
         <DataGovernance />
 
-        {/* Section 14 — Final CTA */}
+        {/* Section 15 — Final CTA */}
         <FinalCTA />
 
-        {/* Section 15 — Footer */}
+        {/* Section 16 — Institutional Footer */}
         <Footer />
       </div>
     </div>

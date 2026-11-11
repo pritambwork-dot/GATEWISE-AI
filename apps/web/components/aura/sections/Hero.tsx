@@ -1,8 +1,6 @@
-'use client';
 import React from 'react';
 import { motion } from 'motion/react';
-import { ShieldCheck, Play, ArrowRight, Smartphone, Terminal } from 'lucide-react';
-import { AppleButton } from '../primitives/AppleButton';
+import { ShieldCheck, Play, ArrowRight, Smartphone, Terminal, Monitor, Download, Lock } from 'lucide-react';
 import { gradientStyle } from '@/constants/styles';
 
 export const Hero: React.FC = () => {
@@ -67,25 +65,57 @@ export const Hero: React.FC = () => {
           delay: 0.7,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="mt-10 flex flex-col items-center gap-4"
+        className="mt-10 flex flex-col items-center gap-5 w-full"
       >
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <AppleButton label="Deploy Gatewise Guard" icon="shield" />
+        {/* Main CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-md sm:max-w-none">
+          {/* Primary Action 1: Launch Web Command Centre */}
+          <a
+            href="/admin"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white text-black font-bold text-sm hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(255,255,255,0.25)] cursor-pointer group"
+          >
+            <Monitor className="w-4 h-4 text-black" />
+            <span>Launch Web Command Centre</span>
+            <ArrowRight className="w-4 h-4 text-black transition-transform group-hover:translate-x-1" />
+          </a>
+
+          {/* Primary Action 2: Multi-Platform Downloads */}
+          <a
+            href="#downloads"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-sm font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
+          >
+            <Download className="w-4 h-4 text-[#00d2ff]" />
+            <span>Download Guard APK & DMG</span>
+          </a>
+
+          {/* Tertiary Action: Live Operations */}
           <a
             href="#operations"
-            className="group px-6 py-3.5 rounded-full border border-white/15 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-sm font-semibold text-white flex items-center gap-2"
+            className="w-full sm:w-auto px-5 py-3.5 rounded-full border border-white/10 bg-black/40 hover:bg-white/5 active:scale-[0.98] transition-all text-xs font-semibold text-white/70 hover:text-white flex items-center justify-center gap-2"
           >
-            <span>Inspect Live Operations</span>
-            <ArrowRight className="w-4 h-4 text-white/60 transition-transform group-hover:translate-x-1" />
+            <span>Live Console</span>
           </a>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-white/40 tracking-tight mt-1">
-          <span>Native Android Guard APK</span>
-          <span>•</span>
-          <span>Universal macOS DMG (1.2 MB)</span>
-          <span>•</span>
-          <span>Apple TestFlight & MDM</span>
+        {/* Clear Platform Support Strip */}
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-white/50 tracking-tight mt-1">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
+            <Monitor className="w-3 h-3 text-[#00d2ff]" />
+            <span>Web App & PWA</span>
+          </span>
+          <span className="text-white/20">•</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
+            <Smartphone className="w-3 h-3 text-emerald-400" />
+            <span>Android Guard APK</span>
+          </span>
+          <span className="text-white/20">•</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
+            <span>macOS Universal DMG</span>
+          </span>
+          <span className="text-white/20">•</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
+            <span>Apple iOS TestFlight</span>
+          </span>
         </div>
       </motion.div>
     </section>

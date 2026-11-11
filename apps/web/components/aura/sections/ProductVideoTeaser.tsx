@@ -1,37 +1,67 @@
-'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Play, Pause, Volume2, VolumeX, Maximize2, Sparkles, Film } from 'lucide-react';
+import {
+  Play, Pause, Volume2, VolumeX, Maximize2, Sparkles, Film,
+  ShieldCheck, Cpu, Activity, Fingerprint, Lock, CheckCircle2
+} from 'lucide-react';
 import { SectionEyebrow } from '../primitives/SectionEyebrow';
 
 const VIDEOS = [
   {
     id: 'teaser',
-    label: '4K Motion Teaser',
+    label: '4K Sovereign Motion Teaser',
     src: '/media/videos/gatewise-teaser-uploaded.mp4',
     badge: 'CINEMATIC 2X',
-    desc: 'Official 4K product motion teaser demonstrating multi-factor gate verification and sovereign campus operations.',
+    tag: 'PRODUCTION PREVIEW',
+    desc: 'Official 4K kinetic product motion showcase: YuNet 28ms face landmark detection, SFace 128-D cosine vectors, and HMAC-SHA256 ledger integrity.',
+    telemetry: {
+      engine: 'YuNet + SFace 128-D',
+      latency: '142ms Total Edge Pipeline',
+      status: 'VERIFIED [0.984 COSINE]',
+      post: 'Gate-Main-02 Terminal Ingress',
+    },
   },
   {
     id: 'admin',
     label: 'Command Centre Walkthrough',
     src: '/media/videos/admin-portal-demo.mp4',
     badge: 'ADMIN PORTAL',
-    desc: 'Centralized institutional command centre: live gate feeds, identity roster, guard management, and incident escalation.',
+    tag: 'WEB COMMAND DESK',
+    desc: 'Centralized institutional command centre: live gate feeds, identity roster, automated visitor passes, and real-time station heartbeat.',
+    telemetry: {
+      engine: 'Web Command & Control',
+      latency: '<150ms WebSocket Broadcast',
+      status: 'ALL GATES ACTIVE',
+      post: 'Central Security HQ Desk',
+    },
   },
   {
     id: 'guard',
-    label: 'Guard Mobile App Demo',
+    label: 'Android Guard App Demo',
     src: '/media/videos/guard-app-demo.mp4',
     badge: 'ANDROID GUARD',
-    desc: 'Sub-300ms edge camera face match, offline identity cache, and biometric verification on handheld ruggedized terminal.',
+    tag: 'FIELD TERMINAL',
+    desc: 'Sub-300ms on-device camera face match, offline SQLite identity continuity cache, and ruggedized Android terminal field verification.',
+    telemetry: {
+      engine: 'On-Device Android NDK',
+      latency: '28ms YuNet Landmark Pass',
+      status: 'OFFLINE CONTINUITY ACTIVE',
+      post: 'Perimeter Handheld Post',
+    },
   },
   {
     id: 'overview',
-    label: 'Platform Overview',
+    label: 'Full System Overview',
     src: '/media/videos/gatewise-overview.mp4',
-    badge: 'FULL SYSTEM',
-    desc: 'End-to-end sovereign perimeter architecture, hardware actuators, and cryptographic audit ledger overview.',
+    badge: 'SOVEREIGN STACK',
+    tag: 'END-TO-END SUITE',
+    desc: 'End-to-end sovereign perimeter defense architecture: distributed camera nodes, hardware barrier relays, and DPDP Act 2023 compliance.',
+    telemetry: {
+      engine: 'Zero-Image Privacy Pipeline',
+      latency: 'Instant Edge Validation',
+      status: '100% AIR-GAPPED READY',
+      post: 'Institutional Campus Boundary',
+    },
   },
 ];
 
@@ -43,7 +73,7 @@ export const ProductVideoTeaser: React.FC = () => {
 
   const currentVideo = VIDEOS.find((v) => v.id === activeVideoId) || VIDEOS[0];
 
-  // Enforce 2x playback speed as requested
+  // Enforce 2.0x playback speed as requested
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 2.0;
@@ -83,15 +113,15 @@ export const ProductVideoTeaser: React.FC = () => {
   };
 
   return (
-    <section className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-16 md:py-24">
+    <section id="motion-showcase" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-16 md:py-24">
       {/* Eyebrow & Headline */}
       <div className="flex flex-col items-center text-center mb-10 space-y-4">
-        <SectionEyebrow label="Cinematic Showcase" tag="Real Product Video" />
+        <SectionEyebrow label="Product Motion Showcase" tag="GATEWISE AI 1.0" />
         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-white">
-          See GATEWISE AI in Action
+          Experience GATEWISE AI in Action
         </h2>
-        <p className="text-white/60 max-w-xl text-sm sm:text-base leading-relaxed">
-          Real application screen captures and motion walkthroughs. No fake mockups or static illustrations.
+        <p className="text-white/60 max-w-2xl text-sm sm:text-base leading-relaxed">
+          High-definition screen recordings and live operational walkthroughs of our actual production software. Played at 2.0x operational speed.
         </p>
 
         {/* Video selector tabs */}
@@ -135,6 +165,12 @@ export const ProductVideoTeaser: React.FC = () => {
         {/* Glow backdrop */}
         <div className="absolute inset-0 bg-gradient-to-tr from-[#00d2ff]/10 via-transparent to-[#3D81E3]/10 pointer-events-none" />
 
+        {/* HUD Corner Brackets */}
+        <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+        <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-[#00d2ff]/60 pointer-events-none z-20" />
+
         {/* The Video Element */}
         <video
           ref={videoRef}
@@ -149,21 +185,28 @@ export const ProductVideoTeaser: React.FC = () => {
         />
 
         {/* Ambient Top Overlay Header */}
-        <div className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/30 to-transparent flex items-center justify-between pointer-events-none select-none">
+        <div className="absolute top-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-b from-black/85 via-black/40 to-transparent flex items-center justify-between pointer-events-none select-none z-10">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold text-white tracking-tight">
-              {currentVideo.label}
+            <div className="flex items-center gap-2">
+              <span className="text-xs sm:text-sm font-bold text-white tracking-tight">
+                {currentVideo.label}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono text-[#00d2ff] border border-white/10">
+                {currentVideo.tag}
+              </span>
+            </div>
+            <span className="text-xs text-white/40 hidden md:inline">•</span>
+            <span className="text-xs text-white/50 font-mono hidden md:inline">
+              Locked 2.0x Playback
             </span>
-            <span className="text-xs text-white/40 hidden sm:inline">•</span>
-            <span className="text-xs text-white/50 font-mono hidden sm:inline">2.0x Dynamic Speed</span>
           </div>
 
           <div className="flex items-center gap-2 pointer-events-auto">
             <button
               type="button"
               onClick={toggleMute}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white text-xs font-medium backdrop-blur-md transition-all flex items-center gap-1.5"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 text-white text-xs font-medium backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer"
               aria-label={isMuted ? 'Unmute video' : 'Mute video'}
             >
               {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
@@ -173,7 +216,7 @@ export const ProductVideoTeaser: React.FC = () => {
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="p-2 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white backdrop-blur-md transition-all"
+              className="p-2 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 text-white backdrop-blur-md transition-all cursor-pointer"
               aria-label="Fullscreen"
             >
               <Maximize2 className="w-4 h-4" />
@@ -181,23 +224,42 @@ export const ProductVideoTeaser: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Description Pill */}
-        <div className="absolute bottom-4 inset-x-4 sm:inset-x-6 p-4 rounded-2xl bg-black/75 backdrop-blur-xl border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 select-none">
-          <div className="space-y-0.5">
+        {/* Real-time Biometric HUD Overlay Strip */}
+        <div className="absolute top-16 left-6 hidden lg:flex flex-col gap-1.5 pointer-events-none select-none z-10 font-mono text-[10px]">
+          <div className="px-2.5 py-1 rounded bg-black/60 border border-white/10 text-white/80 backdrop-blur-md flex items-center gap-2">
+            <Cpu className="w-3 h-3 text-[#00d2ff]" />
+            <span>PIPELINE: {currentVideo.telemetry.engine}</span>
+          </div>
+          <div className="px-2.5 py-1 rounded bg-black/60 border border-white/10 text-emerald-400 backdrop-blur-md flex items-center gap-2">
+            <Activity className="w-3 h-3 text-emerald-400" />
+            <span>STATUS: {currentVideo.telemetry.status}</span>
+          </div>
+          <div className="px-2.5 py-1 rounded bg-black/60 border border-white/10 text-white/60 backdrop-blur-md flex items-center gap-2">
+            <ShieldCheck className="w-3 h-3 text-white/50" />
+            <span>NODE: {currentVideo.telemetry.post}</span>
+          </div>
+        </div>
+
+        {/* Bottom Description & Playback HUD */}
+        <div className="absolute bottom-4 inset-x-4 sm:inset-x-6 p-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 select-none z-10">
+          <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-[#00d2ff]" />
-              <span className="text-xs font-semibold text-white">{currentVideo.label}</span>
+              <span className="text-xs font-bold text-white">{currentVideo.label}</span>
+              <span className="text-[10px] text-emerald-400 font-mono font-semibold">
+                ● 2.0X SPEED
+              </span>
             </div>
-            <p className="text-xs text-white/70 max-w-2xl leading-relaxed">
+            <p className="text-xs text-white/70 max-w-3xl leading-relaxed">
               {currentVideo.desc}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={togglePlay}
-              className="px-4 py-2 rounded-full bg-white text-black text-xs font-semibold hover:bg-white/90 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+              className="px-4 py-2 rounded-full bg-white text-black text-xs font-bold hover:bg-white/90 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-black" />}
               <span>{isPlaying ? 'Pause' : 'Play'}</span>

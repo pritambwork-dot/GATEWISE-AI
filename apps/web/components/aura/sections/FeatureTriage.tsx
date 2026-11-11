@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, Cpu, Database, EyeOff, Lock, Radio } from 'lucide-react';
