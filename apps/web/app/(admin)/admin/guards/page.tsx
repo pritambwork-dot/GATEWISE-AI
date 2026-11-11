@@ -120,26 +120,26 @@ export default function GuardManagementPage() {
   const onDuty = guards.filter(g => g.assigned_gate).length;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gatewise-text tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Security Guard & Operator Directory
           </h1>
-          <p className="text-xs text-gatewise-secondary mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Manage guard credentials, monitor station assignments, and enforce session security policies.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           <button
             onClick={loadGuards}
             disabled={isLoading}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-xs font-semibold text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-all shadow-xs"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-gatewise-primary' : ''}`} />
-            <span>Sync Guards</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
+            <span className="hidden sm:inline">Sync Directory</span>
           </button>
 
           <button
@@ -147,7 +147,7 @@ export default function GuardManagementPage() {
               setErrorMessage('');
               setIsInviteModalOpen(true);
             }}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-gatewise-primary text-white text-xs font-bold hover:bg-gatewise-deep transition-all shadow-xs"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-all shadow-xs"
           >
             <UserPlus className="w-3.5 h-3.5" />
             <span>Enroll Guard</span>
@@ -164,54 +164,54 @@ export default function GuardManagementPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Total Guards</span>
-            <Shield className="w-4 h-4 text-gatewise-primary" />
+            <Shield className="w-4 h-4 text-teal-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{total}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Registered security officers</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{total}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Registered security officers</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Active & Eligible</span>
-            <CheckCircle2 className="w-4 h-4 text-gatewise-success" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{active}</div>
-          <span className="text-[10px] text-gatewise-success font-medium mt-0.5 block">Permitted terminal access</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{active}</div>
+          <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Permitted terminal access</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
-            <span>Currently On Duty</span>
-            <DoorClosed className="w-4 h-4 text-gatewise-teal" />
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+            <span>On Duty Now</span>
+            <DoorClosed className="w-4 h-4 text-cyan-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{onDuty}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Assigned to active gate</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{onDuty}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Assigned to active posts</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Suspended</span>
             <ShieldAlert className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{suspended}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Access denied at gate</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{suspended}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Terminal access locked</span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-white border border-gatewise-border shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center space-x-1.5 p-1 rounded-xl bg-background-secondary border border-gatewise-border">
+      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center space-x-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200/80">
           {['ALL', 'ACTIVE', 'SUSPENDED'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                 statusFilter === st
-                  ? 'bg-white text-gatewise-text shadow-xs border border-gatewise-border'
-                  : 'text-gatewise-secondary hover:text-gatewise-text'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {st === 'ALL' ? 'All Guards' : st}
@@ -220,18 +220,18 @@ export default function GuardManagementPage() {
         </div>
 
         <div className="relative min-w-[280px] flex-1 max-w-sm">
-          <Search className="w-4 h-4 text-gatewise-secondary absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search by Officer Name, Employee ID, or Email..."
+            placeholder="Search officer name, ID, or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text placeholder:text-gatewise-secondary focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 focus:bg-white transition-all"
+            className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:bg-white transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gatewise-secondary hover:text-gatewise-text"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -240,84 +240,90 @@ export default function GuardManagementPage() {
       </div>
 
       {/* Guards Table */}
-      <div className="rounded-2xl bg-white border border-gatewise-border shadow-xs overflow-hidden">
+      <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-gatewise-border bg-background-secondary/60 text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                <th className="py-3 px-4">Employee ID</th>
-                <th className="py-3 px-4">Officer Name</th>
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Active Station</th>
-                <th className="py-3 px-4">Account Status</th>
+              <tr className="border-b border-slate-200/80 bg-slate-50/70 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                <th className="py-3 px-4">Officer ID</th>
+                <th className="py-3 px-4">Full Name</th>
+                <th className="py-3 px-4">Assigned Gate Post</th>
+                <th className="py-3 px-4">Active Shift</th>
+                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gatewise-border">
+            <tbody className="divide-y divide-slate-100">
               {filteredGuards.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-gatewise-secondary">
-                    <Shield className="w-8 h-8 text-gatewise-border mx-auto mb-2" />
-                    <p className="font-semibold text-sm text-gatewise-text">No security guards found</p>
-                    <p className="text-xs text-gatewise-secondary mt-1">
-                      Enroll a guard to grant Android terminal verification authority.
+                  <td colSpan={6} className="py-16 text-center text-slate-500">
+                    <Shield className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="font-semibold text-sm text-slate-800">No security officers found</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Enroll a new guard or clear active filters.
                     </p>
                   </td>
                 </tr>
               ) : (
-                filteredGuards.map((g) => {
-                  const isActive = g.account_status === 'ACTIVE';
+                filteredGuards.map((guard) => {
+                  const isActive = guard.account_status === 'ACTIVE';
 
                   return (
                     <tr
-                      key={g.id}
-                      onClick={() => setSelectedGuard(g)}
-                      className="hover:bg-background-secondary/50 cursor-pointer transition-colors"
+                      key={guard.id}
+                      onClick={() => setSelectedGuard(guard)}
+                      className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
                     >
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="font-mono font-bold text-gatewise-primary bg-gatewise-light px-2.5 py-1 rounded-md border border-gatewise-mint">
-                          {g.employee_id}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80 tabular-nums">
+                          {guard.employee_id}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <div className="font-bold text-gatewise-text">{g.full_name}</div>
-                        <div className="text-[10px] text-gatewise-secondary font-mono">{g.role}</div>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <div className="font-semibold text-slate-900">{guard.full_name}</div>
+                        {guard.email && <div className="text-[10px] text-slate-500">{guard.email}</div>}
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="font-mono text-gatewise-text">{g.email || 'None on record'}</span>
-                      </td>
-
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        {g.assigned_gate ? (
-                          <div className="flex items-center space-x-1.5">
-                            <DoorClosed className="w-3.5 h-3.5 text-gatewise-primary" />
-                            <span className="font-semibold text-gatewise-text">{g.assigned_gate.code} — {g.assigned_gate.name}</span>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        {guard.assigned_gate ? (
+                          <div className="flex items-center space-x-1.5 text-teal-800 font-semibold">
+                            <DoorClosed className="w-3.5 h-3.5 text-teal-600" />
+                            <span>{guard.assigned_gate.name}</span>
                           </div>
                         ) : (
-                          <span className="text-gatewise-secondary italic">Unassigned</span>
+                          <span className="text-slate-400 italic">Unassigned</span>
                         )}
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            isActive
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-rose-50 text-rose-700 border border-rose-200'
-                          }`}
-                        >
-                          {g.account_status}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className="text-slate-700 font-mono text-[11px]">
+                          {guard.assigned_gate?.shift || 'Standby'}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end space-x-1.5" onClick={(e) => e.stopPropagation()}>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono ${
+                            isActive
+                              ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20'
+                              : 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                          <span>{guard.account_status}</span>
+                        </span>
+                      </td>
+
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end space-x-1.5">
                           <button
-                            onClick={() => handleToggleStatus(g)}
-                            disabled={actionLoading === g.id}
-                            className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition-all ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStatus(guard);
+                            }}
+                            disabled={actionLoading === guard.id}
+                            className={`px-2.5 py-1 text-xs font-semibold rounded-lg border transition-all ${
                               isActive
                                 ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
                                 : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
@@ -325,15 +331,14 @@ export default function GuardManagementPage() {
                           >
                             {isActive ? 'Suspend' : 'Activate'}
                           </button>
-
                           <button
-                            onClick={() => handleRevokeSessions(g.id)}
-                            disabled={actionLoading === g.id}
-                            className="px-2 py-1 text-xs font-semibold rounded-lg border border-gatewise-border bg-white text-gatewise-secondary hover:text-gatewise-text transition-all"
-                            title="Revoke active mobile sessions"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedGuard(guard);
+                            }}
+                            className="px-2 py-1 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 transition-all shadow-2xs"
                           >
-                            <LogOut className="w-3.5 h-3.5 inline mr-1" />
-                            Revoke
+                            Details
                           </button>
                         </div>
                       </td>
@@ -346,102 +351,90 @@ export default function GuardManagementPage() {
         </div>
       </div>
 
-      {/* Guard Detail Drawer */}
+      {/* Guard Detail Modal */}
       {selectedGuard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
-                    {selectedGuard.full_name}
+                  <h3 className="text-base font-bold text-slate-900">
+                    Security Officer Dossier
                   </h3>
-                  <div className="text-xs font-mono text-gatewise-secondary">
-                    {selectedGuard.employee_id} • {selectedGuard.role}
+                  <div className="text-xs font-mono text-slate-500 tabular-nums">
+                    {selectedGuard.employee_id} • {selectedGuard.full_name}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedGuard(null)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-6 space-y-5">
-              <div className="p-4 rounded-2xl bg-background-secondary/50 border border-gatewise-border space-y-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                  Account Details
-                </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Employee ID</span>
-                    <span className="font-mono font-bold text-gatewise-text">{selectedGuard.employee_id}</span>
+                    <span className="text-[10px] text-slate-400 block">Officer Name</span>
+                    <span className="font-bold text-slate-900">{selectedGuard.full_name}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Account Status</span>
-                    <span className={`font-bold ${selectedGuard.account_status === 'ACTIVE' ? 'text-emerald-700' : 'text-rose-700'}`}>
-                      {selectedGuard.account_status}
-                    </span>
+                    <span className="text-[10px] text-slate-400 block">Employee ID</span>
+                    <span className="font-mono font-bold text-slate-900">{selectedGuard.employee_id}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Email</span>
-                    <span className="font-mono text-gatewise-text">{selectedGuard.email || 'None on record'}</span>
+                    <span className="text-[10px] text-slate-400 block">Email Address</span>
+                    <span className="font-mono text-slate-700">{selectedGuard.email || 'N/A'}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Current Station</span>
-                    <span className="font-semibold text-gatewise-text">
-                      {selectedGuard.assigned_gate ? selectedGuard.assigned_gate.name : 'Unassigned'}
-                    </span>
+                    <span className="text-[10px] text-slate-400 block">Current Status</span>
+                    <span className="font-semibold text-emerald-700">{selectedGuard.account_status}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block">Assigned Gate</span>
+                    <span className="font-semibold text-teal-800">{selectedGuard.assigned_gate?.name || 'Unassigned'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block">Shift Roster</span>
+                    <span className="font-mono text-slate-700">{selectedGuard.assigned_gate?.shift || 'Standby'}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Terminal Security Policy */}
-              <div className="p-4 rounded-2xl border border-gatewise-border space-y-2 text-xs">
-                <div className="flex items-center space-x-1.5 font-bold text-gatewise-text">
-                  <Lock className="w-4 h-4 text-gatewise-primary" />
-                  <span>Terminal Access Security</span>
+              {/* Session Security */}
+              <div className="p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                  <span className="flex items-center space-x-1.5">
+                    <Key className="w-4 h-4 text-teal-600" />
+                    <span>Mobile Device Session Management</span>
+                  </span>
                 </div>
-                <p className="text-xs text-gatewise-secondary leading-relaxed">
-                  Security guards possess sovereign verification decision authority at perimeter checkpoints. All gate events are signed with the guard's HMAC token.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Active JWT tokens issued to this guard for Android Gatewise Guard terminals can be revoked instantly in case of device loss or security compromise.
                 </p>
+                <button
+                  onClick={() => handleRevokeSessions(selectedGuard.id)}
+                  disabled={actionLoading === selectedGuard.id}
+                  className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition-all"
+                >
+                  Revoke All Mobile Sessions
+                </button>
               </div>
             </div>
 
-            {/* Modal Actions */}
-            <div className="p-4 bg-background-secondary/60 border-t border-gatewise-border flex items-center justify-between">
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
               <button
-                type="button"
                 onClick={() => setSelectedGuard(null)}
-                className="px-4 py-2 rounded-xl border border-gatewise-border text-xs font-semibold text-gatewise-secondary hover:bg-white transition-colors"
+                className="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs"
               >
-                Close
+                Close Dossier
               </button>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleToggleStatus(selectedGuard)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    selectedGuard.account_status === 'ACTIVE'
-                      ? 'bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100'
-                      : 'bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100'
-                  }`}
-                >
-                  {selectedGuard.account_status === 'ACTIVE' ? 'Suspend Access' : 'Activate Access'}
-                </button>
-
-                <button
-                  onClick={() => handleRevokeSessions(selectedGuard.id)}
-                  className="px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-gatewise-text text-xs font-bold hover:bg-background-secondary transition-all"
-                >
-                  Revoke Device
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -450,24 +443,24 @@ export default function GuardManagementPage() {
       {/* Enroll Guard Modal */}
       {isInviteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
-                    Enroll Security Guard
+                  <h3 className="text-base font-bold text-slate-900">
+                    Enroll Security Officer
                   </h3>
-                  <p className="text-xs text-gatewise-secondary">
-                    Create credentials for the Android mobile application.
+                  <p className="text-xs text-slate-500">
+                    Create credentials for Android mobile guard terminal.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsInviteModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -481,7 +474,7 @@ export default function GuardManagementPage() {
               )}
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
+                <label className="block text-slate-700 font-semibold mb-1">
                   Employee ID *
                 </label>
                 <input
@@ -490,72 +483,66 @@ export default function GuardManagementPage() {
                   placeholder="e.g. GRD-004"
                   value={inviteForm.employee_id}
                   onChange={(e) => setInviteForm({ ...inviteForm, employee_id: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border font-mono text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Full Legal Name *
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Full Officer Name *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Marcus Vance"
+                  placeholder="e.g. Inspector Ramesh Patra"
                   value={inviteForm.full_name}
                   onChange={(e) => setInviteForm({ ...inviteForm, full_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Official Email *
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Institutional Email *
                 </label>
                 <input
                   type="email"
                   required
-                  placeholder="e.g. m.vance@security.institution.edu"
+                  placeholder="ramesh@security.apex.edu"
                   value={inviteForm.email}
                   onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border font-mono text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Initial Password (Optional)
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Initial Passcode / Secret *
                 </label>
                 <input
                   type="password"
-                  placeholder="Leave blank for default institutional password"
+                  required
+                  placeholder="••••••••••••"
                   value={inviteForm.password}
                   onChange={(e) => setInviteForm({ ...inviteForm, password: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border font-mono text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-mono"
                 />
               </div>
 
-              <div className="pt-4 border-t border-gatewise-border flex items-center justify-end space-x-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsInviteModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-gatewise-border text-gatewise-secondary font-semibold hover:bg-background-secondary transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gatewise-primary text-white font-bold hover:bg-gatewise-deep transition-all shadow-xs flex items-center space-x-1.5"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-teal-800 text-white hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <span>Register Officer</span>
-                  )}
+                  {isSubmitting ? 'Enrolling...' : 'Enroll Officer'}
                 </button>
               </div>
             </form>

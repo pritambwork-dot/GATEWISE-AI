@@ -7,7 +7,7 @@ import {
   ShieldCheck, LayoutDashboard, Activity, Users, UserPlus,
   DoorClosed, Shield, Database, BarChart3, Settings, LogOut,
   Bell, Search, ChevronRight, CheckCircle2, AlertTriangle, Info,
-  ExternalLink, Menu, X, ChevronDown, RefreshCw
+  ExternalLink, Menu, X, ChevronDown, RefreshCw, Command, Sparkles
 } from 'lucide-react';
 import { AuthProvider, useAuth } from '@/lib/contexts/auth-context';
 import { api } from '@/lib/services/api';
@@ -58,12 +58,16 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showAssistant, setShowAssistant] = useState(false);
 
-  // Keyboard shortcut Cmd+K or Ctrl+/ for AI Assistant
+  // Keyboard shortcut Cmd+K for AI Assistant and Cmd+B for Sidebar toggle
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
         setShowAssistant((prev) => !prev);
+      }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'b' || e.key === 'B')) {
+        e.preventDefault();
+        setCollapsed((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -78,7 +82,6 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         setNotifications(items);
         setUnreadCount(items.filter((n) => !n.is_read).length);
       } catch {
-        // Fallback notifications if endpoint unauthenticated
         setNotifications([
           {
             id: 'n-1',
@@ -114,251 +117,230 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     setUnreadCount(0);
   };
 
-  // Find current breadcrumb title
   const currentNav = NAV_GROUPS.flatMap((g) => g.items).find((item) => item.href === pathname);
   const pageTitle = currentNav?.label || 'Command Centre';
 
   return (
-    <div className="min-h-screen flex bg-background text-gatewise-text antialiased">
-      {/* Desktop Sidebar Navigation */}
+    <div className="min-h-screen flex bg-background text-gatewise-text antialiased selection:bg-gatewise-light selection:text-gatewise-deep">
+      {/* Desktop macOS-Style Refined Sidebar */}
       <aside
         className={`${
-          collapsed ? 'w-20' : 'w-64'
-        } bg-white border-r border-gatewise-border flex flex-col justify-between shrink-0 transition-all duration-200 z-30`}
+          collapsed ? 'w-[72px]' : 'w-64'
+        } bg-white border-r border-black/[0.07] flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none shadow-[1px_0_12px_rgba(0,0,0,0.02)]`}
       >
         <div className="flex flex-col h-full">
-          {/* Brand Header */}
-          <div className="p-4 border-b border-gatewise-border flex items-center justify-between">
+          {/* Brand & Compact Workspace Header */}
+          <div className="h-16 px-4 border-b border-black/[0.06] flex items-center justify-between">
             <Link href="/admin" className="flex items-center space-x-2.5 overflow-hidden">
-              <div className="w-9 h-9 rounded-xl bg-gatewise-primary flex items-center justify-center text-white shrink-0 shadow-sm">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="w-8 h-8 rounded-xl bg-gatewise-primary flex items-center justify-center text-white shrink-0 shadow-2xs">
+                <ShieldCheck className="w-4 h-4" />
               </div>
               {!collapsed && (
                 <div className="truncate">
-                  <span className="font-extrabold text-sm text-gatewise-text tracking-tight">
-                    GATEWISE<span className="text-gatewise-primary ml-0.5">AI</span>
-                  </span>
-                  <span className="block text-[10px] text-gatewise-secondary font-medium uppercase tracking-wider">
-                    IIM Sambalpur
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-extrabold text-sm text-gatewise-text tracking-tight">
+                      GATEWISE<span className="text-gatewise-primary ml-0.5">AI</span>
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-800 text-[9px] font-mono font-bold border border-emerald-200">
+                      ADMIN
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-gatewise-secondary font-medium block -mt-0.5">
+                    IIM Sambalpur Ops
                   </span>
                 </div>
               )}
             </Link>
+
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="text-gatewise-secondary hover:text-gatewise-text p-1.5 rounded-lg hover:bg-background-secondary transition-colors"
-              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              className="p-1.5 rounded-lg text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.04] transition-colors"
+              title={collapsed ? 'Expand sidebar (Cmd+B)' : 'Collapse sidebar (Cmd+B)'}
             >
               <Menu className="w-4 h-4" />
             </button>
           </div>
 
           {/* Navigation Links Grouped */}
-          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+          <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6 custom-scroll">
             {NAV_GROUPS.map((group) => (
               <div key={group.title} className="space-y-1">
                 {!collapsed && (
-                  <h3 className="px-3 text-[10px] font-bold text-gatewise-secondary/70 tracking-wider uppercase mb-1">
+                  <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-gatewise-secondary/70">
                     {group.title}
-                  </h3>
+                  </span>
                 )}
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                        isActive
-                          ? 'bg-gatewise-light text-gatewise-deep font-bold shadow-xs'
-                          : 'text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary'
-                      }`}
-                      title={collapsed ? item.label : undefined}
-                    >
-                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-gatewise-primary' : 'text-gatewise-secondary/70'}`} />
-                      {!collapsed && <span className="truncate">{item.label}</span>}
-                    </Link>
-                  );
-                })}
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex items-center ${
+                          collapsed ? 'justify-center px-0' : 'space-x-3 px-3'
+                        } py-2 rounded-xl text-xs font-semibold transition-all ${
+                          isActive
+                            ? 'bg-gatewise-light text-gatewise-deep shadow-2xs font-bold'
+                            : 'text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.03]'
+                        }`}
+                        title={collapsed ? item.label : undefined}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-gatewise-primary' : 'text-gatewise-secondary'}`} />
+                        {!collapsed && <span className="truncate">{item.label}</span>}
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             ))}
-          </div>
+          </nav>
 
-          {/* User Profile & Actions Footer */}
-          <div className="p-3 border-t border-gatewise-border space-y-2 bg-white">
-            <div
-              className={`p-2.5 rounded-xl bg-background-secondary border border-gatewise-border flex items-center ${
-                collapsed ? 'justify-center' : 'space-x-2.5'
-              }`}
-            >
-              <div className="w-8 h-8 rounded-full bg-gatewise-primary/10 border border-gatewise-primary/20 flex items-center justify-center text-gatewise-primary font-bold text-xs shrink-0 overflow-hidden">
-                {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
-                ) : (
-                  <span>{user?.full_name?.charAt(0) || 'A'}</span>
-                )}
-              </div>
+          {/* Bottom Sidebar Footer: Quick Assistant & Sign Out */}
+          <div className="p-3 border-t border-black/[0.06] space-y-2">
+            {!collapsed && (
+              <button
+                onClick={() => setShowAssistant(true)}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-gatewise-light/60 hover:bg-gatewise-light border border-gatewise-mint text-xs font-bold text-gatewise-deep transition-all shadow-2xs"
+              >
+                <div className="flex items-center space-x-2">
+                  <Sparkles className="w-3.5 h-3.5 text-gatewise-primary" />
+                  <span>AI Assistant</span>
+                </div>
+                <kbd className="px-1.5 py-0.5 rounded bg-white/80 text-[10px] font-mono text-gatewise-secondary border border-black/[0.08]">
+                  ⌘K
+                </kbd>
+              </button>
+            )}
+
+            <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} p-1`}>
               {!collapsed && (
-                <div className="min-w-0 flex-1">
-                  <span className="font-bold text-xs text-gatewise-text block truncate">
-                    {user?.full_name || 'Dr. Rajesh Iyer'}
-                  </span>
-                  <span className="text-[10px] text-gatewise-secondary block truncate">
-                    {user?.role === 'SUPER_ADMIN' ? 'Super Administrator' : 'Chief Security Officer'} · {user?.employee_id || 'ADM-001'}
-                  </span>
+                <div className="flex items-center space-x-2 min-w-0">
+                  <div className="w-7 h-7 rounded-full bg-gatewise-primary/10 text-gatewise-primary flex items-center justify-center font-bold text-xs shrink-0">
+                    {user?.full_name ? user.full_name[0] : 'A'}
+                  </div>
+                  <div className="truncate">
+                    <span className="text-xs font-bold text-gatewise-text block truncate leading-tight">
+                      {user?.full_name || 'Administrator'}
+                    </span>
+                    <span className="text-[10px] text-gatewise-secondary truncate block">
+                      {user?.role || 'SUPER_ADMIN'}
+                    </span>
+                  </div>
                 </div>
               )}
-            </div>
-
-            <div className="flex items-center space-x-1">
-              <Link
-                href="/"
-                className="flex items-center justify-center space-x-1 flex-1 py-1.5 rounded-lg border border-gatewise-border text-[11px] font-semibold text-gatewise-secondary hover:bg-background-secondary transition-colors"
-                title="View public website"
-              >
-                {!collapsed && <span>Public Portal</span>}
-                <ExternalLink className="w-3 h-3" />
-              </Link>
               <button
-                onClick={() => logout()}
-                className="p-1.5 rounded-lg border border-gatewise-border text-gatewise-secondary hover:text-gatewise-error hover:bg-rose-50 transition-colors"
-                title="Log out"
+                onClick={logout}
+                className="p-1.5 rounded-lg text-gatewise-secondary hover:text-red-600 hover:bg-red-50 transition-colors"
+                title="Sign Out"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main Administrative Workspace */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* Top Operational Navigation Bar */}
-        <header className="h-16 bg-white border-b border-gatewise-border px-8 flex items-center justify-between sticky top-0 z-20 shadow-xs">
-          {/* Breadcrumbs & Status */}
-          <div className="flex items-center space-x-4 min-w-0">
-            <div className="flex items-center space-x-2 text-xs text-gatewise-secondary">
-              <span className="font-semibold text-gatewise-secondary/70">Admin</span>
-              <ChevronRight className="w-3.5 h-3.5 text-gatewise-secondary/40" />
-              <span className="font-bold text-gatewise-text">{pageTitle}</span>
-            </div>
-            <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-[11px] text-emerald-800 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Campus Network: Encrypted (TLS 1.3)</span>
-            </div>
+      {/* Main Administrative Surface Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Header Bar */}
+        <header className="h-16 bg-white/90 backdrop-blur-xl border-b border-black/[0.07] px-4 sm:px-8 flex items-center justify-between shrink-0 sticky top-0 z-20">
+          {/* Breadcrumb Navigation */}
+          <div className="flex items-center space-x-2 text-xs">
+            <span className="text-gatewise-secondary font-medium">GATEWISE AI</span>
+            <span className="text-gatewise-secondary/40">/</span>
+            <span className="text-gatewise-secondary font-medium">Operations</span>
+            <span className="text-gatewise-secondary/40">/</span>
+            <span className="font-bold text-gatewise-text">{pageTitle}</span>
           </div>
 
-          {/* Right Controls: Notifications, Search, Node ID */}
+          {/* Right Action Tools */}
           <div className="flex items-center space-x-3">
-            {/* Quick Filter Search */}
-            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-background border border-gatewise-border text-xs text-gatewise-secondary w-56 focus-within:border-gatewise-primary focus-within:ring-1 focus-within:ring-gatewise-primary transition-all">
-              <Search className="w-3.5 h-3.5 text-gatewise-secondary/60 shrink-0" />
-              <input
-                type="text"
-                placeholder="Search events, ID, staff..."
-                className="bg-transparent border-none outline-none w-full text-xs text-gatewise-text placeholder:text-gatewise-secondary/60"
-              />
+            {/* Live Telemetry Heartbeat Pill */}
+            <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-mono font-semibold border border-emerald-200">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>NODE N-01 • ACTIVE 24FPS</span>
             </div>
 
-            {/* AI Assistant Co-Pilot Trigger */}
-            <AssistantTriggerButton
-              isOpen={showAssistant}
-              onClick={() => setShowAssistant(!showAssistant)}
-            />
+            {/* Quick Search Launcher */}
+            <button
+              onClick={() => setShowAssistant(true)}
+              className="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-black/[0.03] hover:bg-black/[0.06] text-gatewise-secondary text-xs transition-colors border border-black/[0.04]"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Search operations or query AI...</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white text-[10px] font-mono border border-black/[0.06]">
+                ⌘K
+              </kbd>
+            </button>
 
-            {/* Notification Centre Button & Popover */}
+            {/* Notifications Popover Trigger */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 rounded-xl border border-gatewise-border text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-colors"
-                title="Notification Centre"
+                className="p-2 rounded-xl text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.04] transition-colors relative"
+                title="System Notifications"
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gatewise-error text-white font-bold text-[9px] flex items-center justify-center border-2 border-white">
-                    {unreadCount}
-                  </span>
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500" />
                 )}
               </button>
 
-              {/* Notification Popover Drawer */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gatewise-border p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="flex items-center justify-between pb-3 border-b border-gatewise-border">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold text-xs text-gatewise-text">Operational Notifications</span>
-                      {unreadCount > 0 && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gatewise-error/10 text-gatewise-error">
-                          {unreadCount} new
-                        </span>
-                      )}
-                    </div>
-                    {unreadCount > 0 && (
-                      <button
-                        onClick={markAllRead}
-                        className="text-[11px] font-semibold text-gatewise-primary hover:underline"
-                      >
-                        Mark all read
-                      </button>
-                    )}
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-black/[0.08] ss-card-shadow p-4 space-y-3 z-50 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between pb-2 border-b border-black/[0.06]">
+                    <span className="text-xs font-bold text-gatewise-text">Operational Notifications</span>
+                    <button
+                      onClick={markAllRead}
+                      className="text-[10px] text-gatewise-primary hover:underline font-semibold"
+                    >
+                      Mark all read
+                    </button>
                   </div>
-
-                  <div className="py-2 max-h-80 overflow-y-auto space-y-2 divide-y divide-gatewise-border/40">
-                    {notifications.length === 0 ? (
-                      <div className="py-8 text-center text-xs text-gatewise-secondary">
-                        No notifications at this time. All gate systems normal.
-                      </div>
-                    ) : (
-                      notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          className={`pt-2.5 pb-1 flex items-start space-x-2.5 cursor-pointer hover:bg-background-secondary/60 p-2 rounded-xl transition-colors ${
-                            !n.is_read ? 'bg-emerald-50/40' : ''
-                          }`}
-                          onClick={() => {
-                            setShowNotifications(false);
-                            router.push(n.target_url);
-                          }}
-                        >
-                          <div className="mt-0.5 shrink-0">
-                            {n.severity === 'ERROR' ? (
-                              <AlertTriangle className="w-4 h-4 text-gatewise-error" />
-                            ) : n.severity === 'WARNING' ? (
-                              <AlertTriangle className="w-4 h-4 text-gatewise-warning" />
-                            ) : (
-                              <Info className="w-4 h-4 text-gatewise-teal" />
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <span className="font-bold text-xs text-gatewise-text block truncate">{n.title}</span>
-                            <p className="text-[11px] text-gatewise-secondary line-clamp-2 mt-0.5">{n.message}</p>
-                            <span className="text-[10px] text-gatewise-secondary/70 font-mono mt-1 block">
-                              {new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`p-2.5 rounded-xl text-xs space-y-1 transition-colors ${
+                          n.is_read ? 'bg-black/[0.02]' : 'bg-emerald-50/50 border border-emerald-100'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-gatewise-text">{n.title}</span>
+                          <span className="text-[10px] text-gatewise-secondary font-mono">
+                            {new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
-                      ))
-                    )}
+                        <p className="text-[11px] text-gatewise-secondary leading-snug">{n.message}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Node ID Badge */}
-            <span className="hidden lg:inline-block text-[11px] font-mono px-2.5 py-1 rounded-lg bg-gatewise-light text-gatewise-deep font-bold border border-gatewise-primary/20">
-              Node: IIM-SAMBALPUR-PROD
-            </span>
+            {/* Direct Link to Public Portal */}
+            <Link
+              href="/"
+              target="_blank"
+              className="p-2 rounded-xl text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.04] transition-colors"
+              title="Open Public Website in new tab"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Link>
           </div>
         </header>
 
-        {/* Content Body */}
-        <main className="p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
+        {/* Page Viewport Surface with Room to Breathe */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-8">
           {children}
         </main>
       </div>
 
-      {/* Slide-Over AI Operations Assistant */}
+      {/* Floating Assistant Trigger & Side Panel */}
       <AssistantSidePanel
         isOpen={showAssistant}
         onClose={() => setShowAssistant(false)}

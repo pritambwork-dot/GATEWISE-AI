@@ -151,26 +151,26 @@ export default function GateManagementPage() {
   const totalScans = gates.reduce((acc, g) => acc + (g.today_scans_count || 0), 0);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gatewise-text tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Perimeter Gate & Terminal Management
           </h1>
-          <p className="text-xs text-gatewise-secondary mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Configure physical checkpoints, monitor terminal online health, and dispatch sovereign guards on duty.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           <button
             onClick={loadData}
             disabled={isLoading}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-xs font-semibold text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-all shadow-xs"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-gatewise-primary' : ''}`} />
-            <span>Sync Gates</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
+            <span className="hidden sm:inline">Sync Gates</span>
           </button>
 
           <button
@@ -178,7 +178,7 @@ export default function GateManagementPage() {
               setErrorMsg('');
               setIsCreateModalOpen(true);
             }}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-gatewise-primary text-white text-xs font-bold hover:bg-gatewise-deep transition-all shadow-xs"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-all shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Gate Station</span>
@@ -188,40 +188,40 @@ export default function GateManagementPage() {
 
       {/* Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Total Checkpoints</span>
-            <DoorClosed className="w-4 h-4 text-gatewise-primary" />
+            <DoorClosed className="w-4 h-4 text-teal-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{totalGates}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Configured perimeter posts</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{totalGates}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Configured perimeter posts</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Online & Active</span>
-            <CheckCircle2 className="w-4 h-4 text-gatewise-success" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{activeGates}</div>
-          <span className="text-[10px] text-gatewise-success font-medium mt-0.5 block">Operational telemetry live</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{activeGates}</div>
+          <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Operational telemetry live</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
-            <span>Under Maintenance</span>
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
+            <span>Maintenance</span>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{maintenanceGates}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Diagnostics in progress</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{maintenanceGates}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Diagnostics in progress</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Today's Total Scans</span>
-            <Activity className="w-4 h-4 text-gatewise-teal" />
+            <Activity className="w-4 h-4 text-cyan-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{totalScans}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Across all active gates</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{totalScans}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Across all active gates</span>
         </div>
       </div>
 
@@ -234,21 +234,21 @@ export default function GateManagementPage() {
           return (
             <div
               key={gate.id}
-              className="p-5 rounded-2xl bg-white border border-gatewise-border shadow-xs hover:border-gatewise-primary/40 transition-all flex flex-col justify-between"
+              className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.05)] transition-all flex flex-col justify-between"
             >
               <div>
                 {/* Status & Code */}
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-black text-gatewise-primary bg-gatewise-light px-2.5 py-1 rounded-lg border border-gatewise-mint">
+                  <span className="font-mono text-xs font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 tabular-nums">
                     {gate.code}
                   </span>
                   <span
-                    className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono ${
                       isActive
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20'
                         : isMaintenance
-                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                        : 'bg-rose-50 text-rose-700 border border-rose-200'
+                        ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20'
+                        : 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
                     }`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
@@ -257,32 +257,32 @@ export default function GateManagementPage() {
                 </div>
 
                 {/* Gate Name & Location */}
-                <h3 className="text-base font-black text-gatewise-text mt-3">
+                <h3 className="text-base font-bold text-slate-900 mt-3">
                   {gate.name}
                 </h3>
-                <div className="flex items-center space-x-1.5 text-xs text-gatewise-secondary mt-1">
-                  <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <div className="flex items-center space-x-1.5 text-xs text-slate-500 mt-1">
+                  <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400" />
                   <span>{gate.location}</span>
                 </div>
-                <div className="flex items-center space-x-1.5 text-[11px] text-gatewise-secondary mt-1 font-mono">
+                <div className="flex items-center space-x-1.5 text-[11px] text-slate-400 mt-1 font-mono tabular-nums">
                   <Clock className="w-3 h-3 shrink-0" />
                   <span>{gate.operating_hours || '24/7 Operations'}</span>
                 </div>
 
                 {/* Assigned Guard Box */}
-                <div className="mt-4 p-3 rounded-xl bg-background-secondary/60 border border-gatewise-border">
-                  <span className="text-[10px] uppercase font-bold text-gatewise-secondary tracking-wider block">
-                    Guard on Duty
+                <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider block">
+                    Officer on Duty
                   </span>
                   <div className="flex items-center justify-between mt-1">
                     <div className="flex items-center space-x-2">
-                      <ShieldCheck className="w-4 h-4 text-gatewise-primary" />
-                      <span className="text-xs font-bold text-gatewise-text">
+                      <ShieldCheck className="w-4 h-4 text-teal-600" />
+                      <span className="text-xs font-semibold text-slate-800">
                         {gate.active_guard_name || 'Station Unassigned'}
                       </span>
                     </div>
                     {gate.active_guard_employee_id && (
-                      <span className="text-[10px] font-mono text-gatewise-secondary bg-white px-2 py-0.5 rounded border border-gatewise-border">
+                      <span className="text-[10px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 tabular-nums">
                         {gate.active_guard_employee_id}
                       </span>
                     )}
@@ -290,36 +290,36 @@ export default function GateManagementPage() {
                 </div>
 
                 {/* Today's Scan Stats */}
-                <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-gatewise-border text-center">
+                <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100 text-center">
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Scans</span>
-                    <span className="font-mono font-bold text-gatewise-text text-xs">{gate.today_scans_count || 0}</span>
+                    <span className="text-[10px] text-slate-400 block">Scans</span>
+                    <span className="font-mono font-bold text-slate-800 text-xs tabular-nums">{gate.today_scans_count || 0}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-success block">Admitted</span>
-                    <span className="font-mono font-bold text-gatewise-success text-xs">{gate.today_verified_count || 0}</span>
+                    <span className="text-[10px] text-emerald-600 block">Admitted</span>
+                    <span className="font-mono font-bold text-emerald-600 text-xs tabular-nums">{gate.today_verified_count || 0}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Exceptions</span>
-                    <span className="font-mono font-bold text-gatewise-text text-xs">{gate.today_denied_count || 0}</span>
+                    <span className="text-[10px] text-slate-400 block">Exceptions</span>
+                    <span className="font-mono font-bold text-slate-800 text-xs tabular-nums">{gate.today_denied_count || 0}</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-2 mt-5 pt-3 border-t border-gatewise-border">
+              <div className="grid grid-cols-2 gap-2 mt-5 pt-3 border-t border-slate-100">
                 <button
                   onClick={() => openAssignModal(gate)}
-                  className="px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-xs font-bold text-gatewise-text hover:bg-background-secondary transition-colors flex items-center justify-center space-x-1"
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-center space-x-1"
                 >
-                  <UserCheck className="w-3.5 h-3.5 text-gatewise-primary" />
+                  <UserCheck className="w-3.5 h-3.5 text-teal-600" />
                   <span>Assign</span>
                 </button>
                 <button
                   onClick={() => openEditModal(gate)}
-                  className="px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-xs font-bold text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-colors flex items-center justify-center space-x-1"
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors flex items-center justify-center space-x-1"
                 >
-                  <Settings className="w-3.5 h-3.5" />
+                  <Settings className="w-3.5 h-3.5 text-slate-400" />
                   <span>Configure</span>
                 </button>
               </div>
@@ -331,24 +331,24 @@ export default function GateManagementPage() {
       {/* Create Gate Modal */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <Plus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
+                  <h3 className="text-base font-bold text-slate-900">
                     Add Perimeter Gate Station
                   </h3>
-                  <p className="text-xs text-gatewise-secondary">
+                  <p className="text-xs text-slate-500">
                     Register a physical checkpoint post into the campus network.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -363,7 +363,7 @@ export default function GateManagementPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
+                  <label className="block text-slate-700 font-semibold mb-1">
                     Gate Code *
                   </label>
                   <input
@@ -372,17 +372,17 @@ export default function GateManagementPage() {
                     placeholder="e.g. GATE-04"
                     value={createForm.gate_code}
                     onChange={(e) => setCreateForm({ ...createForm, gate_code: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border font-mono text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
+                  <label className="block text-slate-700 font-semibold mb-1">
                     Initial Status *
                   </label>
                   <select
                     value={createForm.status}
                     onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
                   >
                     <option value="ACTIVE">ACTIVE</option>
                     <option value="MAINTENANCE">MAINTENANCE</option>
@@ -392,67 +392,60 @@ export default function GateManagementPage() {
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
+                <label className="block text-slate-700 font-semibold mb-1">
                   Gate Display Name *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Science Complex Gate"
+                  placeholder="e.g. North Perimeter Entrance"
                   value={createForm.gate_name}
                   onChange={(e) => setCreateForm({ ...createForm, gate_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Campus Location / Sector *
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Physical Campus Location *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. West Campus, Engineering Block A"
+                  placeholder="e.g. Highway 49 Access Road"
                   value={createForm.location}
                   onChange={(e) => setCreateForm({ ...createForm, location: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
+                <label className="block text-slate-700 font-semibold mb-1">
                   Operating Hours
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. 24/7 Operations or 06:00 - 22:00"
+                  placeholder="24/7 Operations or 06:00 - 22:00"
                   value={createForm.operating_hours}
                   onChange={(e) => setCreateForm({ ...createForm, operating_hours: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
-              <div className="pt-4 border-t border-gatewise-border flex items-center justify-end space-x-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-gatewise-border text-gatewise-secondary font-semibold hover:bg-background-secondary transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gatewise-primary text-white font-bold hover:bg-gatewise-deep transition-all shadow-xs flex items-center space-x-1.5"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-teal-800 text-white hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <span>Register Gate</span>
-                  )}
+                  {isSubmitting ? 'Creating...' : 'Create Gate Station'}
                 </button>
               </div>
             </form>
@@ -463,24 +456,24 @@ export default function GateManagementPage() {
       {/* Assign Guard Modal */}
       {isAssignModalOpen && selectedGate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <UserCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
-                    Assign Guard to Station
+                  <h3 className="text-base font-bold text-slate-900">
+                    Assign Guard to Post
                   </h3>
-                  <p className="text-xs text-gatewise-secondary">
-                    {selectedGate.code} — {selectedGate.name}
+                  <p className="text-xs text-slate-500">
+                    Station: {selectedGate.name} ({selectedGate.code})
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsAssignModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -494,13 +487,14 @@ export default function GateManagementPage() {
               )}
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Select Security Guard *
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Select Active Guard Officer *
                 </label>
                 <select
+                  required
                   value={assignForm.guard_id}
                   onChange={(e) => setAssignForm({ ...assignForm, guard_id: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
                 >
                   <option value="">Select an active guard...</option>
                   {guards.map((g) => (
@@ -512,41 +506,35 @@ export default function GateManagementPage() {
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Deployment Shift
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Assigned Shift
                 </label>
                 <select
                   value={assignForm.shift_name}
                   onChange={(e) => setAssignForm({ ...assignForm, shift_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
                 >
                   <option value="Morning Shift (06:00 - 14:00)">Morning Shift (06:00 - 14:00)</option>
-                  <option value="Day Shift (14:00 - 22:00)">Day Shift (14:00 - 22:00)</option>
+                  <option value="Afternoon Shift (14:00 - 22:00)">Afternoon Shift (14:00 - 22:00)</option>
                   <option value="Night Shift (22:00 - 06:00)">Night Shift (22:00 - 06:00)</option>
+                  <option value="General Daytime Shift (08:00 - 18:00)">General Daytime Shift (08:00 - 18:00)</option>
                 </select>
               </div>
 
-              <div className="pt-4 border-t border-gatewise-border flex items-center justify-end space-x-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsAssignModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-gatewise-border text-gatewise-secondary font-semibold hover:bg-background-secondary transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || !assignForm.guard_id}
-                  className="px-5 py-2 rounded-xl bg-gatewise-primary text-white font-bold hover:bg-gatewise-deep transition-all shadow-xs flex items-center space-x-1.5 disabled:opacity-50"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-teal-800 text-white hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Assigning...</span>
-                    </>
-                  ) : (
-                    <span>Confirm Assignment</span>
-                  )}
+                  {isSubmitting ? 'Assigning...' : 'Assign Guard'}
                 </button>
               </div>
             </form>
@@ -554,27 +542,27 @@ export default function GateManagementPage() {
         </div>
       )}
 
-      {/* Configure Gate Modal */}
+      {/* Edit Gate Modal */}
       {isEditModalOpen && selectedGate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <Settings className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
-                    Configure Station: {selectedGate.code}
+                  <h3 className="text-base font-bold text-slate-900">
+                    Configure Checkpoint
                   </h3>
-                  <p className="text-xs text-gatewise-secondary">
-                    Update operational status and terminal metadata.
+                  <p className="text-xs text-slate-500 font-mono">
+                    {selectedGate.code}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -588,77 +576,73 @@ export default function GateManagementPage() {
               )}
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Operational Status *
-                </label>
-                <select
-                  value={editForm.status}
-                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
-                >
-                  <option value="ACTIVE">ACTIVE (Fully Operational)</option>
-                  <option value="MAINTENANCE">MAINTENANCE (Offline for Servicing)</option>
-                  <option value="OFFLINE">OFFLINE (Terminal Decommissioned)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Gate Display Name
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Gate Display Name *
                 </label>
                 <input
                   type="text"
+                  required
                   value={editForm.gate_name}
                   onChange={(e) => setEditForm({ ...editForm, gate_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
               <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Campus Location
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Physical Campus Location *
                 </label>
                 <input
                   type="text"
+                  required
                   value={editForm.location}
                   onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
               </div>
 
-              <div>
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                  Operating Hours
-                </label>
-                <input
-                  type="text"
-                  value={editForm.operating_hours}
-                  onChange={(e) => setEditForm({ ...editForm, operating_hours: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    Operating Hours
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.operating_hours}
+                    onChange={(e) => setEditForm({ ...editForm, operating_hours: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    Station Status
+                  </label>
+                  <select
+                    value={editForm.status}
+                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="MAINTENANCE">MAINTENANCE</option>
+                    <option value="OFFLINE">OFFLINE</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="pt-4 border-t border-gatewise-border flex items-center justify-end space-x-2">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-gatewise-border text-gatewise-secondary font-semibold hover:bg-background-secondary transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gatewise-primary text-white font-bold hover:bg-gatewise-deep transition-all shadow-xs flex items-center space-x-1.5"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-teal-800 text-white hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <span>Save Changes</span>
-                  )}
+                  {isSubmitting ? 'Saving...' : 'Save Configuration'}
                 </button>
               </div>
             </form>

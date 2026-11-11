@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {
   FileCheck, CheckCircle2, XCircle, Clock, AlertCircle,
   Shield, UserCheck, RefreshCw, ChevronRight, X, MessageSquare,
-  Building, User, Filter, ArrowUpRight
+  Building, User, Filter, ArrowUpRight, Check, Eye
 } from 'lucide-react';
 import { api } from '@/lib/services/api';
 import { EnrollmentReferral } from '@/types';
@@ -23,6 +23,10 @@ export default function EnrollmentRequestsPage() {
     try {
       const data = await api.listEnrollmentRequests();
       setRequests(data);
+      if (data.length > 0 && !selectedRequest) {
+        setSelectedRequest(data[0]);
+        setAdminNotes(data[0].admin_notes || data[0].administrator_notes || '');
+      }
     } catch (err) {
       console.error('Failed to load enrollment requests:', err);
     } finally {
@@ -50,9 +54,8 @@ export default function EnrollmentRequestsPage() {
       setAdminNotes('');
       await loadRequests();
       setTimeout(() => {
-        setSelectedRequest(null);
         setActionMessage(null);
-      }, 1500);
+      }, 3000);
     } catch (err: any) {
       setActionMessage({ type: 'error', text: err.message || 'Failed to approve request' });
     } finally {
@@ -70,9 +73,8 @@ export default function EnrollmentRequestsPage() {
       setAdminNotes('');
       await loadRequests();
       setTimeout(() => {
-        setSelectedRequest(null);
         setActionMessage(null);
-      }, 1500);
+      }, 3000);
     } catch (err: any) {
       setActionMessage({ type: 'error', text: err.message || 'Failed to reject request' });
     } finally {
@@ -87,14 +89,14 @@ export default function EnrollmentRequestsPage() {
   const rejected = requests.filter(r => (r.status || r.request_status) === 'REJECTED').length;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gatewise-text tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Field Enrollment Referrals
           </h1>
-          <p className="text-xs text-gatewise-secondary mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Review and adjudicate identity enrollment referrals initiated by field security guards at perimeter checkpoints.
           </p>
         </div>
@@ -102,67 +104,67 @@ export default function EnrollmentRequestsPage() {
         <button
           onClick={loadRequests}
           disabled={isLoading}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-xs font-semibold text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-all shadow-xs self-start md:self-auto"
+          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-xs self-start md:self-auto"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-gatewise-primary' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
           <span>Refresh Queue</span>
         </button>
       </div>
 
       {/* Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Total Referrals</span>
-            <FileCheck className="w-4 h-4 text-gatewise-primary" />
+            <FileCheck className="w-4 h-4 text-teal-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{total}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Lifetime field submissions</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{total}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Lifetime field submissions</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Pending Review</span>
             <Clock className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-black text-amber-600 mt-1.5 font-mono">{pending}</div>
-          <span className="text-[10px] text-amber-700 font-medium mt-0.5 block">Requires administrator sign-off</span>
+          <div className="text-2xl font-bold text-amber-600 mt-2 font-mono tabular-nums">{pending}</div>
+          <span className="text-[11px] text-amber-700 font-medium mt-0.5 block">Requires sign-off</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Approved</span>
-            <CheckCircle2 className="w-4 h-4 text-gatewise-success" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{approved}</div>
-          <span className="text-[10px] text-gatewise-success font-medium mt-0.5 block">Enrolled & indexed</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{approved}</div>
+          <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Enrolled & indexed</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Rejected</span>
             <XCircle className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{rejected}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Declined referrals</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{rejected}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Declined referrals</span>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center space-x-1.5 p-1 rounded-2xl bg-background-secondary border border-gatewise-border w-fit">
+      <div className="flex items-center space-x-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200/80 w-fit">
         {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map((st) => (
           <button
             key={st}
             onClick={() => setStatusFilter(st)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               statusFilter === st
-                ? 'bg-white text-gatewise-text shadow-xs border border-gatewise-border'
-                : 'text-gatewise-secondary hover:text-gatewise-text'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             {st === 'ALL' ? 'All Referrals' : st.replace(/_/g, ' ')}
             {st === 'PENDING' && pending > 0 && (
-              <span className="ml-1.5 px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[9px]">
+              <span className="ml-1.5 px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[9px] font-mono tabular-nums">
                 {pending}
               </span>
             )}
@@ -170,146 +172,105 @@ export default function EnrollmentRequestsPage() {
         ))}
       </div>
 
-      {/* Referrals Queue Table */}
-      <div className="rounded-2xl bg-white border border-gatewise-border shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-gatewise-border bg-background-secondary/60 text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                <th className="py-3 px-4">Subject Candidate</th>
-                <th className="py-3 px-4">Proposed Category</th>
-                <th className="py-3 px-4">Department</th>
-                <th className="py-3 px-4">Submitting Guard / Gate</th>
-                <th className="py-3 px-4">Timestamp</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gatewise-border">
-              {filteredRequests.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-gatewise-secondary">
-                    <FileCheck className="w-8 h-8 text-gatewise-border mx-auto mb-2" />
-                    <p className="font-semibold text-sm text-gatewise-text">No enrollment referrals found</p>
-                    <p className="text-xs text-gatewise-secondary mt-1">
-                      {statusFilter !== 'ALL'
-                        ? `No referrals currently matching status: ${statusFilter}`
-                        : 'Field referrals submitted by guards on Android terminals will appear here.'}
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                filteredRequests.map((req) => {
-                  const st = req.status || req.request_status || 'PENDING';
-                  const isPending = st === 'PENDING';
-                  const isApproved = st === 'APPROVED';
-                  const isRejected = st === 'REJECTED';
+      {/* iPadOS Master-Detail Split Pane */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Left Column (Master List) */}
+        <div className="lg:col-span-5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+          <div className="p-3.5 border-b border-slate-200/80 bg-slate-50/70 text-xs font-semibold text-slate-700 flex items-center justify-between">
+            <span>Referrals In Queue</span>
+            <span className="font-mono text-[11px] text-slate-500 tabular-nums">{filteredRequests.length} records</span>
+          </div>
 
-                  return (
-                    <tr
-                      key={req.id}
-                      onClick={() => {
-                        setSelectedRequest(req);
-                        setAdminNotes(req.admin_notes || req.administrator_notes || '');
-                      }}
-                      className="hover:bg-background-secondary/50 cursor-pointer transition-colors"
-                    >
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <div className="font-bold text-gatewise-text">{req.person_name}</div>
-                        <div className="text-[10px] font-mono text-gatewise-secondary">Ref #{req.id.substring(0, 8)}</div>
-                      </td>
+          <div className="divide-y divide-slate-100 max-h-[640px] overflow-y-auto">
+            {filteredRequests.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 text-xs">
+                No referrals found matching {statusFilter}.
+              </div>
+            ) : (
+              filteredRequests.map((req) => {
+                const st = req.status || req.request_status || 'PENDING';
+                const isSelected = selectedRequest?.id === req.id;
+                const isPending = st === 'PENDING';
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gatewise-light text-gatewise-deep border border-gatewise-mint">
-                          {req.proposed_category}
-                        </span>
-                      </td>
+                return (
+                  <div
+                    key={req.id}
+                    onClick={() => {
+                      setSelectedRequest(req);
+                      setAdminNotes(req.admin_notes || req.administrator_notes || '');
+                    }}
+                    className={`p-4 cursor-pointer transition-all border-l-4 ${
+                      isSelected
+                        ? 'bg-teal-50/60 border-l-teal-600'
+                        : 'hover:bg-slate-50 border-l-transparent'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-sm text-slate-900">{req.person_name}</div>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono ${
+                          isPending
+                            ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20'
+                            : st === 'APPROVED'
+                            ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20'
+                            : 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
+                        }`}
+                      >
+                        {st}
+                      </span>
+                    </div>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="font-medium text-gatewise-text">{req.department}</span>
-                      </td>
+                    <div className="flex items-center space-x-2 text-xs text-slate-500 mt-1">
+                      <span>{req.proposed_category}</span>
+                      <span>•</span>
+                      <span>{req.department}</span>
+                    </div>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <div className="text-gatewise-text font-medium">Gate ID: {req.gate_id}</div>
-                        <div className="text-[10px] font-mono text-gatewise-secondary">Guard: {req.submitted_by_guard_id}</div>
-                      </td>
-
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <div className="font-mono text-gatewise-text">
-                          {new Date(req.submitted_at || req.created_at || Date.now()).toLocaleTimeString()}
-                        </div>
-                        <div className="text-[10px] text-gatewise-secondary font-mono">
-                          {new Date(req.submitted_at || req.created_at || Date.now()).toLocaleDateString()}
-                        </div>
-                      </td>
-
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            isPending
-                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                              : isApproved
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-rose-50 text-rose-700 border border-rose-200'
-                          }`}
-                        >
-                          {st}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-4 text-right whitespace-nowrap">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedRequest(req);
-                            setAdminNotes(req.admin_notes || req.administrator_notes || '');
-                          }}
-                          className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-gatewise-border bg-white text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-all"
-                        >
-                          {isPending ? 'Review & Adjudicate' : 'View Record'}
-                          <ChevronRight className="w-3 h-3 inline ml-0.5" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 mt-2 font-mono tabular-nums">
+                      <span>Gate {req.gate_id}</span>
+                      <span>{new Date(req.submitted_at || req.created_at || Date.now()).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Review & Adjudication Modal */}
-      {selectedRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-200">
-                  <FileCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-gatewise-text">
-                    Field Enrollment Adjudication
-                  </h3>
-                  <div className="text-xs font-mono text-gatewise-secondary">
-                    Request ID: {selectedRequest.id}
+        {/* Right Column (Detail Inspection Pane) */}
+        <div className="lg:col-span-7">
+          {selectedRequest ? (
+            <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] p-6 space-y-6">
+              {/* Header */}
+              <div className="flex items-start justify-between pb-4 border-b border-slate-200/80">
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-800 font-bold text-lg">
+                    {selectedRequest.person_name.charAt(0)}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-900">{selectedRequest.person_name}</h2>
+                    <div className="text-xs font-mono text-slate-500 mt-0.5 tabular-nums">
+                      Referral ID: {selectedRequest.id}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <button
-                onClick={() => setSelectedRequest(null)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="p-6 space-y-5">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold font-mono ${
+                    (selectedRequest.status || selectedRequest.request_status || 'PENDING') === 'PENDING'
+                      ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-500/20'
+                      : (selectedRequest.status || selectedRequest.request_status) === 'APPROVED'
+                      ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20'
+                      : 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
+                  }`}
+                >
+                  {selectedRequest.status || selectedRequest.request_status || 'PENDING'}
+                </span>
+              </div>
+
               {actionMessage && (
                 <div
-                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center space-x-2 ${
+                  className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center space-x-2 ${
                     actionMessage.type === 'success'
                       ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                       : 'bg-rose-50 text-rose-800 border-rose-200'
@@ -320,114 +281,114 @@ export default function EnrollmentRequestsPage() {
                 </div>
               )}
 
-              {/* Referral Details */}
-              <div className="p-4 rounded-2xl bg-background-secondary/50 border border-gatewise-border space-y-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                  Field Referral Information
+              {/* Subject Metadata Card */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                  Field Referral Dossier
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 gap-3.5 text-xs">
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Candidate Subject</span>
-                    <span className="font-bold text-gatewise-text text-sm">{selectedRequest.person_name}</span>
+                    <span className="text-slate-400 block text-[10px]">Proposed Category</span>
+                    <span className="font-semibold text-slate-900">{selectedRequest.proposed_category}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Proposed Affiliation</span>
-                    <span className="font-semibold text-gatewise-primary">{selectedRequest.proposed_category}</span>
+                    <span className="text-slate-400 block text-[10px]">Assigned Department</span>
+                    <span className="font-semibold text-slate-900">{selectedRequest.department}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Department</span>
-                    <span className="font-semibold text-gatewise-text">{selectedRequest.department}</span>
+                    <span className="text-slate-400 block text-[10px]">Origination Terminal</span>
+                    <span className="font-mono text-slate-800">Gate {selectedRequest.gate_id}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Submitted Timestamp</span>
-                    <span className="font-mono text-gatewise-text">
+                    <span className="text-slate-400 block text-[10px]">Submitting Officer</span>
+                    <span className="font-mono text-slate-800">{selectedRequest.submitted_by_guard_id}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Submission Time</span>
+                    <span className="font-mono text-slate-800 tabular-nums">
                       {new Date(selectedRequest.submitted_at || selectedRequest.created_at || Date.now()).toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Checkpoint Location</span>
-                    <span className="font-mono text-gatewise-text">Gate {selectedRequest.gate_id}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Referring Guard</span>
-                    <span className="font-mono text-gatewise-text">{selectedRequest.submitted_by_guard_id}</span>
+                    <span className="text-slate-400 block text-[10px]">Biometric Status</span>
+                    <span className="text-emerald-700 font-semibold">Single-Shot Vector Captured</span>
                   </div>
                 </div>
               </div>
 
-              {/* Biometric Capture Notice */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex items-start space-x-3 text-xs text-emerald-900">
+              {/* Zero-Knowledge Compliance Banner */}
+              <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-start space-x-3 text-xs text-emerald-900">
                 <Shield className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                <p>
-                  Upon administrative approval, the reference face embedding generated at the terminal will be indexed into the institutional registry under compliant identity management protocols.
+                <p className="leading-relaxed">
+                  Upon administrative sign-off, the single-shot face embedding generated on the terminal is committed into the institutional vector database.
                 </p>
               </div>
 
-              {/* Adjudication Notes */}
-              <div className="space-y-2">
-                <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px]">
+              {/* Clearance with 12px clearance between metadata and actions */}
+              <div className="space-y-3 pt-1">
+                <label className="block text-slate-700 font-semibold text-xs">
                   Administrator Adjudication Notes
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Provide verification justification, institutional ID allocation, or rejection rationale..."
+                  placeholder="Record justification, clearance restrictions, or rejection rationale..."
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 placeholder:text-gatewise-secondary"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 placeholder:text-slate-400"
                 />
               </div>
+
+              {/* Action Buttons (12px top clearance) */}
+              <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between">
+                <span className="text-xs text-slate-400">
+                  Adjudicated decisions are permanent and cryptographically recorded.
+                </span>
+
+                {(selectedRequest.status || selectedRequest.request_status || 'PENDING') === 'PENDING' ? (
+                  <div className="flex items-center space-x-2.5">
+                    <button
+                      type="button"
+                      onClick={handleReject}
+                      disabled={isProcessing}
+                      className="px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition-all flex items-center space-x-1.5"
+                    >
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>Reject</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleApprove}
+                      disabled={isProcessing}
+                      className="px-5 py-2 rounded-xl bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-all shadow-xs flex items-center space-x-1.5 disabled:opacity-50"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Approve & Enroll</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-xs font-semibold font-mono text-slate-500">
+                    Decision: {selectedRequest.status || selectedRequest.request_status}
+                  </span>
+                )}
+              </div>
             </div>
-
-            {/* Modal Actions */}
-            <div className="p-4 bg-background-secondary/60 border-t border-gatewise-border flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setSelectedRequest(null)}
-                className="px-4 py-2 rounded-xl border border-gatewise-border text-xs font-semibold text-gatewise-secondary hover:bg-white transition-colors"
-              >
-                Close
-              </button>
-
-              {(selectedRequest.status || selectedRequest.request_status || 'PENDING') === 'PENDING' ? (
-                <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={handleReject}
-                    disabled={isProcessing}
-                    className="px-4 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-bold hover:bg-rose-100 transition-all flex items-center space-x-1.5"
-                  >
-                    <XCircle className="w-3.5 h-3.5" />
-                    <span>Reject Referral</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleApprove}
-                    disabled={isProcessing}
-                    className="px-5 py-2 rounded-xl bg-gatewise-primary text-white text-xs font-bold hover:bg-gatewise-deep transition-all shadow-xs flex items-center space-x-1.5"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Approve & Enroll</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              ) : (
-                <div className="text-xs font-bold text-gatewise-secondary">
-                  Adjudicated Status: {selectedRequest.status || selectedRequest.request_status}
-                </div>
-              )}
+          ) : (
+            <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] p-12 text-center text-slate-400 text-xs">
+              Select an enrollment referral from the master list to inspect.
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

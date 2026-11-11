@@ -18,6 +18,7 @@ export default function PublicLayout({
 
   const navLinks = [
     { href: '/', label: 'Overview' },
+    { href: '/showcase', label: 'Stageshow Demo' },
     { href: '/product', label: 'Product' },
     { href: '/how-it-works', label: 'Architecture' },
     { href: '/features', label: 'Capabilities' },

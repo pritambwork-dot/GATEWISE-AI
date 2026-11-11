@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Users, UserPlus, Search, Filter, ShieldCheck, Mail, Phone,
   Building, Calendar, CheckCircle2, AlertCircle, X, ChevronRight,
-  RefreshCw, Check, Shield, FileText, Lock
+  RefreshCw, Check, Shield, FileText, Lock, ArrowUpRight
 } from 'lucide-react';
 import { api } from '@/lib/services/api';
 import { InstitutionalIdentity } from '@/types';
@@ -98,32 +98,40 @@ export default function PeopleIdentitiesPage() {
   const studentCount = identities.filter(i => i.category === 'STUDENT').length;
   const facultyStaffCount = identities.filter(i => i.category === 'FACULTY' || i.category === 'STAFF').length;
 
+  const categories = [
+    { id: 'ALL', label: 'All Directory' },
+    { id: 'STUDENT', label: 'Students' },
+    { id: 'FACULTY', label: 'Faculty' },
+    { id: 'STAFF', label: 'Staff' },
+    { id: 'CONTRACTOR', label: 'Contractors' },
+  ];
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gatewise-text tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
             Institutional Identity Registry
           </h1>
-          <p className="text-xs text-gatewise-secondary mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Authoritative directory of registered students, faculty, staff, and contractors with perimeter clearance levels.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           <button
             onClick={loadIdentities}
             disabled={isLoading}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-gatewise-border bg-white text-xs font-semibold text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-all shadow-xs"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-gatewise-primary' : ''}`} />
-            <span>Sync Registry</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
+            <span className="hidden sm:inline">Sync Registry</span>
           </button>
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-gatewise-primary text-white text-xs font-bold hover:bg-gatewise-deep transition-all shadow-xs"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-all shadow-xs"
           >
             <UserPlus className="w-3.5 h-3.5" />
             <span>Enroll Identity</span>
@@ -133,85 +141,92 @@ export default function PeopleIdentitiesPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Enrolled Total</span>
-            <Users className="w-4 h-4 text-gatewise-primary" />
+            <Users className="w-4 h-4 text-teal-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{totalIdentities}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Identities in database</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{totalIdentities}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Identities in directory</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Active Clearance</span>
-            <CheckCircle2 className="w-4 h-4 text-gatewise-success" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{activeCount}</div>
-          <span className="text-[10px] text-gatewise-success font-medium mt-0.5 block">Permitted gate ingress</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{activeCount}</div>
+          <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Permitted gate ingress</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Students</span>
-            <ShieldCheck className="w-4 h-4 text-gatewise-teal" />
+            <ShieldCheck className="w-4 h-4 text-cyan-600" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{studentCount}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Undergraduate & Graduate</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{studentCount}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Undergraduate & Graduate</span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white border border-gatewise-border shadow-xs">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
             <span>Faculty & Staff</span>
-            <Building className="w-4 h-4 text-gatewise-deep" />
+            <Building className="w-4 h-4 text-teal-800" />
           </div>
-          <div className="text-2xl font-black text-gatewise-text mt-1.5 font-mono">{facultyStaffCount}</div>
-          <span className="text-[10px] text-gatewise-secondary mt-0.5 block">Academic & administrative staff</span>
+          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{facultyStaffCount}</div>
+          <span className="text-[11px] text-slate-500 mt-0.5 block">Academic & admin members</span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-white border border-gatewise-border shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
-          >
-            <option value="ALL">All Categories</option>
-            <option value="STUDENT">Students</option>
-            <option value="FACULTY">Faculty</option>
-            <option value="STAFF">Staff</option>
-            <option value="CONTRACTOR">Contractors</option>
-            <option value="VISITOR">Visitors</option>
-          </select>
+      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3">
+        {/* Category Filter Chips */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryFilter(cat.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                  categoryFilter === cat.id
+                    ? 'bg-teal-50 text-teal-900 ring-1 ring-teal-600/30 shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="ACTIVE">Active Clearance</option>
-            <option value="SUSPENDED">Suspended</option>
-            <option value="GRADUATED">Graduated</option>
-            <option value="DEACTIVATED">Deactivated</option>
-          </select>
+          <div className="flex items-center space-x-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
+            >
+              <option value="ALL">All Clearance Statuses</option>
+              <option value="ACTIVE">Active Clearance</option>
+              <option value="SUSPENDED">Suspended</option>
+              <option value="GRADUATED">Graduated</option>
+              <option value="DEACTIVATED">Deactivated</option>
+            </select>
+          </div>
         </div>
 
-        <div className="relative min-w-[280px] flex-1 max-w-sm">
-          <Search className="w-4 h-4 text-gatewise-secondary absolute left-3 top-1/2 -translate-y-1/2" />
+        {/* Search input */}
+        <div className="relative w-full">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search by Name, Institutional ID, or Dept..."
+            placeholder="Search by Name, Institutional ID, or Department..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text placeholder:text-gatewise-secondary focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 focus:bg-white transition-all"
+            className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:bg-white transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gatewise-secondary hover:text-gatewise-text"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -220,12 +235,12 @@ export default function PeopleIdentitiesPage() {
       </div>
 
       {/* Identities Directory Table */}
-      <div className="rounded-2xl bg-white border border-gatewise-border shadow-xs overflow-hidden">
+      <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-gatewise-border bg-background-secondary/60 text-[11px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                <th className="py-3 px-4">Person ID</th>
+              <tr className="border-b border-slate-200/80 bg-slate-50/70 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                <th className="py-3 px-4">Institutional ID</th>
                 <th className="py-3 px-4">Full Legal Name</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Department / Division</th>
@@ -234,14 +249,14 @@ export default function PeopleIdentitiesPage() {
                 <th className="py-3 px-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gatewise-border">
+            <tbody className="divide-y divide-slate-100">
               {filteredIdentities.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gatewise-secondary">
-                    <Users className="w-8 h-8 text-gatewise-border mx-auto mb-2" />
-                    <p className="font-semibold text-sm text-gatewise-text">No matching identities found</p>
-                    <p className="text-xs text-gatewise-secondary mt-1">
-                      Check your search query or clear the filters.
+                  <td colSpan={7} className="py-16 text-center text-slate-500">
+                    <Users className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="font-semibold text-sm text-slate-800">No matching identities found</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Check your search query or reset category filter.
                     </p>
                   </td>
                 </tr>
@@ -254,59 +269,59 @@ export default function PeopleIdentitiesPage() {
                     <tr
                       key={item.id}
                       onClick={() => setSelectedIdentity(item)}
-                      className="hover:bg-background-secondary/50 cursor-pointer transition-colors"
+                      className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
                     >
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="font-mono font-bold text-gatewise-text bg-background-secondary px-2 py-0.5 rounded border border-gatewise-border">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80 tabular-nums">
                           {item.person_id || item.institutional_id}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <div className="font-bold text-gatewise-text">{item.full_name}</div>
-                        {item.email && <div className="text-[10px] text-gatewise-secondary">{item.email}</div>}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <div className="font-semibold text-slate-900">{item.full_name}</div>
+                        {item.email && <div className="text-[10px] text-slate-500">{item.email}</div>}
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gatewise-light text-gatewise-deep border border-gatewise-mint">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-800 ring-1 ring-teal-600/20">
                           {item.category}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <span className="font-medium text-gatewise-text">{item.department}</span>
-                        {item.designation && <div className="text-[10px] text-gatewise-secondary">{item.designation}</div>}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className="font-medium text-slate-800">{item.department || 'General'}</span>
+                        {item.designation && <div className="text-[10px] text-slate-500">{item.designation}</div>}
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono ${
                             isActive
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-rose-50 text-rose-700 border border-rose-200'
+                              ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20'
+                              : 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
                           }`}
                         >
                           {item.identity_status}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-1.5 text-gatewise-secondary">
-                          <CheckCircle2 className={`w-3.5 h-3.5 ${photosCount > 0 ? 'text-gatewise-primary' : 'text-amber-500'}`} />
-                          <span className="text-[11px] font-medium">{photosCount} synced</span>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-1.5 text-slate-600">
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${photosCount > 0 ? 'text-teal-600' : 'text-amber-500'}`} />
+                          <span className="text-[11px] font-mono tabular-nums">{photosCount} photos</span>
                         </div>
                       </td>
 
-                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedIdentity(item);
                           }}
-                          className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-gatewise-border bg-white text-gatewise-secondary hover:text-gatewise-text hover:bg-background-secondary transition-all"
+                          className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-2xs group-hover:border-slate-300"
                         >
-                          View Profile
-                          <ChevronRight className="w-3 h-3 inline ml-0.5" />
+                          Profile
+                          <ChevronRight className="w-3 h-3 inline ml-0.5 text-slate-400 group-hover:text-teal-600" />
                         </button>
                       </td>
                     </tr>
@@ -318,28 +333,28 @@ export default function PeopleIdentitiesPage() {
         </div>
       </div>
 
-      {/* Identity Profile Drawer */}
+      {/* Identity Profile Drawer (Apple-style sheet) */}
       {selectedIdentity && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
+                  <h3 className="text-base font-bold text-slate-900">
                     {selectedIdentity.full_name}
                   </h3>
-                  <div className="text-xs font-mono text-gatewise-secondary">
+                  <div className="text-xs font-mono text-slate-500 tabular-nums">
                     {selectedIdentity.person_id || selectedIdentity.institutional_id} • {selectedIdentity.category}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedIdentity(null)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -347,88 +362,72 @@ export default function PeopleIdentitiesPage() {
 
             <div className="p-6 space-y-5">
               {/* Core Information */}
-              <div className="p-4 rounded-2xl bg-background-secondary/50 border border-gatewise-border space-y-3">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-gatewise-secondary">
-                  Institutional Profile
-                </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Department</span>
-                    <span className="font-bold text-gatewise-text">{selectedIdentity.department}</span>
+                    <span className="text-slate-400 block text-[10px]">Department</span>
+                    <span className="font-semibold text-slate-900">{selectedIdentity.department || 'Not Assigned'}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Designation / Role</span>
-                    <span className="font-bold text-gatewise-text">{selectedIdentity.designation || 'Standard Member'}</span>
+                    <span className="text-slate-400 block text-[10px]">Designation</span>
+                    <span className="font-semibold text-slate-900">{selectedIdentity.designation || 'Member'}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Email Contact</span>
-                    <span className="font-mono text-gatewise-text">{selectedIdentity.email || 'None on record'}</span>
+                    <span className="text-slate-400 block text-[10px]">Email Address</span>
+                    <span className="font-mono text-slate-700">{selectedIdentity.email || 'N/A'}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gatewise-secondary block">Phone Number</span>
-                    <span className="font-mono text-gatewise-text">{selectedIdentity.phone || 'None on record'}</span>
+                    <span className="text-slate-400 block text-[10px]">Contact Phone</span>
+                    <span className="font-mono text-slate-700">{selectedIdentity.phone || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Clearance Level</span>
+                    <span className="font-semibold text-teal-800">{(selectedIdentity as any).clearance_level || 'LEVEL_1_GENERAL'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Account Status</span>
+                    <span className="font-bold text-emerald-700">{selectedIdentity.identity_status}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Biometric Reference Synchronization */}
-              <div className="p-4 rounded-2xl border border-gatewise-border space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-bold text-gatewise-text flex items-center space-x-1.5">
-                    <Shield className="w-4 h-4 text-gatewise-primary" />
-                    <span>Biometric Face Embeddings</span>
-                  </div>
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    SFace 128-D Model
+              {/* Reference Photos */}
+              <div className="space-y-2">
+                <div className="text-xs font-bold text-slate-900 flex items-center justify-between">
+                  <span>Synchronized Reference Photos</span>
+                  <span className="font-mono text-slate-500 text-[11px] tabular-nums">
+                    {selectedIdentity.reference_photos?.length || 0} enrolled
                   </span>
                 </div>
-                <p className="text-xs text-gatewise-secondary leading-relaxed">
-                  {selectedIdentity.reference_photos?.length || 0} reference images indexed and verified via Google Drive institutional repository.
-                </p>
-                <div className="p-2.5 rounded-xl bg-background-secondary/60 text-[11px] text-gatewise-secondary flex items-center justify-between">
-                  <span>Privacy Protection</span>
-                  <span className="font-semibold text-gatewise-text">Raw frames withheld per institutional privacy policy</span>
-                </div>
-              </div>
-
-              {/* Perimeter Clearance Details */}
-              <div className="p-4 rounded-2xl border border-gatewise-border space-y-2">
-                <div className="text-xs font-bold text-gatewise-text flex items-center space-x-1.5">
-                  <Lock className="w-4 h-4 text-gatewise-primary" />
-                  <span>Gate Ingress Authorization</span>
-                </div>
-                {selectedIdentity.access_authorizations && selectedIdentity.access_authorizations.length > 0 ? (
-                  <div className="space-y-2 pt-1">
-                    {selectedIdentity.access_authorizations.map((auth) => (
-                      <div key={auth.id} className="p-2.5 rounded-xl bg-background-secondary/40 border border-gatewise-border text-xs flex items-center justify-between">
-                        <div>
-                          <div className="font-bold text-gatewise-text">{auth.access_status}</div>
-                          <div className="text-[10px] text-gatewise-secondary">
-                            Valid: {auth.valid_from ? new Date(auth.valid_from).toLocaleDateString() : 'Active'} -{' '}
-                            {auth.valid_until ? new Date(auth.valid_until).toLocaleDateString() : 'Indefinite'}
-                          </div>
+                <div className="p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50">
+                  {selectedIdentity.reference_photos && selectedIdentity.reference_photos.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {selectedIdentity.reference_photos.map((photo: any, idx: number) => (
+                        <div key={idx} className="relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-200">
+                          <img
+                            src={photo.photo_url || photo.file_url}
+                            alt={`Reference ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <span className="text-[10px] font-mono bg-white px-2 py-1 rounded border border-gatewise-border text-gatewise-primary font-bold">
-                          All Perimeter Gates
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-xs text-gatewise-secondary">
-                    Clearance is governed by default institutional category policy.
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-6 text-center text-slate-400 text-xs">
+                      No physical photos attached. Automatically mapped via Google Drive sync folder.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 bg-background-secondary/60 border-t border-gatewise-border flex justify-end">
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
               <button
                 onClick={() => setSelectedIdentity(null)}
-                className="px-5 py-2 text-xs font-bold rounded-xl bg-gatewise-primary text-white hover:bg-gatewise-deep transition-all shadow-xs"
+                className="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs"
               >
-                Done
+                Close Profile
               </button>
             </div>
           </div>
@@ -438,174 +437,150 @@ export default function PeopleIdentitiesPage() {
       {/* Enroll Identity Modal */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-gatewise-border shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gatewise-border flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gatewise-light flex items-center justify-center text-gatewise-primary border border-gatewise-mint">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-gatewise-text">
+                  <h3 className="text-base font-bold text-slate-900">
                     Enroll New Institutional Identity
                   </h3>
-                  <p className="text-xs text-gatewise-secondary">
-                    Creates an authoritative record in the central institutional database.
+                  <p className="text-xs text-slate-500">
+                    Create record and assign perimeter access credentials.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-gatewise-border flex items-center justify-center text-gatewise-secondary hover:bg-background-secondary transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateIdentity} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCreateIdentity} className="p-6 space-y-4">
               {createError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
                   {createError}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Institutional Person ID *
-                  </label>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Person ID / Roll No</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. STU-009 or FAC-003"
+                    placeholder="e.g. STU-2024-001"
                     value={formData.person_id}
                     onChange={(e) => setFormData({ ...formData, person_id: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border font-mono text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Full Legal Name *
-                  </label>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Full Legal Name</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Sarah Jenkins"
+                    placeholder="e.g. Aarav Sharma"
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Institutional Category *
-                  </label>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                   >
-                    <option value="STUDENT">STUDENT</option>
-                    <option value="FACULTY">FACULTY</option>
-                    <option value="STAFF">STAFF</option>
-                    <option value="CONTRACTOR">CONTRACTOR</option>
-                    <option value="VISITOR">VISITOR</option>
+                    <option value="STUDENT">Student</option>
+                    <option value="FACULTY">Faculty</option>
+                    <option value="STAFF">Staff</option>
+                    <option value="CONTRACTOR">Contractor</option>
+                    <option value="VISITOR">Visitor</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Department / Division *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Computer Science"
-                    value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Designation (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Associate Professor"
-                    value={formData.designation}
-                    onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="e.g. s.jenkins@institution.edu"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Clearance Level
-                  </label>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Clearance Level</label>
                   <select
                     value={formData.clearance_level}
                     onChange={(e) => setFormData({ ...formData, clearance_level: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20 cursor-pointer"
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                   >
-                    <option value="LEVEL_1_GENERAL">LEVEL 1 - General Perimeter</option>
-                    <option value="LEVEL_2_STAFF">LEVEL 2 - Staff & Labs</option>
-                    <option value="LEVEL_3_RESTRICTED">LEVEL 3 - Restricted Facilities</option>
-                    <option value="LEVEL_4_HIGH_SECURITY">LEVEL 4 - High Security</option>
+                    <option value="LEVEL_1_GENERAL">Level 1 — General Perimeter</option>
+                    <option value="LEVEL_2_ACADEMIC">Level 2 — Academic Zones</option>
+                    <option value="LEVEL_3_RESTRICTED">Level 3 — Restricted Labs</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gatewise-secondary font-bold uppercase tracking-wider text-[10px] mb-1">
-                    Valid Until Date
-                  </label>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Department</label>
                   <input
-                    type="date"
-                    value={formData.valid_until}
-                    onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-background-secondary border border-gatewise-border text-gatewise-text focus:outline-none focus:ring-2 focus:ring-gatewise-primary/20"
+                    type="text"
+                    placeholder="e.g. Computer Science"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Designation</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. MBA Scholar"
+                    value={formData.designation}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gatewise-border flex items-center justify-end space-x-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Institutional Email</label>
+                  <input
+                    type="email"
+                    placeholder="aarav@apex.edu"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-700 block mb-1">Mobile Phone</label>
+                  <input
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-gatewise-border text-gatewise-secondary font-semibold hover:bg-background-secondary transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gatewise-primary text-white font-bold hover:bg-gatewise-deep transition-all shadow-xs flex items-center space-x-1.5"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-teal-800 text-white hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <span>Register Identity</span>
-                  )}
+                  {isSubmitting ? 'Enrolling...' : 'Enroll Identity'}
                 </button>
               </div>
             </form>
