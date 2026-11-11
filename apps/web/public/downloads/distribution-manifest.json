@@ -1,0 +1,55 @@
+{
+  "application": "GATEWISE AI Sovereign Access Platform",
+  "release_date": "2026-11-11",
+  "channel": "production",
+  "platforms": {
+    "android": {
+      "name": "GATEWISE Guard (Android)",
+      "platform": "android",
+      "version": "1.0.0",
+      "version_code": 1,
+      "file_name": "gatewise-guard-v1.0.0-release.apk",
+      "file_size_bytes": 906440,
+      "download_url": "/downloads/gatewise-guard-v1.0.0-release.apk",
+      "sha256": "f397221752236e04de2be91d4ba1b55a2a136a6e77f5022192ca4387ea6d8ddd",
+      "compatibility": "Android 8.0 (API 26) through Android 15+",
+      "package_id": "com.gatewiseai.guard",
+      "status": "PUBLISHED",
+      "description": "Native Android Guard client with real-time YuNet edge camera detection, SFace 128-D cosine match, and HMAC-SHA256 non-repudiation ledger.",
+      "install_guide": "Enable 'Install from Unknown Sources' in Android Settings -> Security, open downloaded APK, and tap Install."
+    },
+    "ios": {
+      "name": "GATEWISE Guard (iOS)",
+      "platform": "ios",
+      "version": "1.0.0",
+      "version_code": 1,
+      "file_name": "gatewise-guard-ios-v1.0.0.ipa",
+      "file_size_bytes": 833683,
+      "download_url": "/downloads/gatewise-guard-ios-v1.0.0.ipa",
+      "sha256": "504c0762bf09722761e01b5bb437d433476c0e31ab5e06ce37bb811b7d1fdf61",
+      "compatibility": "iOS 17.0+ (iPhone 11 through 16 Pro Max, iPadOS 17+)",
+      "package_id": "com.gatewiseai.guard",
+      "ota_manifest_url": "/downloads/gatewise-guard-ios-manifest.plist",
+      "source_zip_url": "/downloads/gatewise-guard-ios-source-v1.0.0.zip",
+      "testflight_url": "https://testflight.apple.com/join/gatewise-guard",
+      "status": "PUBLISHED",
+      "description": "Pure native SwiftUI & Swift 6 client with Liquid Glass aesthetic, strict concurrency, biometric Face ID unlock, and offline-first persistence.",
+      "install_guide": "Install via TestFlight, institutional Apple Configurator 2, AltStore, SideStore, or mobile device management (MDM) profile."
+    },
+    "macos": {
+      "name": "GATEWISE Admin Command Centre (macOS)",
+      "platform": "macos",
+      "version": "1.0.0",
+      "version_code": 1,
+      "file_name": "gatewise-admin-macos-v1.0.0.dmg",
+      "file_size_bytes": 1296738,
+      "download_url": "/downloads/gatewise-admin-macos-v1.0.0.dmg",
+      "sha256": "f5131c83a00d3ec6c73f4b69119bcf7b09b90dbe0d05ee7401b6a500451429b6",
+      "compatibility": "macOS 13.0 Ventura, Sonoma, Sequoia (Apple Silicon & Intel)",
+      "package_id": "com.gatewiseai.admin",
+      "status": "PUBLISHED",
+      "description": "Native desktop Command Centre for campus administrators with live telemetry, access roster control, and cryptographic audit log inspection.",
+      "install_guide": "Open the DMG disk image, drag 'GATEWISE AI Command Centre.app' into Applications, and launch."
+    }
+  }
+}
