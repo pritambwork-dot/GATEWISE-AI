@@ -1,26 +1,48 @@
-GATEWISE AI 1.0 — COMPLETE PRODUCT WALKTHROUGH TRANSCRIPT
-Duration: 65 seconds
-Target Platform: GATEWISE Guard Android App & GATEWISE Admin Portal
+GATEWISE AI — MOTION SHOWCASE SPECIFICATION & TRANSCRIPT
+Duration: 28.84s • 60 FPS • High-Octane 2x Playback
+Format: MP4 (H.264) + WebM (VP8)
+Audio: 48kHz Stereo AAC
 
-[Scene 1: Introduction (00:00 - 00:06)]
-Title: GATEWISE AI 1.0
-Headline: Smarter Gate Operations. One Connected Platform.
-Institution: Indian Institute of Management Sambalpur
+00:00 - Kinetic Introduction
+"EDGE BIOMETRIC INTELLIGENCE"
+Bold centered typography: "GATEWISE" with "Sub-300ms" and "Sovereign" flanking.
+Bottom horizon neon arc with status indicator: "AI system for end-to-end workflow automation and optimization".
 
-[Scene 2: GATEWISE Guard Android Application (00:06 - 00:22)]
-Stage 1: Tactical Optical Capture (60 FPS viewfinder with automatic exposure compensation).
-Stage 2: YuNet 5-Point Landmark Extraction (28ms inference time on edge hardware).
-Stage 3: 128-D Cosine Metric Matching (SFace neural pipeline, cosine score 0.984 > 0.720 threshold).
-Stage 4: Sovereign Guard Action & HMAC-SHA256 Digital Seal (Hardware non-repudiation signature).
+00:02 - Live Ingress Queue & Vector Processing
+Active Gate Telemetry at Gate-Main-02.
+Dr. Maya Sharma (Cosine 0.984 [ACCESS GRANTED]), Officer Ramesh Verma (Active Duty Session Bound), Marcus Vance (Student Affairs), Visitor Pass #9042, Vehicle OD 02 AK 9142.
+Dynamic action button: "Explore Gate Operations ->".
 
-[Scene 3: GATEWISE Admin Portal (00:22 - 00:40)]
-Central Security Command: Real-time telemetry, 4-gate post relay health, and throughput charts.
-Live Gate Activity Feed: Server-Sent Events (SSE) streaming live verification events and cryptographic badges.
+00:07 - Sovereign Perimeter Architecture Stack
+Cascading isometric deck of modular architecture layers:
+- Data Sync & WebSocket Feed
+- Autonomous ANPR & Barrier Relay
+- HMAC-SHA256 Non-Repudiation Vault
+- SFace 128-D Vector Embeddings
+- YuNet 28ms Face Landmark Detector
+- Offline SQLite Continuity Engine
 
-[Scene 4: Connected Multi-Gate Real-Time Workflow (00:40 - 00:55)]
-Synchronization: Immediate field guard decision dispatch to central administrator dashboard.
-Zero Raw Biometrics: Ephemeral RAM extraction ensures privacy and compliance with DPDP and ISO/IEC 27001.
+00:13 - Unified Platform Integration
+"Connect every gate, guard & turnstile in one unified platform"
+Orbiting architecture badges: 28ms YuNet, SFace 128-D, HMAC-256, Android Guard APK, Admin Command Desk.
 
-[Scene 5: Conclusion & Calls to Action (00:55 - 01:05)]
-GATEWISE AI: One platform. Connected institutional operations.
-CTAs: Explore the Platform / Download Android APK.
+00:15 - Institutional Metric Verification
+Center glowing sphere: "<300ms End-to-End Verification SLA"
+Key telemetry metrics:
+- 128-D Zero Raw Photos Stored
+- 98.4% Mean Cosine Match
+- 100% On-Premise Deploy
+- Audit DPDP Act Compliant
+- 24/7 Offline Continuity
+
+00:21 - Distributed Perimeter Network
+"Full Perimeter Governance. Zero Cloud Leaks."
+Orbiting checkpoint nodes: Gate-01, Gate-02, Admin Desk, Vehicle Barrier, Pedestrian Totem, SQLite Vault.
+
+00:25 - Sovereign Operations Deployment
+"Deploy sovereign, sub-second campus intelligence"
+Portal link: www.gatewise.ai
+
+00:27 - Brand Verification Lockup
+Emerald Shield Checkmark brand identity with star flare.
+"GATEWISE AI 1.0 — Institutional Access Architecture • Verified for IIM Sambalpur Campus"
