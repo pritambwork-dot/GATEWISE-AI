@@ -103,7 +103,7 @@ export default function ProductHeroShowcase({
               href="/download?platform=ios"
               className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-sky-50 text-sky-800 border border-sky-200/80 hover:bg-sky-100 transition-colors font-semibold text-[11px]"
             >
-              <span>Apple iOS (IPA)</span>
+              <span>Apple iOS (TestFlight)</span>
             </Link>
             <span className="text-slate-300">•</span>
             <Link

@@ -2,27 +2,29 @@
   "application": "GATEWISE AI",
   "platform": "android",
   "release_channel": "production",
-  "published": true,
+  "published": false,
   "version_name": "1.0.0",
   "version_code": 1,
   "minimum_android_version": "Android 8.0 (API 26)+",
-  "file_name": "gatewise-guard-v1.0.0-release.apk",
-  "file_size_bytes": 906440,
-  "download_url": "/downloads/gatewise-guard-v1.0.0-release.apk",
-  "sha256": "f397221752236e04de2be91d4ba1b55a2a136a6e77f5022192ca4387ea6d8ddd",
+  "target_android_version": "Android 14 (API 34)",
+  "file_name": null,
+  "file_size_bytes": null,
+  "download_url": null,
+  "sha256": null,
   "release_date": "2026-11-11",
   "release_notes": [
-    "Official production release of GATEWISE AI Guard application for Android.",
+    "Production-grade GATEWISE Guard client built with Expo SDK 51 & React Native 0.74.5.",
     "Integrated single-shot camera capture with YuNet face detection and SFace 128-D embedding.",
     "Decoupled clearance evaluation separating identity candidate match from gate authorization.",
     "Cryptographic HMAC-SHA256 non-repudiation sealing for all sovereign guard decisions.",
-    "Offline caching and sync queue for transient connectivity drops."
+    "Offline caching and SQLite sync queue for transient connectivity drops."
   ],
   "package_identifier": "com.gatewiseai.guard",
-  "verification_status": "VERIFIED_PRODUCTION_RELEASE",
+  "verification_status": "AWAITING_PRODUCTION_CERTIFICATION",
+  "eas_build_profile": "production-apk",
   "signing_certificate": {
     "issuer": "GATEWISE AI Institutional Release Authority",
-    "fingerprint_sha256": "f397221752236e04de2be91d4ba1b55a2a136a6e77f5022192ca4387ea6d8ddd",
-    "valid_from": "2026-11-11"
+    "fingerprint_sha256": null,
+    "valid_from": null
   }
 }

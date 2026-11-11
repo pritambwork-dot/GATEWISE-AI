@@ -255,7 +255,7 @@ export default function PublicLayout({
                 </li>
                 <li>
                   <Link href="/download?platform=ios" className="text-gatewise-secondary hover:text-gatewise-text transition-colors">
-                    Apple iOS Guard (IPA &amp; TestFlight)
+                    Apple iOS Guard (TestFlight &amp; MDM)
                   </Link>
                 </li>
                 <li>
