@@ -21,6 +21,8 @@ All media files adhere strictly to synthetic privacy constraints: zero genuine s
 
 | File Name | Format | Codec | Resolution | FPS | Duration | File Size | Primary Purpose |
 |:---|:---|:---|:---|:---|:---|:---|:---|
+| `gatewise-teaser-template.mp4` | MP4 | H.264 (High) | 1920x1080 | 60 | 28.84s | 4.50 MB | High-Energy Motion Teaser (Template Recreation) |
+| `gatewise-teaser-template.webm` | WebM | VP8 / Vorbis | 1920x1080 | 60 | 28.84s | 7.66 MB | 60fps WebM fallback for motion teaser |
 | `gatewise-overview.mp4` | MP4 | H.264 (High) | 1920x1080 | 30 | 65s | 6.76 MB | Master Cinematic Walkthrough (Scenes 1–5) |
 | `gatewise-overview.webm` | WebM | VP8 / Vorbis | 1920x1080 | 30 | 65s | 7.55 MB | Open-standard fallback for modern browsers |
 | `guard-app-demo.mp4` | MP4 | H.264 (High) | 1080x1920 | 30 | 16s | 324 KB | Vertical Guard Mobile HUD Walkthrough |
@@ -32,6 +34,7 @@ All media files adhere strictly to synthetic privacy constraints: zero genuine s
 
 | File Name | Format | Dimensions | File Size | Aspect Ratio | Display Role |
 |:---|:---|:---|:---|:---|:---|
+| `gatewise-teaser.webp` | WebP | 1920x1080 | 37 KB | 16:9 | High-energy teaser poster image |
 | `gatewise-overview.webp` | WebP | 1920x1080 | 104 KB | 16:9 | Master video player poster |
 | `gatewise-overview.jpg` | JPEG | 1920x1080 | 186 KB | 16:9 | Legacy browser fallback poster |
 | `guard-demo.webp` | WebP | 1080x1920 | 88 KB | 9:16 | Vertical phone frame poster (Section A) |

@@ -48,6 +48,32 @@ The master product walkthrough video (`gatewise-overview.mp4` and `gatewise-over
 
 ---
 
+## 1.5 High-Energy Motion Teaser Template (28.84 Seconds • 60 FPS)
+
+Recreated directly from the user-uploaded template video (`64173585.mp4` / `media_1794382458736_56d85117.mp4`), preserving its exact electronic soundtrack, 60fps frame rate, scene timings, kinetic typography, and motion pacing while translating all visuals to GATEWISE AI branding:
+
+```
++---------------------------------------------------------------------------------------------------+
+| 00:00 - 02.27 | Scene 1: The Kinetic Hook — Edge Biometrics, GATEWISE Logo, Sub-300ms Pill        |
+| 02.27 - 07.60 | Scene 2: Live Ingress Queue — Active Gate Cards & Pulsating Stadium Button Wave   |
+| 07.60 - 13.10 | Scene 3: Sovereign Security Stack — 3D Cascading Deck with Animated Green Cursor |
+| 13.10 - 15.43 | Scene 4: The Unified Platform Statement — Connect All Systems & 5 Orbiting Badges |
+| 15.43 - 21.70 | Scene 5: Massive Metric Showcase — <300ms SLA & 5 Floating Sine-Wave Pills        |
+| 21.70 - 25.00 | Scene 6: Constellation Perimeter Network — 6 Checkpoint Nodes in Connected Orbit  |
+| 25.00 - 27.50 | Scene 7: Value Proposition & Call to Action — Dual Glowing Arches & Toggle Switch  |
+| 27.50 - 28.84 | Scene 8: Brand Outro & Release Lockup — Emerald Shield Checkmark & IIM Sambalpur  |
++---------------------------------------------------------------------------------------------------+
+```
+
+- **Output Files:**
+  - `gatewise-teaser-template.mp4` (4.50 MB, H.264 High Profile, 60 fps, 1920x1080)
+  - `gatewise-teaser-template.webm` (7.66 MB, VP8, 60 fps, 1920x1080)
+  - `gatewise-teaser.webp` (37 KB poster image)
+- **Audio:** Original driving electronic soundtrack extracted from user template (`soundtrack.aac`) and perfectly muxed.
+- **Renderer Script:** [`scripts/render_template_video.py`](file:///Users/pritambiswas/antigravity/NORVA/scripts/render_template_video.py)
+
+---
+
 ## 2. Technical Encoding Specifications
 
 ### 2.1 Master File: `gatewise-overview.mp4`

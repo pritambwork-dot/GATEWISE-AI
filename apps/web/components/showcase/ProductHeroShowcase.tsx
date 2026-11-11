@@ -84,7 +84,7 @@ export default function ProductHeroShowcase({
               <div className="w-6 h-6 rounded-full bg-gatewise-light flex items-center justify-center text-gatewise-primary">
                 <Play className="w-3 h-3 fill-current ml-0.5" />
               </div>
-              <span>Watch Product Demo (65s)</span>
+              <span>Watch Product Teaser (28s)</span>
             </button>
           </div>
         </div>
