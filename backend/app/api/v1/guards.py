@@ -22,6 +22,7 @@ class UpdateGuardRequest(BaseModel):
     account_status: Optional[str] = None # ACTIVE, SUSPENDED, INACTIVE
     avatar_url: Optional[str] = None
 
+@router.get("")
 @router.get("/")
 def list_guards(
     status: Optional[str] = None,

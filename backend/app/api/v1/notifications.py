@@ -8,6 +8,7 @@ from ...security.permissions import require_roles, GatewiseRole
 
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
+@router.get("")
 @router.get("/")
 def get_notifications(
     admin: User = Depends(require_roles([GatewiseRole.ADMIN, GatewiseRole.SUPER_ADMIN])),

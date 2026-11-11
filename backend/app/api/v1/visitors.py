@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timezone
 import random
+import uuid
 from ...core.database import get_db
 from ...models.entities import VisitorPass, User, AuditLog
 from ...schemas.visitor import VisitorPassResponse, VisitorPassCreate, VisitorIntakeRequest
@@ -10,8 +11,15 @@ from ...security.permissions import get_current_user, require_roles, GatewiseRol
 
 router = APIRouter(prefix="/visitors", tags=["Visitors"])
 
-def generate_pass_code() -> str:
-    return f"PASS-{random.randint(1000, 9999)}"
+def generate_pass_code(db: Optional[Session] = None) -> str:
+    for _ in range(20):
+        code = f"PASS-{random.randint(1000, 9999)}"
+        if db is not None:
+            if not db.query(VisitorPass).filter(VisitorPass.pass_code == code).first():
+                return code
+        else:
+            return code
+    return f"PASS-{uuid.uuid4().hex[:6].upper()}"
 
 @router.get("/", response_model=List[VisitorPassResponse])
 def list_visitor_passes(
@@ -32,7 +40,7 @@ def register_walk_in_visitor(
     db: Session = Depends(get_db)
 ):
     now = datetime.now(timezone.utc)
-    pass_code = generate_pass_code()
+    pass_code = generate_pass_code(db)
     
     pass_record = VisitorPass(
         pass_code=pass_code,
@@ -189,7 +197,7 @@ def create_pre_approved_pass(
     current_admin: User = Depends(require_roles([GatewiseRole.ADMIN, GatewiseRole.SUPER_ADMIN])),
     db: Session = Depends(get_db)
 ):
-    pass_code = generate_pass_code()
+    pass_code = generate_pass_code(db)
     pass_record = VisitorPass(
         pass_code=pass_code,
         visitor_name=payload.visitor_name,

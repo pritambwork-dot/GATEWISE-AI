@@ -29,14 +29,14 @@ export default function PublicLayout({
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-brand-mint selection:text-gatewise-deep font-sans">
       {/* Stageshow Top Telemetry Banner */}
-      <div className="bg-[#17221c] text-[#d1ded7] text-[11px] py-1.5 px-4 font-mono border-b border-black/10 flex items-center justify-between overflow-x-auto">
+      <div className="bg-[#17221c] text-[#d1ded7] text-[11px] py-1.5 px-4 font-mono border-b border-black/10 flex items-center justify-between overflow-hidden">
         <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
           <div className="flex items-center gap-2 shrink-0">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-semibold text-white">GATEWISE CLUSTER</span>
-            <span className="text-[#879990]">• Node N-01 IIM Sambalpur Perimeter Active</span>
+            <span className="text-[#879990] hidden sm:inline">• Node N-01 IIM Sambalpur Perimeter Active</span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-[#879990] shrink-0 text-[10px]">
+          <div className="hidden md:flex items-center gap-4 text-[#879990] shrink-0 text-[10px]">
             <span>SFace 128-D Cosine: <strong className="text-emerald-400 font-semibold">0.984 Avg</strong></span>
             <span>Edge YuNet: <strong className="text-white font-semibold">28ms</strong></span>
             <span>Audit: <strong className="text-white font-semibold">HMAC-SHA256</strong></span>
@@ -68,7 +68,7 @@ export default function PublicLayout({
           </Link>
 
           {/* Desktop Nav Items */}
-          <nav className="hidden md:flex items-center p-1 rounded-full bg-black/[0.03] border border-black/[0.04]">
+          <nav className="hidden lg:flex items-center p-1 rounded-full bg-black/[0.03] border border-black/[0.04]">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -88,7 +88,7 @@ export default function PublicLayout({
           </nav>
 
           {/* Right Action CTAs */}
-          <div className="hidden md:flex items-center space-x-2.5">
+          <div className="hidden lg:flex items-center space-x-2.5">
             <Link
               href="/admin/login"
               className="text-xs font-semibold text-gatewise-secondary hover:text-gatewise-text px-3 py-1.5 rounded-lg hover:bg-black/[0.03] transition-colors flex items-center gap-1.5"
@@ -107,7 +107,7 @@ export default function PublicLayout({
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center space-x-2">
+          <div className="flex lg:hidden items-center space-x-2">
             <Link
               href="/download"
               className="px-3 py-1.5 rounded-full bg-gatewise-primary text-white text-xs font-semibold"
@@ -126,7 +126,7 @@ export default function PublicLayout({
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-gatewise-border bg-white px-4 pt-2 pb-6 space-y-3 animate-in fade-in duration-150">
+          <div className="lg:hidden border-b border-gatewise-border bg-white px-4 pt-2 pb-6 space-y-3 animate-in fade-in duration-150">
             <nav className="space-y-1">
               {navLinks.map((link) => (
                 <Link

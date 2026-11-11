@@ -30,10 +30,12 @@ class UpdateGateRequest(BaseModel):
     operating_hours: Optional[str] = None
     status: Optional[str] = None
 
+@router.get("")
 @router.get("/")
 def list_gates(db: Session = Depends(get_db)):
     return db.query(Gate).all()
 
+@router.post("", status_code=status.HTTP_201_CREATED)
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_gate(
     payload: CreateGateRequest,

@@ -10,6 +10,7 @@ from ...security.permissions import get_current_user, require_roles, GatewiseRol
 
 router = APIRouter(prefix="/identities", tags=["Institutional Identities"])
 
+@router.get("", response_model=List[IdentityResponse])
 @router.get("/", response_model=List[IdentityResponse])
 def list_identities(
     category: Optional[str] = None,

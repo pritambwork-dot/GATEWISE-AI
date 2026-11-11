@@ -1,0 +1,848 @@
+{
+  "timestamp": "2026-11-11T05:54:43Z",
+  "screenshots": [
+    {
+      "group": "Public Website",
+      "route": "/",
+      "filename": "docs/design/screenshots/website/web_01_homepage.png",
+      "description": "Homepage with Hero & Trust Strip",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 528.2,
+      "dom_nodes": 432,
+      "fcp_ms": 104
+    },
+    {
+      "group": "Public Website",
+      "route": "/product",
+      "filename": "docs/design/screenshots/website/web_02_product.png",
+      "description": "Product Overview & Architecture",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 431.8,
+      "dom_nodes": 242,
+      "fcp_ms": 48
+    },
+    {
+      "group": "Public Website",
+      "route": "/how-it-works",
+      "filename": "docs/design/screenshots/website/web_03_how_it_works.png",
+      "description": "Three-Tier Processing & SFace",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 415.5,
+      "dom_nodes": 232,
+      "fcp_ms": 36
+    },
+    {
+      "group": "Public Website",
+      "route": "/features",
+      "filename": "docs/design/screenshots/website/web_04_features.png",
+      "description": "Feature Grid & Institutional Controls",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 416.7,
+      "dom_nodes": 315,
+      "fcp_ms": 28
+    },
+    {
+      "group": "Public Website",
+      "route": "/security",
+      "filename": "docs/design/screenshots/website/web_05_security.png",
+      "description": "Cryptographic Non-Repudiation & Privacy",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 410.8,
+      "dom_nodes": 199,
+      "fcp_ms": 20
+    },
+    {
+      "group": "Public Website",
+      "route": "/download",
+      "filename": "docs/design/screenshots/website/web_06_download.png",
+      "description": "Signed APK Download Centre",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 415.6,
+      "dom_nodes": 277,
+      "fcp_ms": 40
+    },
+    {
+      "group": "Public Website",
+      "route": "/installation",
+      "filename": "docs/design/screenshots/website/web_07_installation.png",
+      "description": "Zero-Trust Device Setup & Provisioning",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 418.0,
+      "dom_nodes": 231,
+      "fcp_ms": 28
+    },
+    {
+      "group": "Public Website",
+      "route": "/faq",
+      "filename": "docs/design/screenshots/website/web_08_faq.png",
+      "description": "Frequently Asked Questions & Policy",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 412.6,
+      "dom_nodes": 200,
+      "fcp_ms": 24
+    },
+    {
+      "group": "Public Website",
+      "route": "/support",
+      "filename": "docs/design/screenshots/website/web_09_support.png",
+      "description": "Support Centre & Escalation SLA",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 414.9,
+      "dom_nodes": 207,
+      "fcp_ms": 24
+    },
+    {
+      "group": "Public Website",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/website/web_10_stageshow_studio.png",
+      "description": "Stageshow Product Demonstration Studio",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 414.5,
+      "dom_nodes": 284,
+      "fcp_ms": 36
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/login",
+      "filename": "docs/design/screenshots/admin/admin_01_login.png",
+      "description": "Admin Authentication Portal with Institutional Role Quick-Entry",
+      "viewport": "1440x900",
+      "state": "INITIAL",
+      "load_time_ms": 457.8
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/admin/admin_02_command_centre.png",
+      "description": "Command Centre KPIs, Live Telemetry & Quick Actions",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 632.5,
+      "dom_nodes": 568,
+      "fcp_ms": 48
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/admin/admin_03_live_activity.png",
+      "description": "Live Gate Activity & Cryptographic Log Stream",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 621.5,
+      "dom_nodes": 3365,
+      "fcp_ms": 36
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/people",
+      "filename": "docs/design/screenshots/admin/admin_04_people_identities.png",
+      "description": "Institutional Identities & Vector Reference Directory",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 615.1,
+      "dom_nodes": 2396,
+      "fcp_ms": 24
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/enrollment",
+      "filename": "docs/design/screenshots/admin/admin_05_enrollment_requests.png",
+      "description": "Field Enrollment Referrals & Adjudication Queue",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 612.7,
+      "dom_nodes": 842,
+      "fcp_ms": 24
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/visitors",
+      "filename": "docs/design/screenshots/admin/admin_06_visitor_passes.png",
+      "description": "Pre-Approved Passes & Walk-In Intake Registry",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 625.1,
+      "dom_nodes": 301,
+      "fcp_ms": 36
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/gates",
+      "filename": "docs/design/screenshots/admin/admin_07_gate_posts.png",
+      "description": "Perimeter Gate Posts, Shifts & Lane Lockdown Controls",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 615.8,
+      "dom_nodes": 342,
+      "fcp_ms": 28
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/guards",
+      "filename": "docs/design/screenshots/admin/admin_08_guard_management.png",
+      "description": "Security Guard Directory, Credentials & Session Revocation",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 619.3,
+      "dom_nodes": 2164,
+      "fcp_ms": 28
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/repository",
+      "filename": "docs/design/screenshots/admin/admin_09_drive_repository.png",
+      "description": "Google Drive Vector Sync & Reference Image Status",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 612.6,
+      "dom_nodes": 318,
+      "fcp_ms": 24
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/analytics",
+      "filename": "docs/design/screenshots/admin/admin_10_analytics_eval.png",
+      "description": "Evaluation Metrics, Cosine Similarity Distribution & Confusion Matrix",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 613.9,
+      "dom_nodes": 645,
+      "fcp_ms": 32
+    },
+    {
+      "group": "Admin Portal",
+      "route": "/admin/settings",
+      "filename": "docs/design/screenshots/admin/admin_11_system_settings.png",
+      "description": "Security Thresholds, Biometric Latency & Session Policies",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "load_time_ms": 610.6,
+      "dom_nodes": 272,
+      "fcp_ms": 28
+    },
+    {
+      "group": "Admin Modals & Drawers",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/admin/admin_12_verification_detail_modal.png",
+      "description": "Verification Record Detail Modal with Non-Repudiation HMAC-SHA256 Hash",
+      "viewport": "1440x900",
+      "state": "MODAL_OPEN"
+    },
+    {
+      "group": "Admin Modals & Drawers",
+      "route": "/admin/people",
+      "filename": "docs/design/screenshots/admin/admin_13_identity_drawer.png",
+      "description": "Institutional Identity Profile Slide-Over Drawer with Active Clearance",
+      "viewport": "1440x900",
+      "state": "DRAWER_OPEN"
+    },
+    {
+      "group": "Admin Modals & Drawers",
+      "route": "/admin/gates",
+      "filename": "docs/design/screenshots/admin/admin_15_gate_config_modal.png",
+      "description": "Perimeter Gate Post Configuration & Guard Assignment View",
+      "viewport": "1440x900",
+      "state": "MODAL_OPEN"
+    },
+    {
+      "group": "Admin Modals & Drawers",
+      "route": "/admin/guards",
+      "filename": "docs/design/screenshots/admin/admin_16_guard_detail_modal.png",
+      "description": "Security Officer Credential & Session Revocation Modal",
+      "viewport": "1440x900",
+      "state": "MODAL_OPEN"
+    },
+    {
+      "group": "AI Assistant Workspace",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/admin/admin_17_assistant_panel.png",
+      "description": "Operational Gemini AI Assistant Workspace Slide-Over Panel",
+      "viewport": "1440x900",
+      "state": "PANEL_OPEN"
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_desktop_pro_1920x1080.png",
+      "description": "/ at 1920x1080 Desktop Pro",
+      "viewport": "1920x1080",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_desktop_pro_1920x1080.png",
+      "description": "/admin at 1920x1080 Desktop Pro",
+      "viewport": "1920x1080",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_desktop_pro_1920x1080.png",
+      "description": "/admin/activity at 1920x1080 Desktop Pro",
+      "viewport": "1920x1080",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_desktop_pro_1920x1080.png",
+      "description": "/features at 1920x1080 Desktop Pro",
+      "viewport": "1920x1080",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_desktop_pro_1920x1080.png",
+      "description": "/download at 1920x1080 Desktop Pro",
+      "viewport": "1920x1080",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_desktop_std_1440x900.png",
+      "description": "/ at 1440x900 Standard Desktop",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_desktop_std_1440x900.png",
+      "description": "/admin at 1440x900 Standard Desktop",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_desktop_std_1440x900.png",
+      "description": "/admin/activity at 1440x900 Standard Desktop",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_desktop_std_1440x900.png",
+      "description": "/features at 1440x900 Standard Desktop",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_desktop_std_1440x900.png",
+      "description": "/download at 1440x900 Standard Desktop",
+      "viewport": "1440x900",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_desktop_compact_1280x800.png",
+      "description": "/ at 1280x800 Compact Desktop",
+      "viewport": "1280x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_desktop_compact_1280x800.png",
+      "description": "/admin at 1280x800 Compact Desktop",
+      "viewport": "1280x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_desktop_compact_1280x800.png",
+      "description": "/admin/activity at 1280x800 Compact Desktop",
+      "viewport": "1280x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_desktop_compact_1280x800.png",
+      "description": "/features at 1280x800 Compact Desktop",
+      "viewport": "1280x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_desktop_compact_1280x800.png",
+      "description": "/download at 1280x800 Compact Desktop",
+      "viewport": "1280x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_tablet_land_1024x768.png",
+      "description": "/ at 1024x768 Tablet Landscape",
+      "viewport": "1024x768",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_tablet_land_1024x768.png",
+      "description": "/admin at 1024x768 Tablet Landscape",
+      "viewport": "1024x768",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_tablet_land_1024x768.png",
+      "description": "/admin/activity at 1024x768 Tablet Landscape",
+      "viewport": "1024x768",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_tablet_land_1024x768.png",
+      "description": "/features at 1024x768 Tablet Landscape",
+      "viewport": "1024x768",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_tablet_land_1024x768.png",
+      "description": "/download at 1024x768 Tablet Landscape",
+      "viewport": "1024x768",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_tablet_port_768x1024.png",
+      "description": "/ at 768x1024 Tablet Portrait",
+      "viewport": "768x1024",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_tablet_port_768x1024.png",
+      "description": "/admin at 768x1024 Tablet Portrait",
+      "viewport": "768x1024",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_tablet_port_768x1024.png",
+      "description": "/admin/activity at 768x1024 Tablet Portrait",
+      "viewport": "768x1024",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_tablet_port_768x1024.png",
+      "description": "/features at 768x1024 Tablet Portrait",
+      "viewport": "768x1024",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_tablet_port_768x1024.png",
+      "description": "/download at 768x1024 Tablet Portrait",
+      "viewport": "768x1024",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_mobile_phone_390x844.png",
+      "description": "/ at 390x844 Mobile Phone",
+      "viewport": "390x844",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_mobile_phone_390x844.png",
+      "description": "/admin at 390x844 Mobile Phone",
+      "viewport": "390x844",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_mobile_phone_390x844.png",
+      "description": "/admin/activity at 390x844 Mobile Phone",
+      "viewport": "390x844",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_mobile_phone_390x844.png",
+      "description": "/features at 390x844 Mobile Phone",
+      "viewport": "390x844",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_mobile_phone_390x844.png",
+      "description": "/download at 390x844 Mobile Phone",
+      "viewport": "390x844",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/",
+      "filename": "docs/design/screenshots/responsive/resp_01_home_compact_android_360x800.png",
+      "description": "/ at 360x800 Compact Android",
+      "viewport": "360x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin",
+      "filename": "docs/design/screenshots/responsive/resp_02_admin_compact_android_360x800.png",
+      "description": "/admin at 360x800 Compact Android",
+      "viewport": "360x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/admin/activity",
+      "filename": "docs/design/screenshots/responsive/resp_03_activity_compact_android_360x800.png",
+      "description": "/admin/activity at 360x800 Compact Android",
+      "viewport": "360x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/features",
+      "filename": "docs/design/screenshots/responsive/resp_04_features_compact_android_360x800.png",
+      "description": "/features at 360x800 Compact Android",
+      "viewport": "360x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Responsive Breakpoints",
+      "route": "/download",
+      "filename": "docs/design/screenshots/responsive/resp_05_download_compact_android_360x800.png",
+      "description": "/download at 360x800 Compact Android",
+      "viewport": "360x800",
+      "state": "POPULATED",
+      "has_horizontal_overflow": false
+    },
+    {
+      "group": "Stageshow Rehearsals",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/rehearsal/stageshow_scene_1.png",
+      "description": "Stageshow Studio Scene 1 Animated Rehearsal",
+      "viewport": "1440x900",
+      "state": "SCENE_1_ACTIVE"
+    },
+    {
+      "group": "Stageshow Rehearsals",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/rehearsal/stageshow_scene_2.png",
+      "description": "Stageshow Studio Scene 2 Animated Rehearsal",
+      "viewport": "1440x900",
+      "state": "SCENE_2_ACTIVE"
+    },
+    {
+      "group": "Stageshow Rehearsals",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/rehearsal/stageshow_scene_3.png",
+      "description": "Stageshow Studio Scene 3 Animated Rehearsal",
+      "viewport": "1440x900",
+      "state": "SCENE_3_ACTIVE"
+    },
+    {
+      "group": "Stageshow Rehearsals",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/rehearsal/stageshow_scene_4.png",
+      "description": "Stageshow Studio Scene 4 Animated Rehearsal",
+      "viewport": "1440x900",
+      "state": "SCENE_4_ACTIVE"
+    },
+    {
+      "group": "Stageshow Rehearsals",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/rehearsal/stageshow_scene_5.png",
+      "description": "Stageshow Studio Scene 5 Animated Rehearsal",
+      "viewport": "1440x900",
+      "state": "SCENE_5_ACTIVE"
+    },
+    {
+      "group": "Guard Mobile Views",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/mobile/mob_01_viewfinder_idle.png",
+      "description": "Handheld Viewfinder Idle State with Oval Reticle",
+      "viewport": "1440x900 (Phone Frame)",
+      "state": "IDLE"
+    },
+    {
+      "group": "Guard Mobile Views",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/mobile/mob_02_detecting_landmarks.png",
+      "description": "Facial Landmark Induction & SFace 128-D Embedding Generation",
+      "viewport": "1440x900 (Phone Frame)",
+      "state": "SCANNING"
+    },
+    {
+      "group": "Guard Mobile Views",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/mobile/mob_03_biometric_match_found.png",
+      "description": "Candidate Identity Match >= 90% with Auto-Admit Recommendation",
+      "viewport": "1440x900 (Phone Frame)",
+      "state": "MATCHED"
+    },
+    {
+      "group": "Guard Mobile Views",
+      "route": "/showcase",
+      "filename": "docs/design/screenshots/mobile/mob_04_sovereign_entry_granted.png",
+      "description": "Sovereign Guard Entry Decision & Cryptographic Seal Payoff",
+      "viewport": "1440x900 (Phone Frame)",
+      "state": "AUTHORIZED"
+    }
+  ],
+  "performance": {
+    "/": {
+      "route": "/",
+      "load_time_ms": 528.2,
+      "ttfb_ms": 4,
+      "fcp_ms": 104,
+      "dom_nodes": 432
+    },
+    "/product": {
+      "route": "/product",
+      "load_time_ms": 431.8,
+      "ttfb_ms": 3,
+      "fcp_ms": 48,
+      "dom_nodes": 242
+    },
+    "/how-it-works": {
+      "route": "/how-it-works",
+      "load_time_ms": 415.5,
+      "ttfb_ms": 3,
+      "fcp_ms": 36,
+      "dom_nodes": 232
+    },
+    "/features": {
+      "route": "/features",
+      "load_time_ms": 416.7,
+      "ttfb_ms": 4,
+      "fcp_ms": 28,
+      "dom_nodes": 315
+    },
+    "/security": {
+      "route": "/security",
+      "load_time_ms": 410.8,
+      "ttfb_ms": 2,
+      "fcp_ms": 20,
+      "dom_nodes": 199
+    },
+    "/download": {
+      "route": "/download",
+      "load_time_ms": 415.6,
+      "ttfb_ms": 3,
+      "fcp_ms": 40,
+      "dom_nodes": 277
+    },
+    "/installation": {
+      "route": "/installation",
+      "load_time_ms": 418.0,
+      "ttfb_ms": 2,
+      "fcp_ms": 28,
+      "dom_nodes": 231
+    },
+    "/faq": {
+      "route": "/faq",
+      "load_time_ms": 412.6,
+      "ttfb_ms": 2,
+      "fcp_ms": 24,
+      "dom_nodes": 200
+    },
+    "/support": {
+      "route": "/support",
+      "load_time_ms": 414.9,
+      "ttfb_ms": 2,
+      "fcp_ms": 24,
+      "dom_nodes": 207
+    },
+    "/showcase": {
+      "route": "/showcase",
+      "load_time_ms": 414.5,
+      "ttfb_ms": 3,
+      "fcp_ms": 36,
+      "dom_nodes": 284
+    },
+    "/admin": {
+      "route": "/admin",
+      "load_time_ms": 632.5,
+      "ttfb_ms": 3,
+      "fcp_ms": 48,
+      "dom_nodes": 568
+    },
+    "/admin/activity": {
+      "route": "/admin/activity",
+      "load_time_ms": 621.5,
+      "ttfb_ms": 4,
+      "fcp_ms": 36,
+      "dom_nodes": 3365
+    },
+    "/admin/people": {
+      "route": "/admin/people",
+      "load_time_ms": 615.1,
+      "ttfb_ms": 2,
+      "fcp_ms": 24,
+      "dom_nodes": 2396
+    },
+    "/admin/enrollment": {
+      "route": "/admin/enrollment",
+      "load_time_ms": 612.7,
+      "ttfb_ms": 2,
+      "fcp_ms": 24,
+      "dom_nodes": 842
+    },
+    "/admin/visitors": {
+      "route": "/admin/visitors",
+      "load_time_ms": 625.1,
+      "ttfb_ms": 4,
+      "fcp_ms": 36,
+      "dom_nodes": 301
+    },
+    "/admin/gates": {
+      "route": "/admin/gates",
+      "load_time_ms": 615.8,
+      "ttfb_ms": 2,
+      "fcp_ms": 28,
+      "dom_nodes": 342
+    },
+    "/admin/guards": {
+      "route": "/admin/guards",
+      "load_time_ms": 619.3,
+      "ttfb_ms": 2,
+      "fcp_ms": 28,
+      "dom_nodes": 2164
+    },
+    "/admin/repository": {
+      "route": "/admin/repository",
+      "load_time_ms": 612.6,
+      "ttfb_ms": 1,
+      "fcp_ms": 24,
+      "dom_nodes": 318
+    },
+    "/admin/analytics": {
+      "route": "/admin/analytics",
+      "load_time_ms": 613.9,
+      "ttfb_ms": 2,
+      "fcp_ms": 32,
+      "dom_nodes": 645
+    },
+    "/admin/settings": {
+      "route": "/admin/settings",
+      "load_time_ms": 610.6,
+      "ttfb_ms": 1,
+      "fcp_ms": 28,
+      "dom_nodes": 272
+    }
+  },
+  "accessibility": {
+    "wcag_target": "WCAG 2.2 Level AA",
+    "contrast_ratio_normal_text": ">= 4.5:1 (Enforced by institutional palette #1A2E22 on #FFFFFF / #F4F8F5: 12.8:1)",
+    "contrast_ratio_large_text": ">= 3.0:1 (Enforced by headline palette #14251B: 14.2:1)",
+    "focus_indicators": "2px solid #23865D with 2px offset (Enforced globally via focus-visible:ring-2 focus-visible:ring-emerald-600)",
+    "reduced_motion_handling": "Enforced via motion-safe: and @media(prefers-reduced-motion)",
+    "automated_scan": {
+      "issuesCount": 0,
+      "issues": [],
+      "headingSkipped": true
+    }
+  },
+  "interactions": [
+    {
+      "action": "Open Verification Detail Modal",
+      "component": "Activity Table Row",
+      "status": "PASS",
+      "notes": "Modal displays full biometric breakdown, candidate similarity, and cryptographic hash."
+    },
+    {
+      "action": "Open Identity Slide-Over Drawer",
+      "component": "People Table Row",
+      "status": "PASS",
+      "notes": "Slide-over drawer displays photograph, clearance tier, gate privileges, and audit log."
+    },
+    {
+      "action": "Inspect Gate Post",
+      "component": "Gate Post Card",
+      "status": "PASS",
+      "notes": "Displays active guard assignments, lane lockdown state, and operating hours."
+    },
+    {
+      "action": "Inspect Security Officer",
+      "component": "Guard Table Row",
+      "status": "PASS",
+      "notes": "Shows gate post assignment, badge ID, and security session controls."
+    },
+    {
+      "action": "Trigger Cmd+K AI Assistant Panel",
+      "component": "Global Keybinding & Trigger Pill",
+      "status": "PASS",
+      "notes": "Assistant panel opens smoothly from right edge with query prompts and tool execution permissions."
+    }
+  ],
+  "defects": []
+}

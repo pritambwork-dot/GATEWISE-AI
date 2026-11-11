@@ -53,6 +53,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -120,13 +121,17 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   const currentNav = NAV_GROUPS.flatMap((g) => g.items).find((item) => item.href === pathname);
   const pageTitle = currentNav?.label || 'Command Centre';
 
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen flex bg-background text-gatewise-text antialiased selection:bg-gatewise-light selection:text-gatewise-deep">
       {/* Desktop macOS-Style Refined Sidebar */}
       <aside
         className={`${
           collapsed ? 'w-[72px]' : 'w-64'
-        } bg-white border-r border-black/[0.07] flex flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none shadow-[1px_0_12px_rgba(0,0,0,0.02)]`}
+        } hidden md:flex bg-white border-r border-black/[0.07] flex-col justify-between shrink-0 transition-all duration-200 z-30 select-none shadow-[1px_0_12px_rgba(0,0,0,0.02)]`}
       >
         <div className="flex flex-col h-full">
           {/* Brand & Compact Workspace Header */}
@@ -243,16 +248,100 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
+      {/* Mobile Slide-Over Navigation Drawer */}
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileNavOpen(false)}
+          />
+          <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between p-4 z-10 animate-in slide-in-from-left duration-200">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-black/[0.06]">
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="flex items-center space-x-2.5"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-gatewise-primary flex items-center justify-center text-white shrink-0 shadow-2xs">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <span className="font-extrabold text-sm text-gatewise-text tracking-tight">
+                    GATEWISE<span className="text-gatewise-primary ml-0.5">AI</span>
+                  </span>
+                </Link>
+                <button
+                  onClick={() => setMobileNavOpen(false)}
+                  className="p-1.5 rounded-lg text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.04]"
+                  aria-label="Close navigation drawer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <nav className="overflow-y-auto max-h-[calc(100vh-160px)] py-4 space-y-4">
+                {NAV_GROUPS.map((group) => (
+                  <div key={group.title} className="space-y-1">
+                    <span className="text-[10px] font-bold text-gatewise-secondary/70 uppercase px-2.5 tracking-wider block">
+                      {group.title}
+                    </span>
+                    {group.items.map((item) => {
+                      const isActive = pathname === item.href;
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileNavOpen(false)}
+                          className={`flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                            isActive
+                              ? 'bg-gatewise-primary text-white font-semibold shadow-xs'
+                              : 'text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.03]'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4 shrink-0" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ))}
+              </nav>
+            </div>
+
+            <div className="pt-3 border-t border-black/[0.06] flex items-center justify-between">
+              <span className="text-xs font-semibold text-gatewise-text truncate max-w-[150px]">
+                {user?.full_name || 'Administrator'}
+              </span>
+              <button
+                onClick={logout}
+                className="p-1.5 rounded-lg text-gatewise-secondary hover:text-rose-600 hover:bg-rose-50"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Administrative Surface Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header Bar */}
         <header className="h-16 bg-white/90 backdrop-blur-xl border-b border-black/[0.07] px-4 sm:px-8 flex items-center justify-between shrink-0 sticky top-0 z-20">
-          {/* Breadcrumb Navigation */}
+          {/* Left Breadcrumb & Mobile Drawer Trigger */}
           <div className="flex items-center space-x-2 text-xs">
-            <span className="text-gatewise-secondary font-medium">GATEWISE AI</span>
-            <span className="text-gatewise-secondary/40">/</span>
-            <span className="text-gatewise-secondary font-medium">Operations</span>
-            <span className="text-gatewise-secondary/40">/</span>
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="md:hidden p-1.5 -ml-1 rounded-lg text-gatewise-secondary hover:text-gatewise-text hover:bg-black/[0.04]"
+              aria-label="Open Navigation Drawer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <span className="text-gatewise-secondary font-medium hidden sm:inline">GATEWISE AI</span>
+            <span className="text-gatewise-secondary/40 hidden sm:inline">/</span>
+            <span className="text-gatewise-secondary font-medium hidden sm:inline">Operations</span>
+            <span className="text-gatewise-secondary/40 hidden sm:inline">/</span>
             <span className="font-bold text-gatewise-text">{pageTitle}</span>
           </div>
 
