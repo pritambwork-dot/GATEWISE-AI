@@ -49,7 +49,7 @@ export const Testimonials: React.FC = () => {
             <figcaption className="mt-6 sm:mt-8 pt-4 sm:pt-5 border-t border-white/10">
               <div className="text-sm font-semibold text-white">{t.author}</div>
               <div className="text-xs text-white/50 mt-0.5">{t.role}</div>
-              <div className="text-xs text-[#00d2ff] font-semibold tracking-wider uppercase mt-2">
+              <div className="text-xs text-[#12B5A6] font-semibold tracking-wider uppercase mt-2">
                 {t.company}
               </div>
             </figcaption>

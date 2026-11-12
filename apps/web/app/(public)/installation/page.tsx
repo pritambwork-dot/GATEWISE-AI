@@ -137,41 +137,12 @@ export default function InstallationGuidePage() {
 
       {/* Platform Switcher */}
       <div className="bg-black/[0.04] p-1.5 rounded-2xl border border-black/[0.06] flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2">
-        <button
-          onClick={() => setActiveTab('android')}
-          className={`flex items-center justify-center space-x-2 py-3 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
-            activeTab === 'android'
-              ? 'bg-white text-gatewise-deep shadow-xs'
-              : 'text-gatewise-secondary hover:text-gatewise-text'
-          }`}
+        <div
+          className="flex items-center justify-center space-x-2 py-3 sm:py-2.5 px-6 rounded-xl text-xs sm:text-sm font-bold bg-white text-gatewise-deep shadow-xs"
         >
-          <Smartphone className={`w-4 h-4 ${activeTab === 'android' ? 'text-emerald-600' : 'text-slate-400'}`} />
-          <span>Android (APK)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('ios')}
-          className={`flex items-center justify-center space-x-2 py-3 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
-            activeTab === 'ios'
-              ? 'bg-white text-gatewise-deep shadow-xs'
-              : 'text-gatewise-secondary hover:text-gatewise-text'
-          }`}
-        >
-          <Apple className={`w-4 h-4 ${activeTab === 'ios' ? 'text-slate-900' : 'text-slate-400'}`} />
-          <span>Apple iOS (IPA / TestFlight)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('macos')}
-          className={`flex items-center justify-center space-x-2 py-3 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
-            activeTab === 'macos'
-              ? 'bg-white text-gatewise-deep shadow-xs'
-              : 'text-gatewise-secondary hover:text-gatewise-text'
-          }`}
-        >
-          <Monitor className={`w-4 h-4 ${activeTab === 'macos' ? 'text-purple-600' : 'text-slate-400'}`} />
-          <span>macOS Desktop (DMG)</span>
-        </button>
+          <Smartphone className="w-4 h-4 text-emerald-600" />
+          <span>Android Guard APK Walkthrough</span>
+        </div>
       </div>
 
       {/* Critical Security Warning Card */}

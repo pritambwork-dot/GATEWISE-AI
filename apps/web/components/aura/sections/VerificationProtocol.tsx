@@ -63,14 +63,14 @@ export const VerificationProtocol: React.FC = () => {
                 onClick={() => setActiveStep(idx)}
                 className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all cursor-pointer min-h-[64px] ${
                   isActive
-                    ? 'border-[#00d2ff]/60 bg-[#00d2ff]/10 shadow-[0_0_20px_rgba(0,210,255,0.15)]'
+                    ? 'border-[#2F5BFF]/70 bg-[#2F5BFF]/15 shadow-[0_0_24px_rgba(47,91,255,0.22)]'
                     : 'border-white/10 bg-white/5 hover:bg-white/10 text-white/60'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span
                     className={`font-mono text-xs font-bold ${
-                      isActive ? 'text-[#00d2ff]' : 'text-white/40'
+                      isActive ? 'text-[#12B5A6]' : 'text-white/40'
                     }`}
                   >
                     STAGE {step.num}
@@ -95,7 +95,7 @@ export const VerificationProtocol: React.FC = () => {
                 onClick={() => setActiveStep(idx)}
                 className={`p-4 sm:p-6 rounded-2xl border transition-all cursor-pointer ${
                   isActive
-                    ? 'border-[#00d2ff]/40 bg-white/[0.04] shadow-lg'
+                    ? 'border-[#2F5BFF]/50 bg-[#2F5BFF]/5 shadow-lg'
                     : 'border-white/5 bg-transparent hover:bg-white/[0.02]'
                 }`}
               >
@@ -104,7 +104,7 @@ export const VerificationProtocol: React.FC = () => {
                     <span
                       className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-mono text-xs font-bold transition-all shrink-0 ${
                         isActive
-                          ? 'bg-white text-black shadow-md'
+                          ? 'bg-[#2F5BFF] text-white shadow-md'
                           : 'bg-white/10 text-white/60'
                       }`}
                     >
@@ -122,7 +122,7 @@ export const VerificationProtocol: React.FC = () => {
                   <span
                     className={`text-[10px] font-mono px-2.5 py-0.5 sm:py-1 rounded-full border transition-all self-start sm:self-auto shrink-0 ${
                       isActive
-                        ? 'bg-[#00d2ff]/15 text-[#00d2ff] border-[#00d2ff]/40 font-semibold'
+                        ? 'bg-[#2F5BFF]/20 text-[#12B5A6] border-[#2F5BFF]/40 font-semibold'
                         : 'bg-white/5 text-white/40 border-white/10'
                     }`}
                   >
@@ -137,7 +137,7 @@ export const VerificationProtocol: React.FC = () => {
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.25 }}
-                      className="mt-3.5 pl-3 sm:pl-13 border-l-2 border-[#00d2ff]/30 ml-2 sm:ml-4 overflow-hidden"
+                      className="mt-3.5 pl-3 sm:pl-13 border-l-2 border-[#12B5A6]/40 ml-2 sm:ml-4 overflow-hidden"
                     >
                       <p className="text-xs sm:text-sm text-white/70 leading-relaxed pt-1">
                         {step.desc}

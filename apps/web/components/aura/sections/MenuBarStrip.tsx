@@ -76,8 +76,8 @@ export const MenuBarStrip: React.FC = () => {
           </div>
 
           {/* Mobile Live Pill */}
-          <div className="sm:hidden font-mono text-[10px] text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="sm:hidden font-mono text-[10px] text-[#1FB36B] flex items-center gap-1.5 bg-[#1FB36B]/10 px-2 py-0.5 rounded-full border border-[#1FB36B]/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
             <span>4 Gates Online</span>
           </div>
         </div>
@@ -85,14 +85,14 @@ export const MenuBarStrip: React.FC = () => {
         {/* Right side: Operations Telemetry & Time */}
         <div className="flex items-center gap-2.5 sm:gap-5 text-white/70">
           <div className="hidden md:flex items-center gap-3 font-mono text-[11px] text-white/60">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <span className="flex items-center gap-1.5 text-[#1FB36B]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-ping" />
               4 Gates Online
             </span>
             <span>•</span>
             <span className="text-white/50">12 Guards Active</span>
             <span>•</span>
-            <span className="text-[#00d2ff]">242ms Edge Match</span>
+            <span className="text-[#12B5A6]">242ms Edge Match</span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">

@@ -75,13 +75,13 @@ export const CookieConsent: React.FC = () => {
             /* Main Banner */
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d2ff]/20 to-[#3D81E3]/20 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Cookie className="w-5 h-5 text-[#00d2ff]" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#12B5A6]/20 to-[#2F5BFF]/20 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Cookie className="w-5 h-5 text-[#12B5A6]" />
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-white tracking-tight">Institutional Privacy &amp; Cookies</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-emerald-400 border border-white/10">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#1FB36B] border border-white/10">
                       DPDP ACT 2023
                     </span>
                   </div>
@@ -122,7 +122,7 @@ export const CookieConsent: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-[#00d2ff]" />
+                  <Shield className="w-4 h-4 text-[#12B5A6]" />
                   <span className="text-sm font-bold text-white">Granular Cookie Governance</span>
                 </div>
                 <button
@@ -141,7 +141,7 @@ export const CookieConsent: React.FC = () => {
                   <div className="space-y-0.5 max-w-md">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-white">Strictly Necessary &amp; Security</span>
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-400">ALWAYS ON</span>
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#1FB36B]/20 text-[#1FB36B]">ALWAYS ON</span>
                     </div>
                     <p className="text-[11px] text-white/60">
                       Required for sovereign gate authentication tokens, encrypted WebSockets, and CSRF defense. Cannot be disabled.
@@ -162,7 +162,7 @@ export const CookieConsent: React.FC = () => {
                     type="checkbox"
                     checked={analyticsAllowed}
                     onChange={(e) => setAnalyticsAllowed(e.target.checked)}
-                    className="w-4 h-4 accent-[#00d2ff] rounded cursor-pointer"
+                    className="w-4 h-4 accent-[#2F5BFF] rounded cursor-pointer"
                   />
                 </div>
 
@@ -178,7 +178,7 @@ export const CookieConsent: React.FC = () => {
                     type="checkbox"
                     checked={prefsAllowed}
                     onChange={(e) => setPrefsAllowed(e.target.checked)}
-                    className="w-4 h-4 accent-[#00d2ff] rounded cursor-pointer"
+                    className="w-4 h-4 accent-[#2F5BFF] rounded cursor-pointer"
                   />
                 </div>
               </div>

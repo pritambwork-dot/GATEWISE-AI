@@ -61,7 +61,7 @@ export const LegalModals: React.FC = () => {
             {/* Header */}
             <div className="p-6 border-b border-white/10 flex items-center justify-between shrink-0 bg-white/[0.02]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#00d2ff]/20 to-[#3D81E3]/20 border border-white/10 flex items-center justify-center text-[#00d2ff]">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#12B5A6]/20 to-[#2F5BFF]/20 border border-white/10 flex items-center justify-center text-[#12B5A6]">
                   {activeModal === 'privacy' && <Shield className="w-5 h-5" />}
                   {activeModal === 'terms' && <Scale className="w-5 h-5" />}
                   {activeModal === 'security' && <Lock className="w-5 h-5" />}
@@ -79,7 +79,7 @@ export const LegalModals: React.FC = () => {
                   <div className="flex items-center gap-2 mt-0.5 text-xs text-white/50 font-mono">
                     <span>SOVEREIGN PERIMETER STANDARD v2.4</span>
                     <span>•</span>
-                    <span className="text-emerald-400">ACTIVE &amp; ENFORCED</span>
+                    <span className="text-[#1FB36B]">ACTIVE &amp; ENFORCED</span>
                   </div>
                 </div>
               </div>
@@ -98,8 +98,8 @@ export const LegalModals: React.FC = () => {
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-sm text-white/80 leading-relaxed font-sans">
               {activeModal === 'privacy' && (
                 <>
-                  <div className="p-4 rounded-2xl bg-[#00d2ff]/10 border border-[#00d2ff]/20 flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#00d2ff] shrink-0 mt-0.5" />
+                  <div className="p-4 rounded-2xl bg-[#12B5A6]/10 border border-[#12B5A6]/20 flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#12B5A6] shrink-0 mt-0.5" />
                     <div className="space-y-1">
                       <span className="font-bold text-white text-sm">Core Guarantee: Zero Persistent Image Storage</span>
                       <p className="text-xs text-white/80 leading-relaxed">
@@ -187,7 +187,7 @@ export const LegalModals: React.FC = () => {
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
-                      <div className="flex items-center gap-2 text-[#00d2ff]">
+                      <div className="flex items-center gap-2 text-[#12B5A6]">
                         <Lock className="w-4 h-4" />
                         <span className="font-bold text-xs uppercase tracking-wider font-mono">Encryption at Rest</span>
                       </div>
@@ -197,7 +197,7 @@ export const LegalModals: React.FC = () => {
                     </div>
 
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
-                      <div className="flex items-center gap-2 text-emerald-400">
+                      <div className="flex items-center gap-2 text-[#1FB36B]">
                         <Server className="w-4 h-4" />
                         <span className="font-bold text-xs uppercase tracking-wider font-mono">In-Transit Protection</span>
                       </div>
@@ -229,8 +229,8 @@ export const LegalModals: React.FC = () => {
               {activeModal === 'compliance' && (
                 <>
                   <div className="space-y-3">
-                    <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div className="p-4 rounded-2xl bg-[#1FB36B]/10 border border-[#1FB36B]/20 flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-[#1FB36B] shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white text-sm">DPDP Act 2023 (Digital Personal Data Protection)</span>
                         <p className="text-xs text-white/80 mt-1 leading-relaxed">
@@ -241,7 +241,7 @@ export const LegalModals: React.FC = () => {
                     </div>
 
                     <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3">
-                      <Shield className="w-5 h-5 text-[#00d2ff] shrink-0 mt-0.5" />
+                      <Shield className="w-5 h-5 text-[#12B5A6] shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white text-sm">ISO/IEC 27001:2022 Information Security Management</span>
                         <p className="text-xs text-white/80 mt-1 leading-relaxed">

@@ -69,7 +69,7 @@ export const ProductVideoTeaser: React.FC = () => {
         onClick={togglePlay}
       >
         {/* Glow backdrop */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#00d2ff]/10 via-transparent to-[#3D81E3]/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#12B5A6]/10 via-transparent to-[#2F5BFF]/10 pointer-events-none" />
 
         {/* The Pure Video Element */}
         <video
@@ -111,7 +111,7 @@ export const ProductVideoTeaser: React.FC = () => {
             {isMuted ? (
               <VolumeX className="w-4 h-4 text-rose-400" />
             ) : (
-              <Volume2 className="w-4 h-4 text-emerald-400" />
+              <Volume2 className="w-4 h-4 text-[#1FB36B]" />
             )}
           </button>
 

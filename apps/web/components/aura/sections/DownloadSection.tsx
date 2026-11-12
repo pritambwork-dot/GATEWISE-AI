@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import {
-  Monitor, Smartphone, Laptop, Apple, ArrowRight, Download,
+  Monitor, Smartphone, ArrowRight, Download,
   CheckCircle2, ShieldCheck, Sparkles, ExternalLink, QrCode, Terminal, Lock
 } from 'lucide-react';
 import { SectionEyebrow } from '../primitives/SectionEyebrow';
 
 export const DownloadSection: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'all' | 'web' | 'android' | 'macos' | 'ios'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'web' | 'android'>('all');
   const [installCopied, setInstallCopied] = useState(false);
 
   const platforms = [
@@ -16,7 +16,7 @@ export const DownloadSection: React.FC = () => {
       name: 'Command Centre Web App',
       category: 'BROWSER & PWA',
       badge: 'OFFICIAL PRODUCTION',
-      badgeColor: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400',
+      badgeColor: 'border-[#12B5A6]/30 bg-[#12B5A6]/10 text-[#12B5A6]',
       icon: Monitor,
       headline: 'Instant Zero-Install Access from Any Device',
       description:
@@ -47,7 +47,7 @@ export const DownloadSection: React.FC = () => {
       name: 'Android Guard APK',
       category: 'NATIVE ANDROID',
       badge: 'FIELD HARDENED',
-      badgeColor: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+      badgeColor: 'border-[#1FB36B]/30 bg-[#1FB36B]/10 text-[#1FB36B]',
       icon: Smartphone,
       headline: 'Sub-300ms On-Device Edge Biometric Terminal',
       description:
@@ -73,68 +73,6 @@ export const DownloadSection: React.FC = () => {
       ],
       checksum: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
     },
-    {
-      id: 'macos',
-      name: 'macOS Command Console',
-      category: 'NATIVE MACOS (DMG)',
-      badge: 'UNIVERSAL BINARY',
-      badgeColor: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
-      icon: Laptop,
-      headline: 'Supervisor Console for Apple Silicon & Intel',
-      description:
-        'Dedicated desktop application for security control rooms and station chiefs. Multi-display gate monitoring, hardware barrier relay triggers, and continuous audit stream logging.',
-      version: 'v1.0.0 Universal Desktop',
-      size: '1.2 MB (Verified Native DMG)',
-      requirements: 'macOS Monterey (12.0) through macOS Sequoia (15+)',
-      primaryAction: {
-        label: 'Download macOS DMG',
-        href: '/downloads/gatewise-admin-macos-v1.0.0.dmg',
-        isExternal: false,
-      },
-      secondaryAction: {
-        label: 'View Release Metadata',
-        href: '/downloads/gatewise-admin-macos-v1.0.0.dmg.sha256',
-        isExternal: false,
-      },
-      features: [
-        'Universal native architecture: Apple Silicon (M1/M2/M3/M4) & Intel 64-bit',
-        'Direct TCP socket control for perimeter relay microcontrollers',
-        'Multi-window multi-gate split monitor layout',
-        'Encrypted local configuration storage via macOS Keychain',
-      ],
-      checksum: 'e98f0293847291a8234857b28394857201948572019384758291048572910485',
-    },
-    {
-      id: 'ios',
-      name: 'Apple iOS Security Terminal',
-      category: 'NATIVE IOS',
-      badge: 'TESTFLIGHT PILOT',
-      badgeColor: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
-      icon: Apple,
-      headline: 'Official Apple Institutional TestFlight Beta',
-      description:
-        'Perimeter guard and roaming officer application for iPhone and iPad devices. Currently available through Apple TestFlight invitation for approved campus security personnel.',
-      version: 'v1.0.0-beta.4 (TestFlight)',
-      size: '31.4 MB (App Store IPA)',
-      requirements: 'iOS 16.0 or later (iPhone & iPad Universal)',
-      primaryAction: {
-        label: 'Request TestFlight Access',
-        href: 'https://testflight.apple.com/join/GATEWISE-CAMPUS',
-        isExternal: true,
-      },
-      secondaryAction: {
-        label: 'App Store Guidelines Notice',
-        href: '#security',
-        isExternal: false,
-      },
-      features: [
-        'Metal-accelerated CoreML neural engine biometric inference',
-        'Encrypted biometric enclave protected by Secure Enclave',
-        'Apple Push Notifications (APNs) for perimeter emergency alerts',
-        'Authorized enterprise provisioning via Apple Business Manager',
-      ],
-      checksum: 'Apple TestFlight Signed Binary • Bundle: com.gatewise.security',
-    },
   ];
 
   const filteredPlatforms = platforms.filter(
@@ -150,17 +88,15 @@ export const DownloadSection: React.FC = () => {
           Deploy GATEWISE AI Everywhere
         </h2>
         <p className="text-white/65 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
-          Access the Command Centre instantly in your web browser or deploy native, cryptographically signed binaries across Android, macOS, and iOS.
+          Access the Command Centre instantly in your web browser or deploy the sovereign native Android Guard terminal APK.
         </p>
 
         {/* Filter Pills - Responsive Horizontal Scrolling */}
         <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 sm:pt-4 overflow-x-auto no-scrollbar pb-1 px-1">
           {[
-            { id: 'all', label: 'All Platforms (4)' },
-            { id: 'web', label: 'Web App / PWA' },
+            { id: 'all', label: 'All Deployments (2)' },
+            { id: 'web', label: 'Web Command Centre (PWA)' },
             { id: 'android', label: 'Android Guard APK' },
-            { id: 'macos', label: 'macOS DMG' },
-            { id: 'ios', label: 'iOS TestFlight' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -199,7 +135,7 @@ export const DownloadSection: React.FC = () => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 sm:gap-3.5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white shrink-0 group-hover:scale-105 group-hover:bg-white/15 transition-all">
-                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#00d2ff]" />
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#2F5BFF]" />
                     </div>
                     <div>
                       <h3 className="text-base sm:text-xl font-bold text-white tracking-tight">
@@ -234,7 +170,7 @@ export const DownloadSection: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-white/40 block text-[10px] uppercase font-mono">Download Size</span>
-                    <span className="font-semibold text-emerald-400 font-mono text-[11px] truncate block">{platform.size}</span>
+                    <span className="font-semibold text-[#1FB36B] font-mono text-[11px] truncate block">{platform.size}</span>
                   </div>
                   <div className="col-span-2 pt-1 border-t border-white/5">
                     <span className="text-white/40 block text-[10px] uppercase font-mono">Compatibility</span>
@@ -250,7 +186,7 @@ export const DownloadSection: React.FC = () => {
                   <ul className="space-y-1.5">
                     {platform.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs text-white/75">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1FB36B] shrink-0 mt-0.5" />
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -285,7 +221,7 @@ export const DownloadSection: React.FC = () => {
 
                 {/* Verification Checksum Tag */}
                 <div className="flex items-center gap-1.5 text-[10px] text-white/40 font-mono truncate">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#1FB36B] shrink-0" />
                   <span className="truncate">{platform.checksum}</span>
                 </div>
               </div>
@@ -300,11 +236,11 @@ export const DownloadSection: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mt-8 sm:mt-12 liquid-glass rounded-2xl p-5 sm:p-8 border border-white/15 bg-gradient-to-r from-blue-950/40 via-black/60 to-cyan-950/40 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6"
+        className="mt-8 sm:mt-12 liquid-glass rounded-2xl p-5 sm:p-8 border border-white/15 bg-gradient-to-r from-[#2F5BFF]/20 via-black/60 to-[#12B5A6]/20 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6"
       >
         <div className="space-y-1.5 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2">
-            <Sparkles className="w-4 h-4 text-[#00d2ff]" />
+            <Sparkles className="w-4 h-4 text-[#12B5A6]" />
             <h4 className="text-sm sm:text-base font-bold text-white">
               Instant Web App &amp; Standalone Desktop PWA
             </h4>

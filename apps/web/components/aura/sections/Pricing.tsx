@@ -22,7 +22,7 @@ const PLANS: Plan[] = [
       'Up to 250 Enrolled student and staff identities',
       'Real-time YuNet 5-point facial landmark isolation',
       'On-device SFace 128-D cosine verification',
-      'Universal macOS Admin DMG & Android Guard client',
+      'Web Command Centre & Android Guard APK client',
     ],
   },
   {

@@ -18,7 +18,7 @@ export const FinalCTA: React.FC = () => {
           className="pointer-events-none absolute inset-0 opacity-30"
           style={{
             background:
-              'radial-gradient(800px circle at 50% 0%, rgba(0,210,255,0.2), transparent 70%)',
+              'radial-gradient(800px circle at 50% 0%, rgba(47,91,255,0.25), rgba(18,181,166,0.12) 40%, transparent 70%)',
           }}
         />
 
@@ -49,14 +49,14 @@ export const FinalCTA: React.FC = () => {
             href="#downloads"
             className="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-full border border-white/20 bg-white/5 text-white text-sm font-semibold hover:bg-white/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Download className="w-4 h-4 text-[#00d2ff]" />
-            <span>Download Guard APK &amp; DMG</span>
+            <Download className="w-4 h-4 text-[#12B5A6]" />
+            <span>Download Guard APK</span>
           </a>
         </div>
 
         {/* Release Integrity Footnote */}
         <div className="relative z-10 mt-8 flex items-center justify-center gap-2 font-mono text-[10px] sm:text-[11px] text-white/40">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] shrink-0" />
           <span className="truncate">PRODUCTION SHA-256 SIGNED BINARIES AVAILABLE</span>
         </div>
       </motion.div>

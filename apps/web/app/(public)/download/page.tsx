@@ -142,56 +142,18 @@ export default function DownloadPage() {
         </p>
       </div>
 
-      {/* Platform Switcher Segmented Control */}
-      <div className="bg-black/[0.04] p-1.5 rounded-2xl sm:rounded-full border border-black/[0.06] flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2">
-        
+      {/* Platform Header */}
+      <div className="bg-black/[0.04] p-1.5 rounded-2xl sm:rounded-full border border-black/[0.06] flex items-center justify-center">
         {/* Android Tab */}
-        <button
-          onClick={() => setActivePlatform('android')}
-          className={`flex items-center justify-center space-x-2.5 py-3 sm:py-2.5 px-4 rounded-xl sm:rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[48px] ${
-            activePlatform === 'android'
-              ? 'bg-white text-gatewise-deep shadow-sm border border-black/[0.04]'
-              : 'text-gatewise-secondary hover:text-gatewise-text hover:bg-white/50'
-          }`}
+        <div
+          className="flex items-center justify-center space-x-2.5 py-3 sm:py-2.5 px-6 rounded-xl sm:rounded-full text-xs sm:text-sm font-bold bg-white text-gatewise-deep shadow-sm border border-black/[0.04]"
         >
-          <Smartphone className={`w-4 h-4 ${activePlatform === 'android' ? 'text-emerald-600' : 'text-slate-400'}`} />
-          <span>Android (Guard APK)</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-mono font-semibold">
-            Pilot Prep
+          <Smartphone className="w-4 h-4 text-emerald-600" />
+          <span>Android Guard APK</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono font-semibold">
+            Official Release
           </span>
-        </button>
-
-        {/* iOS Tab */}
-        <button
-          onClick={() => setActivePlatform('ios')}
-          className={`flex items-center justify-center space-x-2.5 py-3 sm:py-2.5 px-4 rounded-xl sm:rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[48px] ${
-            activePlatform === 'ios'
-              ? 'bg-white text-gatewise-deep shadow-sm border border-black/[0.04]'
-              : 'text-gatewise-secondary hover:text-gatewise-text hover:bg-white/50'
-          }`}
-        >
-          <Apple className={`w-4 h-4 ${activePlatform === 'ios' ? 'text-slate-900' : 'text-slate-400'}`} />
-          <span>Apple iOS (TestFlight / MDM)</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-mono font-semibold">
-            TestFlight
-          </span>
-        </button>
-
-        {/* macOS Tab */}
-        <button
-          onClick={() => setActivePlatform('macos')}
-          className={`flex items-center justify-center space-x-2.5 py-3 sm:py-2.5 px-4 rounded-xl sm:rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[48px] ${
-            activePlatform === 'macos'
-              ? 'bg-white text-gatewise-deep shadow-sm border border-black/[0.04]'
-              : 'text-gatewise-secondary hover:text-gatewise-text hover:bg-white/50'
-          }`}
-        >
-          <Monitor className={`w-4 h-4 ${activePlatform === 'macos' ? 'text-purple-600' : 'text-slate-400'}`} />
-          <span>macOS Desktop (DMG)</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono font-semibold">
-            Universal DMG
-          </span>
-        </button>
+        </div>
       </div>
 
       {/* Main Platform Detail Grid */}
@@ -522,34 +484,6 @@ export default function DownloadPage() {
                 <span>Read Cryptographic Security Architecture</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </div>
-          </div>
-
-          {/* Direct Platform Quick Switcher */}
-          <div className="p-4 rounded-2xl bg-white border border-gatewise-border space-y-2 text-xs">
-            <div className="text-[11px] font-bold text-gatewise-text uppercase tracking-wider">
-              Platform Switcher
-            </div>
-            <div className="space-y-1.5">
-              {(['android', 'ios', 'macos'] as PlatformKey[]).filter((k) => k !== activePlatform).map((k) => (
-                <button
-                  key={k}
-                  onClick={() => setActivePlatform(k)}
-                  className="w-full p-2.5 rounded-xl border border-gatewise-border hover:bg-slate-50 transition-colors flex items-center justify-between text-left cursor-pointer"
-                >
-                  <div className="flex items-center space-x-2">
-                    {k === 'android' && <Smartphone className="w-4 h-4 text-emerald-600" />}
-                    {k === 'ios' && <Apple className="w-4 h-4 text-slate-800" />}
-                    {k === 'macos' && <Monitor className="w-4 h-4 text-purple-600" />}
-                    <span className="font-semibold text-gatewise-text text-xs">
-                      {k === 'android' && 'Android (Guard APK)'}
-                      {k === 'ios' && 'Apple iOS (TestFlight)'}
-                      {k === 'macos' && 'macOS (Command Centre)'}
-                    </span>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-gatewise-muted" />
-                </button>
-              ))}
             </div>
           </div>
 

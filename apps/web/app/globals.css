@@ -1,37 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: #f7faf7;
-    --foreground: #171d1a;
+    --background: #070B1A;
+    --foreground: #FFFFFF;
+    
+    /* Brand Design System Tokens */
+    --brand-cobalt: #2F5BFF;
+    --brand-teal: #12B5A6;
+    --brand-amber: #FFB547;
+    --brand-midnight: #070B1A;
+    --brand-permitted: #1FB36B;
+    --brand-denied: #C93338;
+    --brand-selected: #E6ECFF;
     
     /* Stageshow Tokens */
-    --ss-canvas: #f6f5f4;
-    --ss-surface: #ffffff;
-    --ss-chrome: #ffffff;
-    --ss-well: #f0f3f0;
+    --ss-canvas: #070B1A;
+    --ss-surface: #0E162B;
+    --ss-chrome: #141F3B;
+    --ss-well: #0B1224;
     
-    --ss-ink-1: rgba(0, 0, 0, 0.03);
-    --ss-ink-2: rgba(0, 0, 0, 0.05);
-    --ss-ink-3: rgba(0, 0, 0, 0.08);
-    --ss-ink-4: rgba(0, 0, 0, 0.12);
-    --ss-ink-5: rgba(0, 0, 0, 0.18);
-    
-    --ss-line: rgba(0, 0, 0, 0.06);
-    --ss-line-strong: rgba(0, 0, 0, 0.12);
-    
-    --ss-text: #616e68;
-    --ss-text-strong: #19221e;
-    --ss-text-faint: #8a9690;
-    
-    --brand-primary: #00685b;
-    --brand-deep: #004d43;
-    --brand-mint: #eaf3ed;
-    --brand-border: #e1e7e3;
-    --status-verified: #25875d;
-    --status-alert: #cf963a;
+    --brand-primary: #2F5BFF;
+    --brand-deep: #10266B;
+    --brand-mint: #12B5A6;
+    --brand-border: rgba(255, 255, 255, 0.12);
+    --status-verified: #1FB36B;
+    --status-alert: #FFB547;
   }
 
   body {
@@ -176,7 +174,7 @@
 }
 
 .c3-watermark-line-2 {
-  background: linear-gradient(to right, #091020 0%, #0B2551 25%, #A4F4FD 65%, #00d2ff 100%);
+  background: linear-gradient(to right, #070B1A 0%, #10266B 25%, #12B5A6 65%, #2F5BFF 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -348,8 +346,8 @@
   }
   .c3-watermark-line-2 {
     background: none;
-    -webkit-text-fill-color: #00d2ff;
-    color: #00d2ff;
+    -webkit-text-fill-color: #12B5A6;
+    color: #12B5A6;
   }
   .c3-grid {
     display: flex;

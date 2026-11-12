@@ -20,7 +20,7 @@ import { LegalModals } from '@/components/aura/compliance/LegalModals';
 
 export default function PublicHomePage() {
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#0c0c0c] text-white selection:bg-[#3D81E3]/30">
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#070B1A] text-white selection:bg-[#2F5BFF]/35">
       {/* Root SVG Noise Filter for the Shiny Headline */}
       <svg
         className="absolute w-0 h-0 pointer-events-none"
@@ -53,8 +53,8 @@ export default function PublicHomePage() {
           className="w-full h-full object-cover pointer-events-none opacity-40 filter saturate-150 brightness-75"
           src="/media/videos/gatewise-launch-film.mp4"
         />
-        {/* Dark subtle gradient overlay to ensure perfect contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0c0c0c]/85 via-[#0c0c0c]/70 to-[#0c0c0c]/95 pointer-events-none" />
+        {/* Dark subtle gradient overlay to ensure perfect contrast in Midnight */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070B1A]/90 via-[#070B1A]/75 to-[#070B1A]/95 pointer-events-none" />
       </div>
 
       {/* Fullscreen expansive guide lines */}

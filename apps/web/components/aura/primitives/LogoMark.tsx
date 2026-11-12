@@ -5,54 +5,36 @@ interface LogoMarkProps {
 }
 
 export const LogoMark: React.FC<LogoMarkProps> = ({ className = 'w-8 h-8' }) => (
-  <div className={`relative flex items-center justify-center ${className}`}>
+  <div className={`relative flex items-center justify-center shrink-0 ${className}`}>
     <svg
-      viewBox="0 0 40 40"
+      viewBox="0 0 48 48"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-full h-full text-white"
+      className="w-full h-full"
       aria-label="GATEWISE AI Emblem"
     >
-      {/* Outer Shield Boundary */}
+      {/* Cobalt Squircle Background (#2F5BFF) */}
+      <rect width="48" height="48" rx="14" fill="#2F5BFF" />
+      
+      {/* Gate Arch Entry (#FFFFFF) */}
       <path
-        d="M20 3L6 8.5V18.5C6 27.5 12 35.5 20 38C28 35.5 34 27.5 34 18.5V8.5L20 3Z"
-        stroke="currentColor"
-        strokeWidth="2"
+        d="M17 33V23C17 19.134 20.134 16 24 16C27.866 16 31 19.134 31 23V33"
+        stroke="#FFFFFF"
+        strokeWidth="3.2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="opacity-90"
       />
-      {/* Inner Biometric / Neural Node Core */}
+      
+      {/* Base Ground Threshold Bar */}
       <path
-        d="M20 10L12 14V20C12 25 15.5 29.5 20 31C24.5 29.5 28 25 28 20V14L20 10Z"
-        fill="url(#gatewise-shield-grad)"
-        fillOpacity="0.25"
-        stroke="url(#gatewise-shield-grad)"
-        strokeWidth="1.5"
-      />
-      {/* Center Key / Verification Reticle */}
-      <circle cx="20" cy="19" r="3" fill="#00d2ff" />
-      <path
-        d="M20 22V26M18 24H22"
-        stroke="#00d2ff"
-        strokeWidth="1.5"
+        d="M12 33H36"
+        stroke="#FFFFFF"
+        strokeWidth="3.2"
         strokeLinecap="round"
       />
 
-      <defs>
-        <linearGradient
-          id="gatewise-shield-grad"
-          x1="12"
-          y1="10"
-          x2="28"
-          y2="31"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#00d2ff" />
-          <stop offset="0.5" stopColor="#3D81E3" />
-          <stop offset="1" stopColor="#0B2551" />
-        </linearGradient>
-      </defs>
+      {/* Teal Aperture - Verified Face (#12B5A6) */}
+      <circle cx="24" cy="23" r="3.5" fill="#12B5A6" />
     </svg>
   </div>
 );

@@ -53,8 +53,8 @@ export const Footer: React.FC = () => {
         >
           Cookie Preferences
         </button>
-        <div className="flex items-center gap-2 text-emerald-400 font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="flex items-center gap-2 text-[#1FB36B] font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
           <span>All Gates Operational</span>
         </div>
       </div>

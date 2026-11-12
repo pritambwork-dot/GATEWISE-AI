@@ -7,7 +7,7 @@ const ARCHITECTURE_GROUPS = [
   {
     category: 'Sub-300ms Clearance',
     count: '98.4%',
-    color: '#00d2ff',
+    color: '#2F5BFF',
     items: [
       'YuNet 5-point facial landmark isolation on edge CPU',
       'SFace 128-D Euclidean & Cosine metric verification',
@@ -16,7 +16,7 @@ const ARCHITECTURE_GROUPS = [
   {
     category: 'Offline Sovereign Fallback',
     count: '100% Uptime',
-    color: '#10b981',
+    color: '#1FB36B',
     items: [
       'Encrypted on-device SQLite identity cache',
       'Automatic WAN sync with backoff queue when link restores',
@@ -25,7 +25,7 @@ const ARCHITECTURE_GROUPS = [
   {
     category: 'Zero Image Retention Policy',
     count: 'Compliant',
-    color: '#A4F4FD',
+    color: '#12B5A6',
     items: [
       'No raw facial photos ever stored on disk or cloud logs',
       'Transient memory buffers scrubbed immediately after inference',
@@ -34,7 +34,7 @@ const ARCHITECTURE_GROUPS = [
   {
     category: 'Cryptographic Non-Repudiation',
     count: 'HMAC-SHA256',
-    color: '#f59e0b',
+    color: '#FFB547',
     items: [
       'Every barrier open event signed with gate private key',
       'Tamper-evident audit trail exported directly to administration',
@@ -82,7 +82,7 @@ export const FeatureTriage: React.FC = () => {
             {CHIPS.map((chip) => (
               <span
                 key={chip}
-                className="text-xs text-white/75 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:border-[#00d2ff]/40 hover:text-white transition-all cursor-default select-none"
+                className="text-xs text-white/75 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] hover:border-[#2F5BFF]/40 hover:text-white transition-all cursor-default select-none"
               >
                 {chip}
               </span>
@@ -101,7 +101,7 @@ export const FeatureTriage: React.FC = () => {
           {/* Eyebrow text */}
           <div className="flex items-center justify-between pb-4 border-b border-white/10 text-xs">
             <span className="text-white/80 font-medium">Campus Perimeter · 1,420 Entries Verified Today</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#1FB36B] animate-pulse" />
           </div>
 
           {/* Four Sub-Cards */}
@@ -119,7 +119,7 @@ export const FeatureTriage: React.FC = () => {
                     />
                     <span className="font-semibold text-white/90">{group.category}</span>
                   </div>
-                  <span className="text-[11px] text-[#00d2ff] font-mono font-medium">
+                  <span className="text-[11px] text-[#12B5A6] font-mono font-medium">
                     {group.count}
                   </span>
                 </div>

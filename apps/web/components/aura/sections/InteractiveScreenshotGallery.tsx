@@ -254,7 +254,7 @@ export const InteractiveScreenshotGallery: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: (idx % 8) * 0.04 }}
             onClick={() => setLightboxIndex(idx)}
-            className="liquid-glass rounded-2xl overflow-hidden border border-white/10 group cursor-pointer hover:border-[#00d2ff]/50 transition-all flex flex-col justify-between"
+            className="liquid-glass rounded-2xl overflow-hidden border border-white/10 group cursor-pointer hover:border-[#12B5A6]/50 transition-all flex flex-col justify-between"
           >
             {/* Screenshot Thumbnail */}
             <div className="relative aspect-[16/10] bg-black/60 overflow-hidden flex items-center justify-center">
@@ -277,7 +277,7 @@ export const InteractiveScreenshotGallery: React.FC = () => {
             {/* Caption */}
             <div className="p-3.5 sm:p-4 bg-black/30 space-y-1">
               <div className="flex items-center justify-between gap-2">
-                <h4 className="text-xs font-bold text-white group-hover:text-[#00d2ff] transition-colors truncate">
+                <h4 className="text-xs font-bold text-white group-hover:text-[#12B5A6] transition-colors truncate">
                   {screen.title}
                 </h4>
                 <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-white/10 text-white/60 shrink-0">
@@ -299,7 +299,7 @@ export const InteractiveScreenshotGallery: React.FC = () => {
             className="w-full py-3 rounded-xl bg-white/10 border border-white/15 text-white text-xs font-semibold hover:bg-white/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>View All {filteredScreens.length} Screenshots</span>
-            <ChevronDown className="w-4 h-4 text-[#00d2ff]" />
+            <ChevronDown className="w-4 h-4 text-[#12B5A6]" />
           </button>
         </div>
       )}

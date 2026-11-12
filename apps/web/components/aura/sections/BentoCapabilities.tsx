@@ -28,7 +28,7 @@ export const BentoCapabilities: React.FC = () => {
         <div className="md:col-span-2 liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-1.5">
-              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#00d2ff]">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#12B5A6]">
                 Live Sensor Telemetry
               </span>
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
@@ -39,8 +39,8 @@ export const BentoCapabilities: React.FC = () => {
               </p>
             </div>
 
-            <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-mono font-semibold border border-emerald-500/30 shrink-0 flex items-center gap-1.5 self-start">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="px-3 py-1 rounded-full bg-[#1FB36B]/15 text-[#1FB36B] text-xs font-mono font-semibold border border-[#1FB36B]/30 shrink-0 flex items-center gap-1.5 self-start">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
               Sensor Sync Active
             </span>
           </div>
@@ -48,22 +48,22 @@ export const BentoCapabilities: React.FC = () => {
           <div className="rounded-2xl p-4 sm:p-5 border border-white/10 bg-black/40 space-y-3">
             <div className="flex items-center justify-between text-xs font-mono text-white/50 pb-2 border-b border-white/10">
               <span>GATE 01 DUAL-LANE TELEMETRY</span>
-              <span className="text-emerald-400 font-semibold">ALL SENSORS NORMAL</span>
+              <span className="text-[#1FB36B] font-semibold">ALL SENSORS NORMAL</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 space-y-1">
                 <span className="text-[10px] font-mono text-white/40 uppercase">Optical Camera</span>
                 <div className="text-sm font-bold text-white">1080p 60fps</div>
-                <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Auto-Exposure
+                <span className="text-[11px] text-[#1FB36B] font-medium flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B]" /> Auto-Exposure
                 </span>
               </div>
               <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 space-y-1">
                 <span className="text-[10px] font-mono text-white/40 uppercase">OCR ANPR Lens</span>
                 <div className="text-sm font-bold text-white">OD 02 AK 9142</div>
-                <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Plate Verified
+                <span className="text-[11px] text-[#1FB36B] font-medium flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B]" /> Plate Verified
                 </span>
               </div>
               <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 space-y-1">
@@ -94,8 +94,8 @@ export const BentoCapabilities: React.FC = () => {
         </div>
 
         {/* TILE 3: Zero Cloud Biometrics (1 Column) */}
-        <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between space-y-4 bg-gradient-to-br from-white/[0.04] to-emerald-950/20">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
+        <div className="liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between space-y-4 bg-gradient-to-br from-white/[0.04] to-[#1FB36B]/10">
+          <div className="w-10 h-10 rounded-xl bg-[#1FB36B]/20 text-[#1FB36B] border-[#1FB36B]/30 flex items-center justify-center font-bold">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div className="space-y-2">
@@ -106,7 +106,7 @@ export const BentoCapabilities: React.FC = () => {
               Facial vectors are extracted in volatile RAM and discarded. Raw face pictures are never transmitted or retained in server logs.
             </p>
           </div>
-          <div className="pt-3 border-t border-white/10 text-[11px] font-mono text-emerald-400">
+          <div className="pt-3 border-t border-white/10 text-[11px] font-mono text-[#1FB36B]">
             ISO/IEC 27001 &amp; DPDP Compliant
           </div>
         </div>
@@ -126,7 +126,7 @@ export const BentoCapabilities: React.FC = () => {
           <div className="bg-black/40 p-3.5 rounded-xl border border-white/10 space-y-2.5">
             <div className="flex items-center justify-between text-xs">
               <span className="text-white/70 font-medium">Operational Policy:</span>
-              <span className="text-[11px] font-mono text-[#00d2ff] uppercase font-bold">
+              <span className="text-[11px] font-mono text-[#12B5A6] uppercase font-bold">
                 {guardMode === 'standard' ? 'Assisted Gate' : 'Strict Audit'}
               </span>
             </div>
@@ -157,7 +157,7 @@ export const BentoCapabilities: React.FC = () => {
           </div>
 
           <div className="text-[11px] text-white/60 flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-emerald-400" />
+            <Check className="w-3.5 h-3.5 text-[#1FB36B]" />
             <span>Officer retains ultimate physical gate veto</span>
           </div>
         </div>
@@ -177,7 +177,7 @@ export const BentoCapabilities: React.FC = () => {
           <div className="bg-black/40 p-3.5 rounded-xl border border-white/10 space-y-2.5">
             <div className="flex justify-between items-center text-xs font-mono">
               <span className="text-white/60">Accept Threshold:</span>
-              <span className="font-bold text-[#00d2ff]">{cosineThreshold.toFixed(2)}</span>
+              <span className="font-bold text-[#2F5BFF]">{cosineThreshold.toFixed(2)}</span>
             </div>
             <input
               type="range"
@@ -186,7 +186,7 @@ export const BentoCapabilities: React.FC = () => {
               step="0.01"
               value={cosineThreshold}
               onChange={(e) => setCosineThreshold(parseFloat(e.target.value))}
-              className="w-full accent-[#00d2ff] cursor-pointer"
+              className="w-full accent-[#2F5BFF] cursor-pointer"
             />
             <div className="flex justify-between text-[10px] font-mono text-white/50">
               <span>FAR: {far}%</span>

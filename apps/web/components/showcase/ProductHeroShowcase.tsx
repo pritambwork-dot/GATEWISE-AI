@@ -98,21 +98,6 @@ export default function ProductHeroShowcase({
               <Smartphone className="w-3 h-3 text-emerald-600" />
               <span>Android APK</span>
             </Link>
-            <span className="text-slate-300">•</span>
-            <Link
-              href="/download?platform=ios"
-              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-sky-50 text-sky-800 border border-sky-200/80 hover:bg-sky-100 transition-colors font-semibold text-[11px]"
-            >
-              <span>Apple iOS (TestFlight)</span>
-            </Link>
-            <span className="text-slate-300">•</span>
-            <Link
-              href="/download?platform=macos"
-              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200/80 hover:bg-purple-100 transition-colors font-semibold text-[11px]"
-            >
-              <Monitor className="w-3 h-3 text-purple-600" />
-              <span>macOS (DMG)</span>
-            </Link>
           </div>
         </div>
 

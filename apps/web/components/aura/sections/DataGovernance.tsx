@@ -8,7 +8,7 @@ export const DataGovernance: React.FC = () => {
     <section id="security" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
       <div className="liquid-glass rounded-2xl sm:rounded-3xl p-5 sm:p-10 md:p-14 border border-white/10 relative overflow-hidden space-y-8 sm:space-y-10">
         {/* Glow ambient background */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-[#00d2ff]/10 via-[#3D81E3]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-[#12B5A6]/10 via-[#2F5BFF]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-3xl space-y-3 sm:space-y-4 relative z-10">
           <SectionEyebrow label="Data Governance" tag="Zero-Leakage Architecture" />
@@ -23,7 +23,7 @@ export const DataGovernance: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 relative z-10">
           <div className="liquid-glass rounded-2xl p-5 sm:p-6 border border-white/10 space-y-3 bg-black/40">
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#00d2ff] flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#2F5BFF] flex items-center justify-center font-bold">
               <Lock className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-white text-base">Invitation-Only Access</h4>
@@ -33,7 +33,7 @@ export const DataGovernance: React.FC = () => {
           </div>
 
           <div className="liquid-glass rounded-2xl p-5 sm:p-6 border border-white/10 space-y-3 bg-black/40">
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-emerald-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#1FB36B] flex items-center justify-center font-bold">
               <EyeOff className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-white text-base">Zero Raw Biometric Storage</h4>
@@ -43,7 +43,7 @@ export const DataGovernance: React.FC = () => {
           </div>
 
           <div className="liquid-glass rounded-2xl p-5 sm:p-6 border border-white/10 space-y-3 bg-black/40">
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#A4F4FD] flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#12B5A6] flex items-center justify-center font-bold">
               <KeyRound className="w-5 h-5" />
             </div>
             <h4 className="font-bold text-white text-base">Cryptographic Non-Repudiation</h4>
@@ -54,7 +54,7 @@ export const DataGovernance: React.FC = () => {
         </div>
 
         <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-white/50 relative z-10">
-          <div className="flex items-center gap-2 text-emerald-400">
+          <div className="flex items-center gap-2 text-[#1FB36B]">
             <ShieldCheck className="w-4 h-4 shrink-0" />
             <span className="leading-tight">ISO/IEC 27001 &amp; Digital Personal Data Protection (DPDP) Act 2023 Compliant</span>
           </div>

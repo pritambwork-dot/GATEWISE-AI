@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 
 export const gradientStyle: CSSProperties = {
   backgroundImage:
-    'linear-gradient(to right, #091020 0%, #0B2551 12.5%, #A4F4FD 32.5%, #00d2ff 50%, #0B2551 67.5%, #091020 87.5%, #091020 100%)',
+    'linear-gradient(to right, #070B1A 0%, #10266B 12.5%, #12B5A6 32.5%, #2F5BFF 50%, #12B5A6 67.5%, #10266B 87.5%, #070B1A 100%)',
   backgroundSize: '200% auto',
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',

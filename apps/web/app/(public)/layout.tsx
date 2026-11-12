@@ -28,7 +28,7 @@ export default function PublicLayout({
   // If on the home landing page, render the full-screen cinematic experience directly
   if (pathname === '/') {
     return (
-      <main className="w-full min-h-screen bg-[#0c0c0c] text-white selection:bg-[#3D81E3]/30 overflow-x-hidden font-sans">
+      <main className="w-full min-h-screen bg-[#070B1A] text-white selection:bg-[#2F5BFF]/35 overflow-x-hidden font-sans">
         {children}
       </main>
     );

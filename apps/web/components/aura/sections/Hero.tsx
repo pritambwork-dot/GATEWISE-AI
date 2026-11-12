@@ -13,7 +13,7 @@ export const Hero: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl mb-6 sm:mb-8 max-w-full truncate"
       >
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-[#1FB36B] animate-pulse shrink-0" />
         <span className="text-xs font-semibold text-white/90 tracking-tight uppercase shrink-0">
           Production 1.0
         </span>
@@ -85,8 +85,8 @@ export const Hero: React.FC = () => {
             href="#downloads"
             className="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-full border border-white/20 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-sm font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
           >
-            <Download className="w-4 h-4 text-[#00d2ff] shrink-0" />
-            <span>Download Guard APK &amp; DMG</span>
+            <Download className="w-4 h-4 text-[#12B5A6] shrink-0" />
+            <span>Download Guard APK</span>
           </a>
 
           {/* Tertiary Action: Live Operations */}
@@ -101,21 +101,13 @@ export const Hero: React.FC = () => {
         {/* Clear Platform Support Strip */}
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 text-xs text-white/50 tracking-tight mt-1 px-2">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-            <Monitor className="w-3 h-3 text-[#00d2ff]" />
+            <Monitor className="w-3 h-3 text-[#2F5BFF]" />
             <span>Web App &amp; PWA</span>
           </span>
           <span className="text-white/20 hidden sm:inline">•</span>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-            <Smartphone className="w-3 h-3 text-emerald-400" />
+            <Smartphone className="w-3 h-3 text-[#1FB36B]" />
             <span>Android Guard APK</span>
-          </span>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-            <span>macOS Universal DMG</span>
-          </span>
-          <span className="text-white/20 hidden sm:inline">•</span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
-            <span>iOS TestFlight</span>
           </span>
         </div>
       </motion.div>

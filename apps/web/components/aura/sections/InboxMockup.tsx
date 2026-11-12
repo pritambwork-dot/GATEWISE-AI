@@ -51,7 +51,7 @@ const LIVE_ENTRIES: EntryRecord[] = [
     name: 'Dr. Ananya Sharma',
     role: 'Dean of Academic Affairs',
     avatarLetter: 'A',
-    avatarGradient: 'from-[#00d2ff] to-[#0B2551]',
+    avatarGradient: 'from-[#2F5BFF] to-[#070B1A]',
     gate: 'Main Gate 01',
     time: '9:41 AM',
     decision: 'GRANTED',
@@ -73,7 +73,7 @@ const LIVE_ENTRIES: EntryRecord[] = [
     name: 'Rahul Verma',
     role: 'Senior Scholar (#2024-CS-084)',
     avatarLetter: 'R',
-    avatarGradient: 'from-[#A4F4FD] to-[#091020]',
+    avatarGradient: 'from-[#12B5A6] to-[#070B1A]',
     gate: 'Academic Core Gate 02',
     time: '9:39 AM',
     decision: 'GRANTED',
@@ -171,11 +171,11 @@ export const InboxMockup: React.FC = () => {
       {/* Header Eyebrow */}
       <div className="flex flex-col items-center text-center mb-8 sm:mb-12 space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
-          <Activity className="w-3.5 h-3.5 text-[#00d2ff]" />
+          <Activity className="w-3.5 h-3.5 text-[#12B5A6]" />
           <span className="text-xs font-mono font-semibold text-white/80 uppercase tracking-wider">
             Live Gate Operations Console
           </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
         </div>
         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
           On-Premise Biometric Telemetry &amp; Access Stream
@@ -208,7 +208,7 @@ export const InboxMockup: React.FC = () => {
 
           {/* Center Title */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#00d2ff] shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-[#2F5BFF] shrink-0" />
             <span className="text-[11px] sm:text-xs text-white/80 font-semibold tracking-tight truncate max-w-[200px] sm:max-w-none">
               <span className="hidden sm:inline">GATEWISE AI — Perimeter Command Centre &amp; On-Device Guard Telemetry</span>
               <span className="sm:hidden">GATEWISE AI — Command HUD</span>
@@ -217,9 +217,9 @@ export const InboxMockup: React.FC = () => {
 
           {/* Status indicators */}
           <div className="flex items-center gap-2 font-mono text-[10px] text-white/50">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
             <span className="hidden sm:inline">SECURE ENCLAVE ACTIVE</span>
-            <span className="sm:hidden text-emerald-400 font-bold">ONLINE</span>
+            <span className="sm:hidden text-[#1FB36B] font-bold">ONLINE</span>
           </div>
         </div>
 
@@ -270,13 +270,13 @@ export const InboxMockup: React.FC = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="bg-emerald-500/15 border-b border-emerald-500/30 px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-emerald-300 font-mono gap-1"
+              className="bg-[#1FB36B]/15 border-b border-[#1FB36B]/30 px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-[#1FB36B] font-mono gap-1"
             >
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-[#1FB36B] shrink-0" />
                 <span className="truncate">{barrierOverrideNotice}</span>
               </div>
-              <span className="text-[10px] text-emerald-400/70">Cryptographically Signed · Ledger Updated</span>
+              <span className="text-[10px] text-[#1FB36B]/80">Cryptographically Signed · Ledger Updated</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -333,7 +333,7 @@ export const InboxMockup: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span
                             className={`w-2 h-2 rounded-full ${
-                              item.alert ? 'bg-rose-500 animate-pulse' : 'bg-[#00d2ff]'
+                              item.alert ? 'bg-[#C93338] animate-pulse' : 'bg-[#2F5BFF]'
                             }`}
                           />
                           <span>{item.label}</span>
@@ -341,7 +341,7 @@ export const InboxMockup: React.FC = () => {
                         <span
                           className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
                             item.alert
-                              ? 'bg-rose-500/20 text-rose-300'
+                              ? 'bg-[#C93338]/20 text-rose-300'
                               : isActive
                               ? 'bg-white/20 text-white'
                               : 'text-white/40'
@@ -362,10 +362,10 @@ export const InboxMockup: React.FC = () => {
                 </span>
                 <div className="space-y-2">
                   {[
-                    { name: 'YuNet 5-Point Mesh', status: '64ms Edge', color: 'bg-[#00d2ff]' },
-                    { name: 'SFace 128-D Cosine', status: 'Cosine 0.72', color: 'bg-[#A4F4FD]' },
-                    { name: 'ANPR Vehicle Scanner', status: '4K Camera', color: 'bg-[#f59e0b]' },
-                    { name: 'HMAC-SHA256 Ledger', status: 'Immutable', color: 'bg-[#10b981]' },
+                    { name: 'YuNet 5-Point Mesh', status: '64ms Edge', color: 'bg-[#12B5A6]' },
+                    { name: 'SFace 128-D Cosine', status: 'Cosine 0.72', color: 'bg-[#2F5BFF]' },
+                    { name: 'ANPR Vehicle Scanner', status: '4K Camera', color: 'bg-[#FFB547]' },
+                    { name: 'HMAC-SHA256 Ledger', status: 'Immutable', color: 'bg-[#1FB36B]' },
                   ].map((engine) => (
                     <div
                       key={engine.name}
@@ -404,7 +404,7 @@ export const InboxMockup: React.FC = () => {
                   value={searchFilter}
                   onChange={(e) => setSearchFilter(e.target.value)}
                   placeholder="Search identity, vehicle, roll..."
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#00d2ff]/50 transition-colors"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#2F5BFF]/60 transition-colors"
                 />
               </div>
             </div>
@@ -424,7 +424,7 @@ export const InboxMockup: React.FC = () => {
                     }}
                     className={`p-3.5 cursor-pointer transition-all active:bg-white/10 ${
                       isSelected
-                        ? 'bg-white/10 border-l-2 border-[#00d2ff] text-white'
+                        ? 'bg-white/10 border-l-2 border-[#2F5BFF] text-white'
                         : 'hover:bg-white/5 text-white/80'
                     }`}
                   >
@@ -432,7 +432,7 @@ export const InboxMockup: React.FC = () => {
                       <div className="flex items-center gap-2 font-medium text-white">
                         <span
                           className={`w-2 h-2 rounded-full ${
-                            isGranted ? 'bg-emerald-400' : 'bg-rose-500 animate-ping'
+                            isGranted ? 'bg-[#1FB36B]' : 'bg-[#C93338] animate-ping'
                           }`}
                         />
                         <span className="font-semibold text-xs sm:text-sm">{entry.name}</span>
@@ -449,14 +449,14 @@ export const InboxMockup: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`font-mono font-semibold ${
-                            isGranted ? 'text-emerald-400' : 'text-rose-400'
+                            isGranted ? 'text-[#1FB36B]' : 'text-[#C93338]'
                           }`}
                         >
                           {entry.decision === 'GRANTED'
                             ? `Match: ${(entry.cosineScore * 100).toFixed(1)}%`
                             : 'BREACH FLAGGED'}
                         </span>
-                        <span className="lg:hidden text-[#00d2ff] font-medium flex items-center">
+                        <span className="lg:hidden text-[#12B5A6] font-medium flex items-center">
                           HUD <ChevronRight className="w-3 h-3 ml-0.5" />
                         </span>
                       </div>
@@ -503,14 +503,14 @@ export const InboxMockup: React.FC = () => {
                       : 'text-white/50 hover:text-white'
                   }`}
                 >
-                  <Play className="w-3 h-3 text-[#00d2ff]" />
+                  <Play className="w-3 h-3 text-[#2F5BFF]" />
                   <span>Guard Demo</span>
                 </button>
               </div>
 
               <div className="flex items-center gap-1.5 font-mono text-[10px] text-white/40">
                 <span className="hidden sm:inline">GATE #01 •</span>
-                <span className="text-emerald-400 font-semibold">ONLINE</span>
+                <span className="text-[#1FB36B] font-semibold">ONLINE</span>
               </div>
             </div>
 
@@ -533,8 +533,8 @@ export const InboxMockup: React.FC = () => {
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                     selectedRecord.decision === 'GRANTED'
-                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
-                      : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
+                      ? 'border-[#1FB36B]/40 bg-[#1FB36B]/10 text-[#1FB36B]'
+                      : 'border-[#C93338]/40 bg-[#C93338]/10 text-[#C93338]'
                   }`}
                 >
                   {selectedRecord.decision}
@@ -556,7 +556,7 @@ export const InboxMockup: React.FC = () => {
                         <span className="bg-black/60 px-2 py-0.5 rounded border border-white/10">
                           MODE: {selectedRecord.mode}
                         </span>
-                        <span className="bg-[#00d2ff]/20 text-[#00d2ff] px-2 py-0.5 rounded border border-[#00d2ff]/40 font-bold">
+                        <span className="bg-[#2F5BFF]/20 text-[#2F5BFF] px-2 py-0.5 rounded border border-[#2F5BFF]/40 font-bold">
                           SIMILARITY: {(selectedRecord.cosineScore * 100).toFixed(1)}%
                         </span>
                       </div>
@@ -581,7 +581,7 @@ export const InboxMockup: React.FC = () => {
 
               {/* AI Verification Analysis */}
               <div className="liquid-glass rounded-xl p-3.5 border border-white/10 space-y-2">
-                <div className="flex items-center gap-1.5 text-[#00d2ff] font-semibold text-[11px]">
+                <div className="flex items-center gap-1.5 text-[#12B5A6] font-semibold text-[11px]">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>On-Device Edge Analysis</span>
                 </div>
@@ -594,7 +594,7 @@ export const InboxMockup: React.FC = () => {
               <div className="rounded-xl p-3 bg-white/[0.02] border border-white/10 space-y-1.5">
                 <div className="flex items-center justify-between text-[10px] text-white/50 font-mono">
                   <span>HMAC-SHA256 LEDGER SIGNATURE</span>
-                  <span className="text-emerald-400 font-bold">VERIFIED</span>
+                  <span className="text-[#1FB36B] font-bold">VERIFIED</span>
                 </div>
                 <p className="text-[10px] font-mono text-white/60 break-all bg-black/40 p-2 rounded border border-white/5">
                   {selectedRecord.hash}
