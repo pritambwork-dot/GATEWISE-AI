@@ -12,7 +12,7 @@ const VIDEOS = [
     label: 'Official Product Launch Film',
     shortLabel: 'Launch Film',
     src: '/media/videos/gatewise-launch-film.mp4',
-    badge: 'OFFICIAL 720P',
+    badge: 'OFFICIAL 1080P',
     tag: 'CINEMATIC LAUNCH',
     desc: 'Official GATEWISE AI product launch film: sub-300ms on-device edge biometric verification, sovereign perimeter defense, and real-time institutional command desk.',
     telemetry: {
