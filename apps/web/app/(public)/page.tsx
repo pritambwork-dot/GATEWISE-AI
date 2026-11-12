@@ -8,7 +8,6 @@ import { InboxMockup } from '@/components/aura/sections/InboxMockup';
 import { ProductVideoTeaser } from '@/components/aura/sections/ProductVideoTeaser';
 import { BentoCapabilities } from '@/components/aura/sections/BentoCapabilities';
 import { VerificationProtocol } from '@/components/aura/sections/VerificationProtocol';
-import { InteractiveScreenshotGallery } from '@/components/aura/sections/InteractiveScreenshotGallery';
 import { FeatureTriage } from '@/components/aura/sections/FeatureTriage';
 import { DownloadSection } from '@/components/aura/sections/DownloadSection';
 import { LogoCloud } from '@/components/aura/sections/LogoCloud';
@@ -16,6 +15,8 @@ import { Testimonials } from '@/components/aura/sections/Testimonials';
 import { DataGovernance } from '@/components/aura/sections/DataGovernance';
 import { FinalCTA } from '@/components/aura/sections/FinalCTA';
 import { Footer } from '@/components/aura/sections/Footer';
+import { CookieConsent } from '@/components/aura/compliance/CookieConsent';
+import { LegalModals } from '@/components/aura/compliance/LegalModals';
 
 export default function PublicHomePage() {
   return (
@@ -85,10 +86,7 @@ export default function PublicHomePage() {
         {/* Section 7 — 4-Stage Verification Protocol */}
         <VerificationProtocol />
 
-        {/* Section 8 — 24-Screen Interactive Interface Gallery */}
-        <InteractiveScreenshotGallery />
-
-        {/* Section 9 — Perimeter Defense Architecture */}
+        {/* Section 8 — Perimeter Defense Architecture */}
         <FeatureTriage />
 
         {/* Section 10 — Download & Web App Access Hub */}
@@ -109,6 +107,10 @@ export default function PublicHomePage() {
         {/* Section 15 — Institutional Footer */}
         <Footer />
       </div>
+
+      {/* Institutional Compliance & Cookies */}
+      <CookieConsent />
+      <LegalModals />
     </div>
   );
 }
