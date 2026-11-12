@@ -22,51 +22,6 @@ const VIDEOS = [
       post: 'Gate-Main-02 Terminal Ingress',
     },
   },
-  {
-    id: 'admin',
-    label: 'Command Centre Walkthrough',
-    shortLabel: 'Command Desk',
-    src: '/media/videos/admin-portal-demo.mp4',
-    badge: 'ADMIN PORTAL',
-    tag: 'WEB COMMAND DESK',
-    desc: 'Centralized institutional command centre: live gate feeds, identity roster, automated visitor passes, and real-time station heartbeat.',
-    telemetry: {
-      engine: 'Web Command & Control',
-      latency: '<150ms WebSocket Broadcast',
-      status: 'ALL GATES ACTIVE',
-      post: 'Central Security HQ Desk',
-    },
-  },
-  {
-    id: 'guard',
-    label: 'Android Guard App Demo',
-    shortLabel: 'Guard App',
-    src: '/media/videos/guard-app-demo.mp4',
-    badge: 'ANDROID GUARD',
-    tag: 'FIELD TERMINAL',
-    desc: 'Sub-300ms on-device camera face match, offline SQLite identity continuity cache, and ruggedized Android terminal field verification.',
-    telemetry: {
-      engine: 'On-Device Android NDK',
-      latency: '28ms YuNet Landmark Pass',
-      status: 'OFFLINE CONTINUITY ACTIVE',
-      post: 'Perimeter Handheld Post',
-    },
-  },
-  {
-    id: 'overview',
-    label: 'Full System Overview',
-    shortLabel: 'System Suite',
-    src: '/media/videos/gatewise-overview.mp4',
-    badge: 'SOVEREIGN STACK',
-    tag: 'END-TO-END SUITE',
-    desc: 'End-to-end sovereign perimeter defense architecture: distributed camera nodes, hardware barrier relays, and DPDP Act 2023 compliance.',
-    telemetry: {
-      engine: 'Zero-Image Privacy Pipeline',
-      latency: 'Instant Edge Validation',
-      status: '100% AIR-GAPPED READY',
-      post: 'Institutional Campus Boundary',
-    },
-  },
 ];
 
 export const ProductVideoTeaser: React.FC = () => {
@@ -133,38 +88,39 @@ export const ProductVideoTeaser: React.FC = () => {
           Experience GATEWISE AI in Action
         </h2>
         <p className="text-white/60 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
-          Official product launch film and live operational walkthroughs of our actual production software.
+          Official product launch film: sub-300ms on-device edge biometric verification, sovereign perimeter defense, and zero-image privacy.
         </p>
 
-        {/* Video selector tabs - Responsive horizontal scrolling on mobile */}
-        <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 overflow-x-auto no-scrollbar pb-1 px-1">
-          {VIDEOS.map((tab) => {
-            const isActive = tab.id === activeVideoId;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveVideoId(tab.id)}
-                className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[38px] ${
-                  isActive
-                    ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.25)] font-bold'
-                    : 'bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Film className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-black' : 'text-[#00d2ff]'}`} />
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden">{tab.shortLabel}</span>
-                <span
-                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
-                    isActive ? 'bg-black/10 text-black' : 'bg-white/10 text-white/50'
+        {VIDEOS.length > 1 && (
+          <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 overflow-x-auto no-scrollbar pb-1 px-1">
+            {VIDEOS.map((tab) => {
+              const isActive = tab.id === activeVideoId;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveVideoId(tab.id)}
+                  className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[38px] ${
+                    isActive
+                      ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.25)] font-bold'
+                      : 'bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  {tab.badge}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                  <Film className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-black' : 'text-[#00d2ff]'}`} />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.shortLabel}</span>
+                  <span
+                    className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                      isActive ? 'bg-black/10 text-black' : 'bg-white/10 text-white/50'
+                    }`}
+                  >
+                    {tab.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Video Player Frame */}
