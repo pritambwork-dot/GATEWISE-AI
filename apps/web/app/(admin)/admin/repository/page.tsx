@@ -1,370 +1,320 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import {
-  Database, RefreshCw, CheckCircle2, AlertTriangle, FileImage,
-  FolderSync, ShieldCheck, Folder, ExternalLink, HelpCircle,
-  FileQuestion, Check, X, Shield, Lock, Clock, ChevronRight
+  Image as ImageIcon,
+  Search,
+  Upload,
+  Hexagon,
+  CheckCircle2,
+  AlertOctagon,
+  Clock,
+  Eye,
+  ShieldCheck,
+  Cpu,
+  UserCheck
 } from 'lucide-react';
-import { api } from '@/lib/services/api';
-import { RepositoryStatus } from '@/types';
 
-export default function IdentityRepositoryPage() {
-  const [status, setStatus] = useState<RepositoryStatus | null>(null);
-  const [unmappedFiles, setUnmappedFiles] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [isUnmappedModalOpen, setIsUnmappedModalOpen] = useState(false);
-  const [syncFeedback, setSyncFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [forceFullSync, setForceFullSync] = useState(false);
-
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      const [repoStatus, unmapped] = await Promise.all([
-        api.getRepositoryStatus(),
-        api.getUnmappedFiles().catch(() => [])
-      ]);
-      setStatus(repoStatus);
-      setUnmappedFiles(unmapped);
-    } catch (err) {
-      console.error('Failed to load repository status:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const handleTriggerSync = async () => {
-    setIsSyncing(true);
-    setSyncFeedback(null);
-    try {
-      const res = await api.triggerSync(undefined, forceFullSync);
-      setSyncFeedback({
-        type: 'success',
-        message: res.message || 'Google Drive synchronization completed successfully.',
-      });
-      await loadData();
-    } catch (err: any) {
-      setSyncFeedback({
-        type: 'error',
-        message: err.message || 'Failed to complete Google Drive sync job.',
-      });
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  const totalIdentities = status?.total_approved_identities || 0;
-  const referencePhotos = status?.approved_reference_photos || 0;
-  const embeddingsCount = status?.active_embeddings_indexed || 0;
-  const unmappedCount = status?.unmapped_files_count || unmappedFiles.length || 0;
-  const syncPercentage = totalIdentities > 0 ? Math.min(100, Math.round((referencePhotos / totalIdentities) * 100)) : 100;
+export default function PhotographLibraryPage() {
+  const [viewMode, setViewMode] = useState<'library' | 'detail'>('library');
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Institutional Identity Photo Repository
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Google Drive synchronized biometric reference photo store, automated 128-D embedding pipeline, and unmapped file resolution.
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2.5">
-          <button
-            onClick={loadData}
-            disabled={isLoading || isSyncing}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-xs"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
-            <span className="hidden sm:inline">Check Status</span>
-          </button>
-
-          <button
-            onClick={handleTriggerSync}
-            disabled={isSyncing}
-            className="flex items-center space-x-1.5 px-4 py-1.5 rounded-xl bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
-          >
-            <FolderSync className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-            <span>{isSyncing ? 'Synchronizing...' : 'Sync Repository Now'}</span>
-          </button>
-        </div>
-      </div>
-
-      {syncFeedback && (
-        <div
-          className={`p-3.5 rounded-2xl border text-xs font-semibold flex items-center justify-between ${
-            syncFeedback.type === 'success'
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-              : 'bg-rose-50 text-rose-800 border-rose-200'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            {syncFeedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            ) : (
-              <AlertTriangle className="w-4 h-4 text-rose-600" />
-            )}
-            <span>{syncFeedback.message}</span>
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* Page Title & Controls */}
+      {viewMode === 'detail' ? (
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                Photograph details
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
+                Confirmed core capability
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              One photograph, its linked person and its approval and enrollment status.
+            </p>
           </div>
-          <button onClick={() => setSyncFeedback(null)} className="text-xs hover:opacity-75">
-            <X className="w-3.5 h-3.5" />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setViewMode('library')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            >
+              Back to library
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              View enrollment status
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              Review mapping
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              Mark primary
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              Add additional
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              Replace
+            </button>
+            <button className="px-4 py-1.5 rounded-full text-xs font-medium bg-[#C93338] text-white hover:bg-[#B3262B] transition-colors shadow-xs">
+              Reject
+            </button>
+            <button className="px-4 py-1.5 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs">
+              Approve
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                Photograph & Identity Library
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
+                Confirmed core capability
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Manage institutional photographs with role-based access.
+            </p>
+          </div>
+
+          <button className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs">
+            Upload photograph
           </button>
         </div>
       )}
 
-      {/* Main Connection Status Card */}
-      <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
-              <Database className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="text-base font-bold text-slate-900">
-                  Google Drive Reference Store
-                </h3>
-                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 font-mono">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  <span>{status?.connection_status || 'CONNECTED'}</span>
-                </span>
+      {/* Dark Biometric Warning Banner (Pages 16 & 17) */}
+      <div className="bg-[#0B0F19] text-white rounded-2xl p-4 text-xs flex items-center gap-3 shadow-md">
+        <Hexagon className="w-4 h-4 text-white shrink-0" />
+        <p className="leading-relaxed text-slate-200">
+          Biometric images are role-gated, never public, and every view is written to the audit log. Face embeddings are never displayed. Images are never sent to a general-purpose AI.
+        </p>
+      </div>
+
+      {/* VIEW: Photograph Details (Page 17) */}
+      {viewMode === 'detail' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card 1: Photograph */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+            <h3 className="text-sm font-bold text-slate-900">Photograph</h3>
+            <div className="space-y-3 text-xs divide-y divide-slate-100">
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-slate-500">Secure preview</span>
+                <span className="font-mono text-slate-700">—</span>
               </div>
-              {/* Folder Breadcrumb */}
-              <div className="flex items-center space-x-1.5 text-xs text-slate-500 mt-1 font-mono">
-                <span>Google Drive</span>
-                <ChevronRight className="w-3 h-3 text-slate-400" />
-                <span>AUT-Perimeter</span>
-                <ChevronRight className="w-3 h-3 text-slate-400" />
-                <span className="text-slate-800 font-semibold">{status?.folder_id || 'reference_photos'}</span>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-slate-500">Photograph record ID</span>
+                <span className="font-mono text-slate-700">—</span>
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-slate-500">Original filename</span>
+                <span className="font-mono text-slate-700">—</span>
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-slate-500">Upload date</span>
+                <span className="font-mono text-slate-700">—</span>
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-slate-500">Uploaded by</span>
+                <span className="font-mono text-slate-700">—</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <label className="flex items-center space-x-2 text-xs text-slate-600 cursor-pointer select-none">
+          {/* Right Column: Linked person & Status */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Linked person</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Linked person ID</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Full name</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Category</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Status</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Approval status</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Model enrollment status</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW: Photograph Library Grid & Table (Page 16) */}
+      {viewMode === 'library' && (
+        <div className="space-y-6">
+          {/* 7 Stat Cards Grid (Page 16) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-slate-400" />
+                <span className="text-xs font-medium text-slate-700">Total photographs</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1FB36B]" />
+                <span className="text-xs font-medium text-slate-700">Approved</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="text-xs font-medium text-slate-700">Pending</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#C93338]" />
+                <span className="text-xs font-medium text-slate-700">Rejected</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-slate-400" />
+                <span className="text-xs font-medium text-slate-700">Unassigned</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#12B5A6]" />
+                <span className="text-xs font-medium text-slate-700">Enrollment-ready</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#C93338]" />
+                <span className="text-xs font-medium text-slate-700">Failed enrollment</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+            </div>
+          </div>
+
+          {/* Filters Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
-                type="checkbox"
-                checked={forceFullSync}
-                onChange={(e) => setForceFullSync(e.target.checked)}
-                className="rounded border-slate-300 text-teal-700 focus:ring-teal-500/20"
+                type="text"
+                placeholder="Search by name or person ID"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
               />
-              <span>Force full image re-indexing</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Drive Sync Progress Meter */}
-        <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-          <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="text-slate-700">Photo Ingestion & Embedding Sync Status</span>
-            <span className="font-mono text-teal-800 tabular-nums">{syncPercentage}% Mapped</span>
-          </div>
-          <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-            <div
-              className="h-full bg-teal-600 rounded-full transition-all duration-500"
-              style={{ width: `${syncPercentage}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
-            <span>{referencePhotos} photos enrolled of {totalIdentities} expected members</span>
-            <span>YuNet + SFace pipeline</span>
-          </div>
-        </div>
-
-        {/* Sync Telemetry Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">
-              Mapped Identities
-            </span>
-            <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
-              {totalIdentities}
             </div>
-            <span className="text-[11px] text-slate-500 mt-0.5 block">Linked member files</span>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Category</option>
+              <option value="Student">Student</option>
+              <option value="Faculty">Faculty</option>
+            </select>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Approval</option>
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+            </select>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Enrollment</option>
+              <option value="Ready">Ready</option>
+              <option value="Enrolled">Enrolled</option>
+            </select>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Department</option>
+              <option value="Computer Science">Computer Science</option>
+            </select>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">
-              Reference Photos
-            </span>
-            <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
-              {referencePhotos}
-            </div>
-            <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Validated Drive files</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">
-              128-D Embeddings
-            </span>
-            <div className="text-2xl font-bold text-teal-800 mt-1 font-mono tabular-nums">
-              {embeddingsCount}
-            </div>
-            <span className="text-[11px] text-slate-500 mt-0.5 block">Indexed for fast search</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">
-              Unmapped Files
-            </span>
-            <div className="text-2xl font-bold text-amber-600 mt-1 font-mono tabular-nums">
-              {unmappedCount}
-            </div>
-            <button
-              onClick={() => setIsUnmappedModalOpen(true)}
-              className="text-[11px] font-semibold text-amber-700 hover:underline mt-0.5 block text-left"
-            >
-              Review unmapped files &rarr;
-            </button>
-          </div>
-        </div>
-
-        {/* Last Sync Info */}
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between text-xs gap-3">
-          <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-slate-400" />
-            <span className="text-slate-500">
-              Last Completed Synchronization:
-            </span>
-            <span className="font-mono font-semibold text-slate-800 tabular-nums">
-              {status?.last_sync_job?.completed_at
-                ? new Date(status.last_sync_job.completed_at).toLocaleString()
-                : 'Today, 04:30 AM (Autonomous CRON)'}
-            </span>
-          </div>
-          <span className="font-mono text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 w-fit">
-            Job ID: {status?.last_sync_job?.job_id || 'cron-sync-prod-824'}
-          </span>
-        </div>
-      </div>
-
-      {/* Specifications & Privacy Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Naming Convention Specification */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3">
-          <div className="flex items-center space-x-2">
-            <HelpCircle className="w-4 h-4 text-teal-600" />
-            <h4 className="text-sm font-bold text-slate-900">
-              Automated File Ingestion Specification
-            </h4>
-          </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            The Drive sync engine parses Google Drive files automatically based on strict institutional filename schema:
-          </p>
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs space-y-1.5">
-            <div className="text-teal-800 font-bold">
-              {"<PERSON_ID>_<FULL_NAME>.jpg"}
-            </div>
-            <div className="text-[11px] text-slate-500">
-              Examples:
-              <br />• <code>STU-001_Alex_Rivera.jpg</code>
-              <br />• <code>FAC-002_Elena_Rostova.png</code>
-              <br />• <code>STF-003_Marcus_Vance.jpg</code>
-            </div>
-          </div>
-          <p className="text-[11px] text-slate-500">
-            Files matching existing database <code>person_id</code> values are automatically mapped, face-detected with YuNet, and embedded with SFace.
-          </p>
-        </div>
-
-        {/* Security & Zero Biometric Exposure */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3">
-          <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-teal-600" />
-            <h4 className="text-sm font-bold text-slate-900">
-              Zero Raw Biometric Exposure
-            </h4>
-          </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            To satisfy institutional security and privacy policies:
-          </p>
-          <ul className="text-xs text-slate-600 space-y-2">
-            <li className="flex items-start space-x-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-              <span>Drive reference photos are accessed via scoped Google Service Accounts with read-only permission.</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-              <span>Embeddings (128-D vectors) are non-invertible and cannot reconstruct original face imagery.</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-              <span>Administrators cannot download or export raw biometric face crops from this portal.</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Review Unmapped Files Modal */}
-      {isUnmappedModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-200">
-                  <FileQuestion className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Unmapped Google Drive Files
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Files in the designated Drive folder that could not be matched to an institutional ID.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsUnmappedModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4 text-xs">
-              {unmappedFiles.length === 0 ? (
-                <div className="py-8 text-center text-slate-500 space-y-2">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-                  <p className="font-bold text-slate-800">All Drive files successfully mapped!</p>
-                  <p className="text-xs">There are no unmapped or corrupt files in the repository folder.</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-xs text-slate-600">
-                    Rename these files in Google Drive according to the schema <code>{"<ID>_<FullName>.jpg"}</code> and run "Sync Repository Now".
-                  </p>
-                  <div className="rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
-                    {unmappedFiles.map((file, idx) => (
-                      <div key={idx} className="p-3 bg-slate-50 flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <FileImage className="w-4 h-4 text-amber-600" />
-                          <span className="font-mono font-medium text-slate-800">{file.filename || file.name || `unmapped_file_${idx}.jpg`}</span>
+          {/* Table Container */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                    <th className="px-5 py-3">PHOTOGRAPH</th>
+                    <th className="px-5 py-3">FULL NAME</th>
+                    <th className="px-5 py-3">PERSON ID</th>
+                    <th className="px-5 py-3">CATEGORY</th>
+                    <th className="px-5 py-3">DEPARTMENT</th>
+                    <th className="px-5 py-3">APPROVAL</th>
+                    <th className="px-5 py-3">ENROLLMENT</th>
+                    <th className="px-5 py-3">PRIMARY</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={8} className="py-20 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
+                          <ImageIcon className="w-6 h-6" />
                         </div>
-                        <span className="text-[10px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded font-semibold">
-                          {file.reason || 'Missing Person ID'}
-                        </span>
+                        <h3 className="text-base font-bold text-slate-900 mb-1">No photographs yet</h3>
+                        <p className="text-xs text-slate-500 max-w-sm mb-4">
+                          Only photographs supplied through the approved registry appear, in grid or list view. Nothing is shown publicly.
+                        </p>
+                        <button
+                          onClick={() => setViewMode('detail')}
+                          className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs"
+                        >
+                          Preview photograph detail layout
+                        </button>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-              <button
-                onClick={() => setIsUnmappedModalOpen(false)}
-                className="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs"
-              >
-                Done
-              </button>
+            {/* Footer */}
+            <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
+              <span>0 shown · count unavailable until the backend responds</span>
+              <div className="flex items-center gap-2">
+                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Previous</button>
+                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Next</button>
+              </div>
             </div>
           </div>
         </div>

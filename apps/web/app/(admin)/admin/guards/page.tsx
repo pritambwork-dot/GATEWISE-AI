@@ -1,554 +1,821 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
-  Shield, UserPlus, Search, Filter, ShieldCheck, ShieldAlert,
-  AlertTriangle, RefreshCw, X, ChevronRight, UserX, UserCheck,
-  LogOut, Lock, Key, Mail, Building, CheckCircle2, DoorClosed
+  Shield,
+  Search,
+  Plus,
+  Download,
+  Hexagon,
+  Clock,
+  User,
+  DoorClosed,
+  CheckCircle2,
+  AlertOctagon,
+  Eye,
+  SlidersHorizontal,
+  ChevronRight,
+  UserX,
+  FileText
 } from 'lucide-react';
-import { api } from '@/lib/services/api';
-import { GuardUser } from '@/types';
 
-export default function GuardManagementPage() {
-  const [guards, setGuards] = useState<GuardUser[]>([]);
-  const [selectedGuard, setSelectedGuard] = useState<GuardUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Modals & Actions
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-
-  // Form State
-  const [inviteForm, setInviteForm] = useState({
-    employee_id: '',
-    full_name: '',
-    email: '',
-    password: '',
-  });
-
-  const loadGuards = async () => {
-    setIsLoading(true);
-    try {
-      const data = await api.listGuards();
-      setGuards(data);
-    } catch (err) {
-      console.error('Failed to load guards:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+function SecurityGuardsContent() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'analytics' ? 'analytics' : 'list';
+  const [activeTab, setActiveTab] = useState<'list' | 'history' | 'profile' | 'analytics'>(initialTab);
 
   useEffect(() => {
-    loadGuards();
-  }, []);
-
-  const filteredGuards = useMemo(() => {
-    return guards.filter((g) => {
-      if (statusFilter !== 'ALL' && g.account_status !== statusFilter) return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchesName = g.full_name.toLowerCase().includes(q);
-        const matchesId = g.employee_id.toLowerCase().includes(q);
-        const matchesEmail = (g.email || '').toLowerCase().includes(q);
-        if (!matchesName && !matchesId && !matchesEmail) return false;
-      }
-      return true;
-    });
-  }, [guards, statusFilter, searchQuery]);
-
-  const handleInviteGuard = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage('');
-    try {
-      await api.inviteGuard(inviteForm);
-      setIsInviteModalOpen(false);
-      setInviteForm({
-        employee_id: '',
-        full_name: '',
-        email: '',
-        password: '',
-      });
-      setSuccessMessage('Guard credentials generated and registered!');
-      setTimeout(() => setSuccessMessage(''), 3000);
-      await loadGuards();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to create guard account');
-    } finally {
-      setIsSubmitting(false);
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'analytics') {
+      setActiveTab('analytics');
     }
-  };
-
-  const handleToggleStatus = async (guard: GuardUser) => {
-    const newStatus = guard.account_status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-    setActionLoading(guard.id);
-    try {
-      await api.updateGuardStatus(guard.id, { account_status: newStatus });
-      await loadGuards();
-      if (selectedGuard?.id === guard.id) {
-        setSelectedGuard((prev) => prev ? { ...prev, account_status: newStatus as any } : null);
-      }
-    } catch (err: any) {
-      alert(err.message || 'Failed to update guard status');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleRevokeSessions = async (guardId: string) => {
-    if (!confirm('Are you sure you want to revoke all active sessions for this guard? They will be signed out on all mobile devices.')) return;
-    setActionLoading(guardId);
-    try {
-      await api.revokeGuardSessions(guardId);
-      alert('Active mobile sessions revoked successfully.');
-    } catch (err: any) {
-      alert(err.message || 'Failed to revoke guard sessions');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  // Metrics
-  const total = guards.length;
-  const active = guards.filter(g => g.account_status === 'ACTIVE').length;
-  const suspended = guards.filter(g => g.account_status === 'SUSPENDED').length;
-  const onDuty = guards.filter(g => g.assigned_gate).length;
+  }, [searchParams]);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Security Guard & Operator Directory
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Manage guard credentials, monitor station assignments, and enforce session security policies.
-          </p>
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* Page Header */}
+      {activeTab === 'profile' ? (
+        /* Guard Profile Header (Page 9) */
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                Guard profile
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
+                Confirmed core capability
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Identity, assignment, current session and performance for one guard.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            >
+              View sessions
+            </button>
+            <button
+              onClick={() => setActiveTab('list')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            >
+              Review activity
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              Assign or change gate
+            </button>
+            <button className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#C93338] text-white hover:bg-[#B3262B] transition-colors shadow-xs">
+              Suspend account
+            </button>
+          </div>
         </div>
+      ) : activeTab === 'analytics' ? (
+        /* Guard Session Analytics Header (Page 10) */
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                Guard session analytics
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FFF4E5] text-[#B45309]">
+                Backend-dependent
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              How much work a guard completed in one session. Each metric has a precise definition.
+            </p>
+          </div>
 
-        <div className="flex items-center space-x-2.5">
-          <button
-            onClick={loadGuards}
-            disabled={isLoading}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-xs"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
-            <span className="hidden sm:inline">Sync Directory</span>
-          </button>
-
-          <button
-            onClick={() => {
-              setErrorMessage('');
-              setIsInviteModalOpen(true);
-            }}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-all shadow-xs"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Enroll Guard</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('list')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            >
+              Compare sessions
+            </button>
+            <Link
+              href="/admin/verification"
+              className="px-4 py-1.5 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs"
+            >
+              Open event detail
+            </Link>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Standard Security Guards Header (Page 8) */
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                Security Guards
+              </h1>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
+                Confirmed core capability
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Manage guards, gate assignments and working sessions.
+            </p>
+          </div>
 
-      {successMessage && (
-        <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>{successMessage}</span>
+          <div className="flex items-center gap-2">
+            <button className="px-4 py-2 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+              Export
+            </button>
+            <button className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs">
+              Add Guard
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
-            <span>Total Guards</span>
-            <Shield className="w-4 h-4 text-teal-600" />
+      {/* Blue Informational Banner (Page 9 & 10) */}
+      {activeTab === 'profile' && (
+        <div className="bg-[#EBF0FF] border border-[#D0DEFF] text-[#1E3A8A] rounded-2xl p-4 text-xs flex items-center gap-3 shadow-2xs">
+          <Hexagon className="w-4 h-4 text-[#2F5BFF] shrink-0" />
+          <p className="leading-relaxed">
+            Administrative actions appear only when your role permits them. Every change is authenticated and auditable.
+          </p>
+        </div>
+      )}
+
+      {activeTab === 'analytics' && (
+        <div className="bg-[#EBF0FF] border border-[#D0DEFF] text-[#1E3A8A] rounded-2xl p-4 text-xs flex items-center gap-3 shadow-2xs">
+          <Hexagon className="w-4 h-4 text-[#2F5BFF] shrink-0" />
+          <p className="leading-relaxed">
+            The session summary is not calculated until the backend session state is final.
+          </p>
+        </div>
+      )}
+
+      {/* Sub-Tabs (Page 8) */}
+      {(activeTab === 'list' || activeTab === 'history') && (
+        <div className="inline-flex items-center p-1 bg-white border border-slate-200 rounded-full shadow-xs text-xs font-medium text-slate-600">
+          <button
+            onClick={() => setActiveTab('list')}
+            className={`px-4 py-1.5 rounded-full transition-colors ${
+              activeTab === 'list'
+                ? 'bg-[#2F5BFF] text-white shadow-xs font-semibold'
+                : 'hover:text-slate-900 text-slate-600'
+            }`}
+          >
+            Guard list
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`px-4 py-1.5 rounded-full transition-colors ${
+              activeTab === 'history'
+                ? 'bg-[#2F5BFF] text-white shadow-xs font-semibold'
+                : 'hover:text-slate-900 text-slate-600'
+            }`}
+          >
+            Session history
+          </button>
+        </div>
+      )}
+
+      {/* VIEW: Standard Guard List (Page 8) */}
+      {(activeTab === 'list' || activeTab === 'history') && (
+        <div className="space-y-4">
+          {/* Filters Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            <div className="lg:col-span-2 relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search guards by name, ID or email"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
+              />
+            </div>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Account status</option>
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Shift</option>
+              <option value="Morning">Morning</option>
+              <option value="Evening">Evening</option>
+              <option value="Night">Night</option>
+            </select>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Connection</option>
+              <option value="Online">Online</option>
+              <option value="Offline">Offline</option>
+            </select>
+            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+              <option value="">Assigned gate</option>
+              <option value="North Gate">North Gate</option>
+              <option value="South Gate">South Gate</option>
+            </select>
           </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{total}</div>
-          <span className="text-[11px] text-slate-500 mt-0.5 block">Registered security officers</span>
-        </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
-            <span>Active & Eligible</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{active}</div>
-          <span className="text-[11px] text-emerald-600 font-medium mt-0.5 block">Permitted terminal access</span>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
-            <span>On Duty Now</span>
-            <DoorClosed className="w-4 h-4 text-cyan-600" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{onDuty}</div>
-          <span className="text-[11px] text-slate-500 mt-0.5 block">Assigned to active posts</span>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between">
-            <span>Suspended</span>
-            <ShieldAlert className="w-4 h-4 text-rose-500" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 mt-2 font-mono tabular-nums">{suspended}</div>
-          <span className="text-[11px] text-slate-500 mt-0.5 block">Terminal access locked</span>
-        </div>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center space-x-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200/80">
-          {['ALL', 'ACTIVE', 'SUSPENDED'].map((st) => (
-            <button
-              key={st}
-              onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                statusFilter === st
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              {st === 'ALL' ? 'All Guards' : st}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative min-w-[280px] flex-1 max-w-sm">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search officer name, ID, or email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:bg-white transition-all"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Guards Table */}
-      <div className="rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-slate-200/80 bg-slate-50/70 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                <th className="py-3 px-4">Officer ID</th>
-                <th className="py-3 px-4">Full Name</th>
-                <th className="py-3 px-4">Assigned Gate Post</th>
-                <th className="py-3 px-4">Active Shift</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredGuards.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-16 text-center text-slate-500">
-                    <Shield className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="font-semibold text-sm text-slate-800">No security officers found</p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Enroll a new guard or clear active filters.
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                filteredGuards.map((guard) => {
-                  const isActive = guard.account_status === 'ACTIVE';
-
-                  return (
-                    <tr
-                      key={guard.id}
-                      onClick={() => setSelectedGuard(guard)}
-                      className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
-                    >
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80 tabular-nums">
-                          {guard.employee_id}
-                        </span>
-                      </td>
-
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="font-semibold text-slate-900">{guard.full_name}</div>
-                        {guard.email && <div className="text-[10px] text-slate-500">{guard.email}</div>}
-                      </td>
-
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        {guard.assigned_gate ? (
-                          <div className="flex items-center space-x-1.5 text-teal-800 font-semibold">
-                            <DoorClosed className="w-3.5 h-3.5 text-teal-600" />
-                            <span>{guard.assigned_gate.name}</span>
-                          </div>
-                        ) : (
-                          <span className="text-slate-400 italic">Unassigned</span>
-                        )}
-                      </td>
-
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="text-slate-700 font-mono text-[11px]">
-                          {guard.assigned_gate?.shift || 'Standby'}
-                        </span>
-                      </td>
-
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono ${
-                            isActive
-                              ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20'
-                              : 'bg-rose-50 text-rose-700 ring-1 ring-rose-500/20'
-                          }`}
+          {/* Table Container */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                    <th className="px-5 py-3">GUARD</th>
+                    <th className="px-5 py-3">GUARD ID</th>
+                    <th className="px-5 py-3">INSTITUTIONAL EMAIL</th>
+                    <th className="px-5 py-3">ASSIGNED GATE</th>
+                    <th className="px-5 py-3">SHIFT STATUS</th>
+                    <th className="px-5 py-3">SESSION STATUS</th>
+                    <th className="px-5 py-3">LAST ACTIVITY</th>
+                    <th className="px-5 py-3">ACCOUNT STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={8} className="py-20 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
+                          <Shield className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-base font-bold text-slate-900 mb-1">No security guards yet</h3>
+                        <p className="text-xs text-slate-500 max-w-md mb-4">
+                          Guards appear here once registered. Filters cover Active, Inactive, On duty, Off duty, Online, Offline, Suspended and Pending approval.
+                        </p>
+                        <button
+                          onClick={() => setActiveTab('profile')}
+                          className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs"
                         >
-                          <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                          <span>{guard.account_status}</span>
-                        </span>
-                      </td>
+                          Preview guard profile layout
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end space-x-1.5">
+            {/* Footer */}
+            <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
+              <span>0 shown · count unavailable until the backend responds</span>
+              <div className="flex items-center gap-2">
+                <button
+                  disabled
+                  className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  disabled
+                  className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW: Guard Profile Preview (Page 9) */}
+      {activeTab === 'profile' && (
+        <div className="space-y-6">
+          {/* 7 Stat Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" />
+                <span className="text-xs font-medium text-slate-700">Total scans</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Scan attempts initiated.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" />
+                <span className="text-xs font-medium text-slate-700">Completed verifications</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Finished requests.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#12B5A6]" />
+                <span className="text-xs font-medium text-slate-700">Verified identities</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Successful matches.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1FB36B]" />
+                <span className="text-xs font-medium text-slate-700">Authorised entries</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Policy allowed.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#C93338]" />
+                <span className="text-xs font-medium text-slate-700">Denied entries</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Policy denied.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="text-xs font-medium text-slate-700">Pending reviews</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Unresolved.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-slate-500" />
+                <span className="text-xs font-medium text-slate-700">Failed or interrupted</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Attempts that did not complete.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Guard activity search and empty table */}
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search this guard's activity"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
+              />
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                      <th className="px-5 py-3">TIMESTAMP</th>
+                      <th className="px-5 py-3">EVENT ID</th>
+                      <th className="px-5 py-3">GATE</th>
+                      <th className="px-5 py-3">RESULT</th>
+                      <th className="px-5 py-3">OUTCOME</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colSpan={5} className="py-20 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
+                            <Shield className="w-6 h-6" />
+                          </div>
+                          <h3 className="text-base font-bold text-slate-900 mb-1">No activity recorded for this guard</h3>
+                          <p className="text-xs text-slate-500 max-w-sm mb-4">
+                            The chronological timeline lists the guard's real events only.
+                          </p>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleStatus(guard);
-                            }}
-                            disabled={actionLoading === guard.id}
-                            className={`px-2.5 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                              isActive
-                                ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
-                                : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                            }`}
+                            onClick={() => setActiveTab('analytics')}
+                            className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs"
                           >
-                            {isActive ? 'Suspend' : 'Activate'}
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedGuard(guard);
-                            }}
-                            className="px-2 py-1 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 transition-all shadow-2xs"
-                          >
-                            Details
+                            Open session analytics
                           </button>
                         </div>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Guard Detail Modal */}
-      {selectedGuard && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Security Officer Dossier
-                  </h3>
-                  <div className="text-xs font-mono text-slate-500 tabular-nums">
-                    {selectedGuard.employee_id} • {selectedGuard.full_name}
-                  </div>
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
+                <span>0 shown · count unavailable until the backend responds</span>
+                <div className="flex items-center gap-2">
+                  <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Previous</button>
+                  <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Next</button>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedGuard(null)}
-                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
+          </div>
 
-            <div className="p-6 space-y-5">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Officer Name</span>
-                    <span className="font-bold text-slate-900">{selectedGuard.full_name}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Employee ID</span>
-                    <span className="font-mono font-bold text-slate-900">{selectedGuard.employee_id}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Email Address</span>
-                    <span className="font-mono text-slate-700">{selectedGuard.email || 'N/A'}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Current Status</span>
-                    <span className="font-semibold text-emerald-700">{selectedGuard.account_status}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Assigned Gate</span>
-                    <span className="font-semibold text-teal-800">{selectedGuard.assigned_gate?.name || 'Unassigned'}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Shift Roster</span>
-                    <span className="font-mono text-slate-700">{selectedGuard.assigned_gate?.shift || 'Standby'}</span>
-                  </div>
+          {/* 3 Detail Cards (Page 9 Bottom) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Identity Card */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Identity</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Photograph</span>
+                  <span className="font-mono text-slate-700">—</span>
                 </div>
-              </div>
-
-              {/* Session Security */}
-              <div className="p-4 rounded-2xl border border-slate-200/80 space-y-3">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-900">
-                  <span className="flex items-center space-x-1.5">
-                    <Key className="w-4 h-4 text-teal-600" />
-                    <span>Mobile Device Session Management</span>
-                  </span>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Name</span>
+                  <span className="font-mono text-slate-700">—</span>
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Active JWT tokens issued to this guard for Android Gatewise Guard terminals can be revoked instantly in case of device loss or security compromise.
-                </p>
-                <button
-                  onClick={() => handleRevokeSessions(selectedGuard.id)}
-                  disabled={actionLoading === selectedGuard.id}
-                  className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition-all"
-                >
-                  Revoke All Mobile Sessions
-                </button>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Guard ID</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Role</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Institution</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Account status</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-              <button
-                onClick={() => setSelectedGuard(null)}
-                className="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs"
-              >
-                Close Dossier
-              </button>
+            {/* Assignment Card */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Assignment</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Assigned gate</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Gate ID</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Assignment start</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Assignment status</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Current Session Card */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Current session</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Session ID</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Start time</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Duration</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Device information</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-slate-500">Network status</span>
+                  <span className="font-mono text-slate-700">—</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 pt-2">Device details appear only where permitted.</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Enroll Guard Modal */}
-      {isInviteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200/80 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-700 border border-teal-200">
-                  <UserPlus className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Enroll Security Officer
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Create credentials for Android mobile guard terminal.
-                  </p>
-                </div>
+      {/* VIEW: Guard Session Analytics (Page 10) */}
+      {activeTab === 'analytics' && (
+        <div className="space-y-6">
+          {/* 8 Stat Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" />
+                <span className="text-xs font-medium text-slate-700">Total scans</span>
               </div>
-              <button
-                onClick={() => setIsInviteModalOpen(false)}
-                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Individual attempts.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
             </div>
 
-            <form onSubmit={handleInviteGuard} className="p-6 space-y-4 text-xs">
-              {errorMessage && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-                  {errorMessage}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" />
+                <span className="text-xs font-medium text-slate-700">Completed verifications</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Completed requests.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#12B5A6]" />
+                <span className="text-xs font-medium text-slate-700">Verified identities</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Successful identity matches.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1FB36B]" />
+                <span className="text-xs font-medium text-slate-700">Authorised entries</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Policy-approved events.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#C93338]" />
+                <span className="text-xs font-medium text-slate-700">Denied entries</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Policy-denied events.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="text-xs font-medium text-slate-700">Pending reviews</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Unresolved reviews.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-slate-400" />
+                <span className="text-xs font-medium text-slate-700">Failed attempts</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Did not complete.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-teal-500" />
+                <span className="text-xs font-medium text-slate-700">Unique individuals</span>
+              </div>
+              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
+              <div>
+                <p className="text-[11px] text-slate-500 mb-1">Shown only if reliably available.</p>
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">
+                  Awaiting backend
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Session Activity Chart */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Session activity</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Scans by hour, outcomes and gate activity across the session</p>
+              </div>
+
+              <div className="inline-flex items-center p-1 bg-slate-50 border border-slate-200 rounded-full text-xs">
+                {['Today', 'Last 7 days', 'Last 30 days', 'Custom range'].map((r, i) => (
+                  <button
+                    key={r}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      i === 0 ? 'bg-white text-slate-900 shadow-2xs font-semibold' : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-slate-600 mb-6">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#2F5BFF]" /> Total scans</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#7DA4FF]" /> Completed verifications</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#12B5A6]" /> Verified identities</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#1FB36B]" /> Authorised</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#C93338]" /> Denied</span>
+            </div>
+
+            <div className="h-64 rounded-xl border border-dashed border-slate-200 flex flex-col items-center justify-center p-6 text-center bg-slate-50/40">
+              <div className="text-xs font-semibold text-slate-800 mb-1">No chart data yet</div>
+              <p className="text-[11px] text-slate-500 max-w-md leading-relaxed">
+                Series appear only from recorded events. A successful response with no records shows a true zero. A failed request shows an error, and a missing endpoint shows "not configured".
+              </p>
+            </div>
+          </div>
+
+          {/* Session Events Table */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search session events"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
+                />
+              </div>
+              <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
+                <option value="">Outcome</option>
+                <option value="Permitted">Permitted</option>
+                <option value="Denied">Denied</option>
+              </select>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                      <th className="px-5 py-3">TIMESTAMP</th>
+                      <th className="px-5 py-3">EVENT ID</th>
+                      <th className="px-5 py-3">IDENTITY REFERENCE</th>
+                      <th className="px-5 py-3">SCAN RESULT</th>
+                      <th className="px-5 py-3">IDENTITY STATUS</th>
+                      <th className="px-5 py-3">AUTHORISATION</th>
+                      <th className="px-5 py-3">GUARD ACTION</th>
+                      <th className="px-5 py-3">FINAL OUTCOME</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colSpan={8} className="py-20 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
+                            <Shield className="w-6 h-6" />
+                          </div>
+                          <h3 className="text-base font-bold text-slate-900 mb-1">No events in this session</h3>
+                          <p className="text-xs text-slate-500 max-w-sm mb-4">
+                            Events list chronologically. Select a row for its detail page.
+                          </p>
+                          <Link
+                            href="/admin/verification"
+                            className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs"
+                          >
+                            Open event detail
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
+                <span>0 shown · count unavailable until the backend responds</span>
+                <div className="flex items-center gap-2">
+                  <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Previous</button>
+                  <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Next</button>
                 </div>
-              )}
+              </div>
+            </div>
+          </div>
 
+          {/* Metric definitions */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-900 mb-4">Metric definitions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-600">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Employee ID *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. GRD-004"
-                  value={inviteForm.employee_id}
-                  onChange={(e) => setInviteForm({ ...inviteForm, employee_id: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-mono"
-                />
+                <strong className="block text-slate-900 font-semibold mb-1">Total scans</strong>
+                Counts individual attempts. A repeat scan of one person is another scan.
               </div>
-
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Full Officer Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Inspector Ramesh Patra"
-                  value={inviteForm.full_name}
-                  onChange={(e) => setInviteForm({ ...inviteForm, full_name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-                />
+                <strong className="block text-slate-900 font-semibold mb-1">Completed verifications</strong>
+                Counts requests that finished the workflow.
               </div>
-
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Institutional Email *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="ramesh@security.apex.edu"
-                  value={inviteForm.email}
-                  onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-                />
+                <strong className="block text-slate-900 font-semibold mb-1">Verified identities</strong>
+                Counts successful identity matches.
               </div>
-
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Initial Passcode / Secret *
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={inviteForm.password}
-                  onChange={(e) => setInviteForm({ ...inviteForm, password: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-mono"
-                />
+                <strong className="block text-slate-900 font-semibold mb-1">Authorised / denied</strong>
+                Count policy decisions, separate from identity.
               </div>
+              <div>
+                <strong className="block text-slate-900 font-semibold mb-1">Unique individuals</strong>
+                Distinct people. Repeat scans do not add people.
+              </div>
+              <div>
+                <strong className="block text-slate-900 font-semibold mb-1">Pending reviews</strong>
+                Counts unresolved reviews.
+              </div>
+            </div>
+          </div>
 
-              <div className="pt-4 border-t border-slate-200 flex items-center justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setIsInviteModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-5 py-2 text-xs font-bold rounded-xl bg-teal-800 text-white hover:bg-teal-900 transition-all shadow-xs disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Enrolling...' : 'Enroll Officer'}
-                </button>
+          {/* Session Header & Session Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Session header</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Guard name</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Guard ID</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Session ID</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Assigned gate</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Session date</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Start timestamp</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">End timestamp</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Session duration</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Session status</span><span className="font-mono text-slate-700">—</span></div>
               </div>
-            </form>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900">Session summary</h3>
+              <div className="space-y-3 text-xs divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">First recorded event</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Last recorded event</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Total scan attempts</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Completed requests</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Outstanding reviews</span><span className="font-mono text-slate-700">—</span></div>
+                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Interruptions</span><span className="font-mono text-slate-700">—</span></div>
+              </div>
+            </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+export default function SecurityGuardsPage() {
+  return (
+    <React.Suspense fallback={<div className="p-8 text-xs text-slate-500">Loading security guards...</div>}>
+      <SecurityGuardsContent />
+    </React.Suspense>
   );
 }
