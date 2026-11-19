@@ -12,6 +12,7 @@ import {
   Monitor, ChevronRight, Sparkles
 } from 'lucide-react';
 import { AuthProvider, useAuth } from '@/lib/contexts/auth-context';
+import { LanguageProvider, useLanguage, Translations } from '@/lib/contexts/language-context';
 import { LogoMark } from '@/components/aura/primitives/LogoMark';
 
 interface NavSubItem {
@@ -35,64 +36,66 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const NAV_GROUPS: NavGroup[] = [
-  {
-    title: 'OPERATIONS',
-    items: [
-      { href: '/admin', label: 'Overview', icon: LayoutGrid, iconColor: 'text-[#2F5BFF]' },
-      { href: '/admin/activity', label: 'Live Operations', icon: Activity, iconColor: 'text-[#10B981]', badge: 'LIVE' },
-      {
-        href: '/admin/guards',
-        label: 'Security Guards',
-        icon: Shield,
-        iconColor: 'text-[#6366F1]',
-        subItems: [{ href: '/admin/guards?tab=analytics', label: 'Session Analytics', paramTab: 'analytics' }],
-      },
-      { href: '/admin/verification', label: 'Verification Centre', icon: CheckCircle2, iconColor: 'text-[#14B8A6]' },
-      { href: '/admin/audit', label: 'Cryptographic Audit', icon: FileText, iconColor: 'text-[#F59E0B]' },
-    ],
-  },
-  {
-    title: 'IDENTITY & REGISTRY',
-    items: [
-      { href: '/admin/people', label: 'Identity Registry', icon: Users, iconColor: 'text-[#8B5CF6]' },
-      { href: '/admin/repository', label: 'Photograph Library', icon: ImageIcon, iconColor: 'text-[#EC4899]' },
-      {
-        href: '/admin/enrollment',
-        label: 'Registrations',
-        icon: Plus,
-        iconColor: 'text-[#06B6D4]',
-        subItems: [
-          { href: '/admin/enrollment?tab=bulk', label: 'Bulk XLSX Import', paramTab: 'bulk' },
-          { href: '/admin/enrollment?tab=approvals', label: 'Approval Queue', paramTab: 'approvals' },
-          { href: '/admin/enrollment?tab=model', label: 'Model Enrollment', paramTab: 'model' },
-        ],
-      },
-      { href: '/admin/visitors', label: 'Visitor Passes', icon: UserCheck, iconColor: 'text-[#10B981]' },
-      { href: '/admin/vehicles', label: 'Campus Vehicles', icon: Car, iconColor: 'text-[#F97316]' },
-      { href: '/admin/analytics', label: 'Reports & Analytics', icon: BarChart3, iconColor: 'text-[#3B82F6]' },
-    ],
-  },
-  {
-    title: 'SYSTEM ARCHITECTURE',
-    items: [
-      { href: '/admin/access', label: 'Access Control', icon: UserCog, iconColor: 'text-[#64748B]' },
-      { href: '/admin/gates', label: 'Gates & Perimeter', icon: DoorClosed, iconColor: 'text-[#0EA5E9]' },
-      { href: '/admin/notifications', label: 'Notifications', icon: Bell, iconColor: 'text-[#EAB308]' },
-      { href: '/admin/integrations', label: 'Edge Integrations', icon: Plug, iconColor: 'text-[#A855F7]' },
-      {
-        href: '/admin/settings',
-        label: 'Settings',
-        icon: Settings,
-        iconColor: 'text-[#64748B]',
-        subItems: [
-          { href: '/admin/settings?tab=states', label: 'System States', paramTab: 'states' },
-          { href: '/admin/settings?tab=help', label: 'Help & Support', paramTab: 'help' },
-        ],
-      },
-    ],
-  },
-];
+function getNavGroups(t: Translations): NavGroup[] {
+  return [
+    {
+      title: t.navOperations,
+      items: [
+        { href: '/admin', label: t.overview, icon: LayoutGrid, iconColor: 'text-[#2F5BFF]' },
+        { href: '/admin/activity', label: t.liveOperations, icon: Activity, iconColor: 'text-[#10B981]', badge: 'LIVE' },
+        {
+          href: '/admin/guards',
+          label: t.securityGuards,
+          icon: Shield,
+          iconColor: 'text-[#6366F1]',
+          subItems: [{ href: '/admin/guards?tab=analytics', label: t.sessionAnalytics, paramTab: 'analytics' }],
+        },
+        { href: '/admin/verification', label: t.verificationCentre, icon: CheckCircle2, iconColor: 'text-[#14B8A6]' },
+        { href: '/admin/audit', label: t.cryptographicAudit, icon: FileText, iconColor: 'text-[#F59E0B]' },
+      ],
+    },
+    {
+      title: t.navIdentity,
+      items: [
+        { href: '/admin/people', label: t.identityRegistry, icon: Users, iconColor: 'text-[#8B5CF6]' },
+        { href: '/admin/repository', label: t.photoLibrary, icon: ImageIcon, iconColor: 'text-[#EC4899]' },
+        {
+          href: '/admin/enrollment',
+          label: t.registrations,
+          icon: Plus,
+          iconColor: 'text-[#06B6D4]',
+          subItems: [
+            { href: '/admin/enrollment?tab=bulk', label: t.bulkImport, paramTab: 'bulk' },
+            { href: '/admin/enrollment?tab=approvals', label: t.approvalQueue, paramTab: 'approvals' },
+            { href: '/admin/enrollment?tab=model', label: t.modelEnrollment, paramTab: 'model' },
+          ],
+        },
+        { href: '/admin/visitors', label: t.visitorPasses, icon: UserCheck, iconColor: 'text-[#10B981]' },
+        { href: '/admin/vehicles', label: t.campusVehicles, icon: Car, iconColor: 'text-[#F97316]' },
+        { href: '/admin/analytics', label: t.reportsAnalytics, icon: BarChart3, iconColor: 'text-[#3B82F6]' },
+      ],
+    },
+    {
+      title: t.navArchitecture,
+      items: [
+        { href: '/admin/access', label: t.accessControl, icon: UserCog, iconColor: 'text-[#64748B]' },
+        { href: '/admin/gates', label: t.gatesPerimeter, icon: DoorClosed, iconColor: 'text-[#0EA5E9]' },
+        { href: '/admin/notifications', label: t.notifications, icon: Bell, iconColor: 'text-[#EAB308]' },
+        { href: '/admin/integrations', label: t.edgeIntegrations, icon: Plug, iconColor: 'text-[#A855F7]' },
+        {
+          href: '/admin/settings',
+          label: t.settings,
+          icon: Settings,
+          iconColor: 'text-[#64748B]',
+          subItems: [
+            { href: '/admin/settings?tab=states', label: t.systemStates, paramTab: 'states' },
+            { href: '/admin/settings?tab=help', label: t.helpSupport, paramTab: 'help' },
+          ],
+        },
+      ],
+    },
+  ];
+}
 
 /* ── Apple Spring physics ─────────────────────────────────────── */
 const appleSpring = { type: 'spring', stiffness: 500, damping: 35 };
@@ -104,6 +107,7 @@ function DesktopOnlyGate({ children }: { children: React.ReactNode }) {
   const [isNarrow, setIsNarrow] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [bypassed, setBypassed] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
@@ -142,9 +146,11 @@ function DesktopOnlyGate({ children }: { children: React.ReactNode }) {
             <Monitor className="w-6 h-6" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Desktop &amp; Laptop Optimized</h1>
+            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">
+              {t.desktopGateTitle}
+            </h1>
             <p className="text-xs text-slate-500 leading-relaxed">
-              The GATEWISE AI Command Centre is designed for laptop and computer displays (IIM Sambalpur Security Desk).
+              {t.desktopGateDesc}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
@@ -156,7 +162,7 @@ function DesktopOnlyGate({ children }: { children: React.ReactNode }) {
               }}
               className="w-full py-2.5 px-4 rounded-xl bg-[#2F5BFF] text-white font-bold text-xs hover:bg-[#2549D3] active:scale-95 transition-all shadow-md cursor-pointer"
             >
-              Continue to Command Centre
+              {t.desktopGateBypass}
             </button>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] text-slate-600 font-mono bg-slate-100 border border-slate-200">
@@ -275,6 +281,8 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const currentTab = searchParams.get('tab') || '';
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
+  const navGroups = getNavGroups(t);
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -302,39 +310,39 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   if (pathname === '/admin/login') return <>{children}</>;
 
   const getBreadcrumbs = () => {
-    if (pathname === '/admin') return { section: 'Command Centre', page: 'Overview Desk' };
-    if (pathname.startsWith('/admin/activity')) return { section: 'Operations', page: 'Live Operations' };
+    if (pathname === '/admin') return { section: t.commandCentre, page: t.overviewDesk };
+    if (pathname.startsWith('/admin/activity')) return { section: t.navOperations, page: t.liveOperations };
     if (pathname.startsWith('/admin/guards'))
-      return { section: 'Operations', page: currentTab === 'analytics' ? 'Session Analytics' : 'Security Guards' };
-    if (pathname.startsWith('/admin/verification')) return { section: 'Operations', page: 'Verification Centre' };
-    if (pathname.startsWith('/admin/audit')) return { section: 'Operations', page: 'Cryptographic Audit' };
-    if (pathname.startsWith('/admin/people')) return { section: 'Identity', page: 'Identity Registry' };
-    if (pathname.startsWith('/admin/repository')) return { section: 'Identity', page: 'Photograph Library' };
+      return { section: t.navOperations, page: currentTab === 'analytics' ? t.sessionAnalytics : t.securityGuards };
+    if (pathname.startsWith('/admin/verification')) return { section: t.navOperations, page: t.verificationCentre };
+    if (pathname.startsWith('/admin/audit')) return { section: t.navOperations, page: t.cryptographicAudit };
+    if (pathname.startsWith('/admin/people')) return { section: t.navIdentity, page: t.identityRegistry };
+    if (pathname.startsWith('/admin/repository')) return { section: t.navIdentity, page: t.photoLibrary };
     if (pathname.startsWith('/admin/enrollment'))
       return {
-        section: 'Identity',
+        section: t.navIdentity,
         page:
           currentTab === 'bulk'
-            ? 'Bulk XLSX Import'
+            ? t.bulkImport
             : currentTab === 'approvals'
-            ? 'Approval Queue'
+            ? t.approvalQueue
             : currentTab === 'model'
-            ? 'Model Enrollment'
-            : 'New Registrations',
+            ? t.modelEnrollment
+            : t.registrations,
       };
-    if (pathname.startsWith('/admin/visitors')) return { section: 'Movement', page: 'Visitor Passes' };
-    if (pathname.startsWith('/admin/vehicles')) return { section: 'Movement', page: 'Campus Vehicles' };
-    if (pathname.startsWith('/admin/analytics')) return { section: 'Insights', page: 'Reports & Analytics' };
-    if (pathname.startsWith('/admin/notifications')) return { section: 'Administration', page: 'Notifications' };
-    if (pathname.startsWith('/admin/access')) return { section: 'Administration', page: 'Access Control' };
-    if (pathname.startsWith('/admin/gates')) return { section: 'Administration', page: 'Gates & Perimeter' };
-    if (pathname.startsWith('/admin/integrations')) return { section: 'Administration', page: 'Edge Integrations' };
+    if (pathname.startsWith('/admin/visitors')) return { section: t.navIdentity, page: t.visitorPasses };
+    if (pathname.startsWith('/admin/vehicles')) return { section: t.navIdentity, page: t.campusVehicles };
+    if (pathname.startsWith('/admin/analytics')) return { section: t.navIdentity, page: t.reportsAnalytics };
+    if (pathname.startsWith('/admin/notifications')) return { section: t.navArchitecture, page: t.notifications };
+    if (pathname.startsWith('/admin/access')) return { section: t.navArchitecture, page: t.accessControl };
+    if (pathname.startsWith('/admin/gates')) return { section: t.navArchitecture, page: t.gatesPerimeter };
+    if (pathname.startsWith('/admin/integrations')) return { section: t.navArchitecture, page: t.edgeIntegrations };
     if (pathname.startsWith('/admin/settings'))
       return {
-        section: 'Administration',
-        page: currentTab === 'help' ? 'Help & Support' : currentTab === 'states' ? 'System States' : 'Settings',
+        section: t.navArchitecture,
+        page: currentTab === 'help' ? t.helpSupport : currentTab === 'states' ? t.systemStates : t.settings,
       };
-    return { section: 'Administration', page: 'Portal' };
+    return { section: t.commandCentre, page: t.overviewDesk };
   };
 
   const bc = getBreadcrumbs();
@@ -376,7 +384,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                       </span>
                     </div>
                     <span className="text-[10px] font-mono text-[#2F5BFF] font-semibold tracking-tight truncate mt-0.5">
-                      IIM Sambalpur Console
+                      {t.consoleTitle}
                     </span>
                   </div>
                 </Link>
@@ -408,7 +416,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
           {/* 3. Scrollable Navigation List */}
           <div className="flex-1 overflow-y-auto px-3 py-2 space-y-5 scrollbar-thin scrollbar-thumb-slate-200">
-            {NAV_GROUPS.map((group) => (
+            {navGroups.map((group) => (
               <div key={group.title} className="space-y-1">
                 {!collapsed && (
                   <div className="px-3 text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">
@@ -444,7 +452,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                         {user?.full_name || 'Dr. Rajesh Iyer'}
                       </div>
                       <div className="text-[10px] text-[#0F766E] font-mono truncate">
-                        IIM Sambalpur Desk
+                        {t.profileDesk}
                       </div>
                     </div>
                   </div>
@@ -455,7 +463,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                       logout();
                       router.push('/admin/login');
                     }}
-                    title="Sign Out"
+                    title={t.signOut}
                     className="w-7 h-7 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
@@ -514,7 +522,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                   type="text"
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
-                  placeholder="Search events, identities, guards, gates..."
+                  placeholder={t.searchPlaceholder}
                   className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100/70 border border-slate-200/80 text-xs text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#2F5BFF] focus:ring-2 focus:ring-[#2F5BFF]/15 transition-all"
                 />
               </div>
@@ -522,15 +530,41 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
             {/* Right Tools: Telemetry Pills & Dropdowns */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              {/* Language Switcher Pill */}
+              <div className="flex items-center gap-0.5 p-1 rounded-full bg-slate-100 border border-slate-200/90 text-xs shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                    language === 'en'
+                      ? 'bg-white text-[#2F5BFF] shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('hi')}
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                    language === 'hi'
+                      ? 'bg-[#2F5BFF] text-white shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  हिंदी
+                </button>
+              </div>
+
               {/* Institution Badge */}
               <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-xs font-mono text-emerald-800">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>IIM Sambalpur Active</span>
+                <span>{t.campusActiveBadge}</span>
               </div>
 
               {/* Vector Badge */}
               <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-[11px] font-mono text-slate-700">
-                <span>SFace 128-D:</span>
+                <span>{t.sfaceScore}:</span>
                 <span className="text-emerald-700 font-bold">0.984</span>
               </div>
 
@@ -589,7 +623,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                       {user?.full_name || 'Dr. Rajesh Iyer'}
                     </span>
                     <span className="text-[10px] text-slate-500 font-mono">
-                      {user?.role || 'Admin'}
+                      {t.profileRole}
                     </span>
                   </div>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -601,7 +635,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                       <div className="text-xs font-bold text-slate-900">{user?.full_name || 'Dr. Rajesh Iyer'}</div>
                       <div className="text-[11px] text-slate-500 truncate">{user?.email || 'admin.security@iimsambalpur.ac.in'}</div>
                       <span className="inline-block mt-1 text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#EBF0FF] text-[#2F5BFF] font-bold">
-                        IIM Sambalpur Desk
+                        {t.profileDesk}
                       </span>
                     </div>
 
@@ -611,7 +645,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                         className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
                       >
                         <Settings className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Settings</span>
+                        <span>{t.systemPreferences}</span>
                       </Link>
                       <Link
                         href="/"
@@ -619,7 +653,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                         className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Open Public Portal</span>
+                        <span>{t.publicPortal}</span>
                       </Link>
                     </div>
 
@@ -633,7 +667,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                         className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       >
                         <LogOut className="w-3.5 h-3.5" />
-                        <span>Sign Out</span>
+                        <span>{t.signOut}</span>
                       </button>
                     </div>
                   </div>
@@ -655,9 +689,11 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <React.Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
-        <AdminLayoutContent>{children}</AdminLayoutContent>
-      </React.Suspense>
+      <LanguageProvider>
+        <React.Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
+          <AdminLayoutContent>{children}</AdminLayoutContent>
+        </React.Suspense>
+      </LanguageProvider>
     </AuthProvider>
   );
 }

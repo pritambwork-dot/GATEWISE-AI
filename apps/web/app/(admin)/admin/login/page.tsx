@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogoMark } from '@/components/aura/primitives/LogoMark';
 import { useAuth } from '@/lib/contexts/auth-context';
+import { useLanguage } from '@/lib/contexts/language-context';
 import { AlertCircle, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
 type PrototypeState =
@@ -66,8 +67,8 @@ const translations = {
 export default function AdminLoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { language, setLanguage } = useLanguage();
 
-  const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [adminId, setAdminId] = useState('ADM-001');
   const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
@@ -129,6 +130,9 @@ export default function AdminLoginPage() {
 
     try {
       await login(adminId, password);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('gatewise_language', language);
+      }
       window.location.href = '/admin';
     } catch (err: any) {
       setProtoState('invalid_credentials');

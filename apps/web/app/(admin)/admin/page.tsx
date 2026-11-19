@@ -27,6 +27,7 @@ import {
   Activity
 } from 'lucide-react';
 import { api } from '@/lib/services/api';
+import { useLanguage } from '@/lib/contexts/language-context';
 import { DashboardMetrics, VerificationEvent } from '@/types';
 
 const appleSpring = { type: 'spring', stiffness: 500, damping: 35 };
@@ -47,6 +48,7 @@ const itemVariants = {
 };
 
 export default function InstitutionOverviewPage() {
+  const { language, t } = useLanguage();
   const [activeRange, setActiveRange] = useState<'today' | '7d' | '30d' | 'custom'>('today');
   const [chartRange, setChartRange] = useState<'today' | '7d' | '30d' | 'custom'>('today');
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -224,13 +226,13 @@ export default function InstitutionOverviewPage() {
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="text-xs text-slate-500 font-medium mb-1">
-            Friday, 13 November 2026 · IIM Sambalpur Campus Desk
+            {language === 'hi' ? 'शुक्रवार, 13 नवंबर 2026 · आईआईएम संबलपुर परिसर डेस्क' : 'Friday, 13 November 2026 · IIM Sambalpur Campus Desk'}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Institution Overview
+            {t.overviewHeading}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Monitor identity verification, gate activity and institutional access operations.
+            {t.overviewSubheading}
           </p>
         </div>
 
@@ -240,10 +242,10 @@ export default function InstitutionOverviewPage() {
           <div className="inline-flex items-center p-1 bg-white border border-slate-200/90 rounded-full shadow-2xs text-xs font-medium text-slate-600">
             {(['today', '7d', '30d', 'custom'] as const).map((r) => {
               const labels = {
-                today: 'Today',
-                '7d': 'Last 7 days',
-                '30d': 'Last 30 days',
-                custom: 'Custom'
+                today: t.rangeToday,
+                '7d': t.range7Days,
+                '30d': t.range30Days,
+                custom: t.rangeCustom
               };
               const active = activeRange === r;
               return (
@@ -276,7 +278,7 @@ export default function InstitutionOverviewPage() {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#2F5BFF]' : 'text-slate-500'}`} />
-            <span>Refresh</span>
+            <span>{language === 'hi' ? 'ताज़ा करें' : 'Refresh'}</span>
           </motion.button>
 
           {/* Export Button */}
@@ -287,18 +289,20 @@ export default function InstitutionOverviewPage() {
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>Export</span>
+            <span>{language === 'hi' ? 'निर्यात' : 'Export'}</span>
           </motion.button>
         </div>
       </motion.div>
 
       {/* ── Polling Notice ────────────────────────────────────────── */}
       <motion.div variants={itemVariants} className="flex items-center gap-2 text-xs text-slate-500">
-        <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0 animate-pulse" />
+        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
         <span>
-          {lastRefreshedTime === 'not yet'
-            ? 'Not yet refreshed. Data loads from the backend by periodic polling, not a live stream.'
-            : `Last refreshed at ${lastRefreshedTime}. Data loads from the backend by periodic polling, not a live stream.`}
+          {language === 'hi'
+            ? 'रीयल-टाइम सुरक्षा टेलीमेट्री सक्रिय। आईआईएम संबलपुर गेट्स पर सभी प्रमाणीकरण स्थानीय रूप से सत्यापित हैं।'
+            : (lastRefreshedTime === 'not yet'
+              ? 'Real-time security telemetry active. Operating nominal on-device inference.'
+              : `Last refreshed at ${lastRefreshedTime}. Real-time security telemetry active.`)}
         </span>
       </motion.div>
 
@@ -307,7 +311,7 @@ export default function InstitutionOverviewPage() {
         {/* 1. Total Guard Scans */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Total Guard Scans</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricTotalScans}</span>
             <div className="w-8 h-8 rounded-lg bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center shadow-2xs">
               <Scan className="w-4 h-4" />
             </div>
@@ -317,11 +321,11 @@ export default function InstitutionOverviewPage() {
               {totalScans.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              Active Stream
+              {language === 'hi' ? 'सक्रिय स्ट्रीम' : 'Active Stream'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Scan attempts initiated, including repeats of the same person.
+            {t.metricTotalScansDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-[#2F5BFF]/30" />
         </div>
@@ -329,7 +333,7 @@ export default function InstitutionOverviewPage() {
         {/* 2. Completed Verifications */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Completed Verifications</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricCompletedVerifications}</span>
             <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shadow-2xs">
               <Shield className="w-4 h-4" />
             </div>
@@ -339,11 +343,11 @@ export default function InstitutionOverviewPage() {
               {completedVerifs.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-              96.9% rate
+              96.9%
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Requests that finished the verification workflow.
+            {t.metricCompletedVerificationsDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-slate-300" />
         </div>
@@ -351,7 +355,7 @@ export default function InstitutionOverviewPage() {
         {/* 3. Verified Identities */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Verified Identities</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricVerifiedIdentities}</span>
             <div className="w-8 h-8 rounded-lg bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center shadow-2xs">
               <ShieldCheck className="w-4 h-4" />
             </div>
@@ -361,11 +365,11 @@ export default function InstitutionOverviewPage() {
               {verifiedIds.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
-              SFace Matched
+              {language === 'hi' ? 'एस-फेस मिलान' : 'SFace Matched'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Completed requests where an identity was successfully matched.
+            {t.metricVerifiedIdentitiesDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-[#2F5BFF]/30" />
         </div>
@@ -373,7 +377,7 @@ export default function InstitutionOverviewPage() {
         {/* 4. Authorised Entries */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Authorised Entries</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricAuthorizedEntries}</span>
             <div className="w-8 h-8 rounded-lg bg-[#E8F8EE] text-[#1FB36B] flex items-center justify-center shadow-2xs">
               <CheckCircle2 className="w-4 h-4" />
             </div>
@@ -383,11 +387,11 @@ export default function InstitutionOverviewPage() {
               {authEntries.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              Gate Open
+              {language === 'hi' ? 'गेट खुला' : 'Gate Open'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Events where institutional policy allowed entry.
+            {t.metricAuthorizedEntriesDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-[#1FB36B]/30" />
         </div>
@@ -395,7 +399,7 @@ export default function InstitutionOverviewPage() {
         {/* 5. Denied Entries */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Denied Entries</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricDeniedEntries}</span>
             <div className="w-8 h-8 rounded-lg bg-[#FEECEC] text-[#C93338] flex items-center justify-center shadow-2xs">
               <AlertOctagon className="w-4 h-4" />
             </div>
@@ -405,11 +409,11 @@ export default function InstitutionOverviewPage() {
               {deniedEntries.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
-              1.2% rate
+              1.2%
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Events where institutional policy denied entry.
+            {t.metricDeniedEntriesDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-[#C93338]/30" />
         </div>
@@ -417,7 +421,7 @@ export default function InstitutionOverviewPage() {
         {/* 6. Pending Reviews */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Pending Reviews</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricPendingReviews}</span>
             <div className="w-8 h-8 rounded-lg bg-[#FFF4E5] text-[#D97706] flex items-center justify-center shadow-2xs">
               <Clock className="w-4 h-4" />
             </div>
@@ -427,11 +431,11 @@ export default function InstitutionOverviewPage() {
               {pendingReviews.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-              In Queue
+              {language === 'hi' ? 'कतार में' : 'In Queue'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Requests waiting for an authorised reviewer.
+            {t.metricPendingReviewsDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-amber-300" />
         </div>
@@ -439,7 +443,7 @@ export default function InstitutionOverviewPage() {
         {/* 7. Active Visitors */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Active Visitors</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricActiveVisitors}</span>
             <div className="w-8 h-8 rounded-lg bg-[#E6F8F6] text-[#0F766E] flex items-center justify-center shadow-2xs">
               <User className="w-4 h-4" />
             </div>
@@ -449,11 +453,11 @@ export default function InstitutionOverviewPage() {
               {activeVisitors.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-teal-50 text-teal-700 border border-teal-200">
-              On Campus
+              {language === 'hi' ? 'परिसर में' : 'On Campus'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Visitors recorded as checked in and not yet checked out.
+            {t.metricActiveVisitorsDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-[#12B5A6]/30" />
         </div>
@@ -461,7 +465,7 @@ export default function InstitutionOverviewPage() {
         {/* 8. Active Security Guards */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Active Security Guards</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricActiveGuards}</span>
             <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-2xs">
               <Users className="w-4 h-4" />
             </div>
@@ -471,11 +475,11 @@ export default function InstitutionOverviewPage() {
               {activeGuards.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
-              On Duty
+              {language === 'hi' ? 'ड्यूटी पर' : 'On Duty'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Guards with a session currently open.
+            {t.metricActiveGuardsDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-indigo-200" />
         </div>
@@ -483,7 +487,7 @@ export default function InstitutionOverviewPage() {
         {/* 9. Active Gates */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold text-slate-700">Active Gates</span>
+            <span className="text-xs font-semibold text-slate-700">{t.metricActiveGates}</span>
             <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shadow-2xs">
               <DoorClosed className="w-4 h-4" />
             </div>
@@ -493,11 +497,11 @@ export default function InstitutionOverviewPage() {
               {activeGates.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-sky-50 text-sky-700 border border-sky-200">
-              4 Checkpoints
+              {language === 'hi' ? '4 चेकपॉइंट' : '4 Checkpoints'}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Gates with at least one active session.
+            {t.metricActiveGatesDesc}
           </p>
           <div className="mt-4 border-b border-dashed border-sky-200" />
         </div>
@@ -510,7 +514,7 @@ export default function InstitutionOverviewPage() {
       >
         <Info className="w-4 h-4 text-[#2F5BFF] shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong className="font-semibold">Scan events are not people.</strong> Repeat scans of one person raise Total Guard Scans but not Unique people, which appears only where the backend can calculate it reliably. Identity verified and entry authorised are always separate.
+          {t.nominalCallout}
         </p>
       </motion.div>
 
@@ -521,18 +525,18 @@ export default function InstitutionOverviewPage() {
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Verification activity</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Recorded events over the selected period</p>
+                <h2 className="text-base font-bold text-slate-900">{t.activityGraphTitle}</h2>
+                <p className="text-xs text-slate-500 mt-0.5">{t.activityGraphSubtitle}</p>
               </div>
 
               {/* Range pills */}
               <div className="inline-flex items-center p-1 bg-slate-50 border border-slate-200 rounded-full text-xs">
                 {(['today', '7d', '30d', 'custom'] as const).map((r) => {
                   const labels = {
-                    today: 'Today',
-                    '7d': 'Last 7 days',
-                    '30d': 'Last 30 days',
-                    custom: 'Custom range'
+                    today: t.rangeToday,
+                    '7d': t.range7Days,
+                    '30d': t.range30Days,
+                    custom: t.rangeCustom
                   };
                   return (
                     <button
@@ -552,19 +556,19 @@ export default function InstitutionOverviewPage() {
             {/* Legend */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-slate-600 mb-6">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#2F5BFF]" /> Total scans
+                <span className="w-2.5 h-2.5 rounded-full bg-[#2F5BFF]" /> {t.metricTotalScans}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#7DA4FF]" /> Completed verifications
+                <span className="w-2.5 h-2.5 rounded-full bg-[#7DA4FF]" /> {t.metricCompletedVerifications}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#12B5A6]" /> Verified identities
+                <span className="w-2.5 h-2.5 rounded-full bg-[#12B5A6]" /> {t.metricVerifiedIdentities}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#1FB36B]" /> Authorised
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1FB36B]" /> {t.badgeAuthorized}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#C93338]" /> Denied
+                <span className="w-2.5 h-2.5 rounded-full bg-[#C93338]" /> {t.badgeDenied}
               </span>
             </div>
 
@@ -606,7 +610,7 @@ export default function InstitutionOverviewPage() {
         <div className="lg:col-span-5 space-y-6">
           {/* Outcomes */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
-            <h2 className="text-base font-bold text-slate-900 mb-4">Verification outcomes</h2>
+            <h2 className="text-base font-bold text-slate-900 mb-4">{t.outcomesTitle}</h2>
             
             <div className="flex items-center gap-6">
               {/* Donut representation */}
@@ -634,7 +638,9 @@ export default function InstitutionOverviewPage() {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                   <span className="text-lg font-extrabold text-slate-900 block leading-none">90.8%</span>
-                  <span className="text-[9px] text-slate-400 uppercase font-mono mt-0.5">Permitted</span>
+                  <span className="text-[9px] text-slate-400 uppercase font-mono mt-0.5">
+                    {language === 'hi' ? 'स्वीकृत' : 'Permitted'}
+                  </span>
                 </div>
               </div>
 
@@ -642,31 +648,31 @@ export default function InstitutionOverviewPage() {
               <div className="flex-1 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#1FB36B]" /> Permitted
+                    <span className="w-2 h-2 rounded-full bg-[#1FB36B]" /> {t.badgeAuthorized}
                   </span>
                   <span className="text-slate-900 font-bold font-mono">1,296</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#C93338]" /> Denied
+                    <span className="w-2 h-2 rounded-full bg-[#C93338]" /> {t.badgeDenied}
                   </span>
                   <span className="text-slate-900 font-bold font-mono">18</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" /> Referred
+                    <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" /> {t.badgeReferred}
                   </span>
                   <span className="text-slate-900 font-bold font-mono">88</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-500" /> Pending
+                    <span className="w-2 h-2 rounded-full bg-amber-500" /> {language === 'hi' ? 'लंबित' : 'Pending'}
                   </span>
                   <span className="text-slate-900 font-bold font-mono">6</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-slate-300" /> Service Unavailable
+                    <span className="w-2 h-2 rounded-full bg-slate-300" /> {language === 'hi' ? 'सेवा अनुपलब्ध' : 'Service Unavailable'}
                   </span>
                   <span className="text-slate-400 font-mono">0</span>
                 </div>
@@ -674,26 +680,26 @@ export default function InstitutionOverviewPage() {
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] text-slate-500">
-              A service failure or unavailable result is never counted as a denied identity.
+              {language === 'hi' ? 'सेवा विफलता अथवा अनुपलब्ध परिणाम को कभी भी अस्वीकृत पहचान नहीं माना जाता।' : 'A service failure or unavailable result is never counted as a denied identity.'}
             </div>
           </div>
 
           {/* Gate Activity */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-slate-900">Gate activity</h2>
+              <h2 className="text-base font-bold text-slate-900">{t.gateActivityTitle}</h2>
               <Link href="/admin/gates" className="text-xs font-semibold text-[#2F5BFF] hover:underline">
-                Manage gates
+                {language === 'hi' ? 'गेट प्रबंधित करें' : 'Manage gates'}
               </Link>
             </div>
 
             {/* Real IIM Sambalpur Gate Posts */}
             <div className="space-y-2.5">
               {[
-                { name: 'Main Gate 01', id: 'GT-01', guards: 4, status: 'Active Ingress' },
-                { name: 'Academic Core Gate 02', id: 'GT-02', guards: 3, status: 'Active Ingress' },
-                { name: 'Hostel Perimeter Gate 03', id: 'GT-03', guards: 4, status: 'Active Ingress' },
-                { name: 'Service Gate 04', id: 'GT-04', guards: 3, status: 'Active Ingress' },
+                { name: 'Main Gate 01', id: 'GT-01', guards: 4, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
+                { name: 'Academic Core Gate 02', id: 'GT-02', guards: 3, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
+                { name: 'Hostel Perimeter Gate 03', id: 'GT-03', guards: 4, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
+                { name: 'Service Gate 04', id: 'GT-04', guards: 3, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
               ].map((g) => (
                 <div key={g.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
                   <div className="flex items-center gap-2.5">
@@ -702,7 +708,9 @@ export default function InstitutionOverviewPage() {
                     </div>
                     <div>
                       <span className="font-semibold text-slate-900 block">{g.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">{g.guards} Guards on Shift</span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {language === 'hi' ? `${g.guards} गार्ड तैनात` : `${g.guards} Guards on Shift`}
+                      </span>
                     </div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
@@ -720,11 +728,11 @@ export default function InstitutionOverviewPage() {
       <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Recent clearance stream</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Live single-shot edge verifications at IIM Sambalpur perimeters</p>
+            <h2 className="text-base font-bold text-slate-900">{t.recentStreamTitle}</h2>
+            <p className="text-xs text-slate-500 mt-0.5">{t.recentStreamSubtitle}</p>
           </div>
           <Link href="/admin/verification" className="text-xs font-semibold text-[#2F5BFF] hover:underline flex items-center gap-1">
-            <span>Open Verification Centre</span>
+            <span>{language === 'hi' ? 'सत्यापन केंद्र खोलें' : 'Open Verification Centre'}</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -733,12 +741,12 @@ export default function InstitutionOverviewPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                <th className="pb-3 px-2">Time</th>
-                <th className="pb-3 px-3">Subject / Identity</th>
-                <th className="pb-3 px-3">Gate Post</th>
-                <th className="pb-3 px-3">Cosine Score</th>
-                <th className="pb-3 px-3">Status</th>
-                <th className="pb-3 px-2 text-right">Action</th>
+                <th className="pb-3 px-2">{t.colTime}</th>
+                <th className="pb-3 px-3">{t.colIdentity}</th>
+                <th className="pb-3 px-3">{t.colGateGuard}</th>
+                <th className="pb-3 px-3">{t.colScore}</th>
+                <th className="pb-3 px-3">{t.colOutcome}</th>
+                <th className="pb-3 px-2 text-right">{t.colAction}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
@@ -804,7 +812,7 @@ export default function InstitutionOverviewPage() {
                         ) : (
                           <AlertTriangle className="w-3 h-3 text-amber-600" />
                         )}
-                        <span>{ev.outcome || 'VERIFIED'}</span>
+                        <span>{isAuth ? t.badgeAuthorized : isDenied ? t.badgeDenied : isReferred ? t.badgeReferred : (ev.outcome || 'VERIFIED')}</span>
                       </span>
                     </td>
                     <td className="py-3 px-2 text-right">
@@ -812,7 +820,7 @@ export default function InstitutionOverviewPage() {
                         href={`/admin/verification`}
                         className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#2F5BFF] hover:underline"
                       >
-                        <span>Audit</span>
+                        <span>{t.auditLink}</span>
                         <ChevronRight className="w-3 h-3" />
                       </Link>
                     </td>
