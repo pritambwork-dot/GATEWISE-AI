@@ -66,7 +66,7 @@ export default function PublicLayout({
                   GATEWISE<span className="text-gatewise-primary font-black ml-0.5">AI</span>
                 </span>
                 <span className="px-1.5 py-0.5 rounded-full bg-gatewise-light text-gatewise-deep text-[10px] font-mono font-bold border border-gatewise-mint">
-                  v1.0
+                  Active
                 </span>
               </div>
               <span className="text-[10px] font-medium text-gatewise-secondary -mt-0.5">
@@ -258,7 +258,7 @@ export default function PublicLayout({
                 </li>
                 <li>
                   <Link href="/download?platform=android" className="text-gatewise-secondary hover:text-gatewise-text transition-colors">
-                    Android Guard APK (v1.0.0)
+                    Android Guard APK
                   </Link>
                 </li>
                 <li>

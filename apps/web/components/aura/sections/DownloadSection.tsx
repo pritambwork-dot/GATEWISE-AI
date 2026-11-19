@@ -21,7 +21,7 @@ export const DownloadSection: React.FC = () => {
       headline: 'Instant Zero-Install Access from Any Device',
       description:
         'The centralized institutional command centre runs directly in your modern web browser and can be installed locally as a high-performance Progressive Web App (PWA). Full multi-gate telemetry, biometric vector audit, and incident dispatch.',
-      version: 'v1.0.0 Production Web',
+      version: '',
       size: 'Instant Stream / PWA Cached',
       requirements: 'Chrome 110+, Safari 16+, Edge 110+, Firefox 115+',
       primaryAction: {
@@ -52,17 +52,17 @@ export const DownloadSection: React.FC = () => {
       headline: 'Sub-300ms On-Device Edge Biometric Terminal',
       description:
         'Engineered for handheld ruggedized Android terminals and guard smartphones at active perimeter posts. Runs YuNet landmark tracking and SFace 128-D cosine vectors 100% on-device with zero raw photo retention.',
-      version: 'v1.0.0 (Build 12)',
+      version: '',
       size: '24.8 MB (Native Signed Package)',
       requirements: 'Android 8.0 (Oreo, API 26) through Android 15+',
       primaryAction: {
         label: 'Download Native APK',
-        href: '/downloads/gatewise-guard-v1.0.0-release.apk',
+        href: '/downloads/gatewise-guard-release.apk',
         isExternal: false,
       },
       secondaryAction: {
         label: 'Inspect SHA-256 Checksum',
-        href: '/downloads/gatewise-guard-v1.0.0-release.apk.sha256',
+        href: '/downloads/gatewise-guard-release.apk.sha256',
         isExternal: false,
       },
       features: [
@@ -164,10 +164,6 @@ export const DownloadSection: React.FC = () => {
 
                 {/* Specs Box */}
                 <div className="p-3 sm:p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 grid grid-cols-2 gap-2.5 sm:gap-3 text-xs">
-                  <div>
-                    <span className="text-white/40 block text-[10px] uppercase font-mono">Version / Build</span>
-                    <span className="font-semibold text-white/90 font-mono text-[11px] truncate block">{platform.version}</span>
-                  </div>
                   <div>
                     <span className="text-white/40 block text-[10px] uppercase font-mono">Download Size</span>
                     <span className="font-semibold text-[#1FB36B] font-mono text-[11px] truncate block">{platform.size}</span>

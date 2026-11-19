@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, ShieldCheck, Download, Monitor } from 'lucide-react';
-import { AppleButton } from '../primitives/AppleButton';
 
 export const FinalCTA: React.FC = () => {
   return (

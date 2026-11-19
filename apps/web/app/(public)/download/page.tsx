@@ -356,7 +356,7 @@ export default function DownloadPage() {
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gatewise-primary text-white text-sm sm:text-base font-bold hover:bg-gatewise-deep active:scale-[0.98] transition-all shadow-md hover:shadow-lg inline-flex items-center justify-center space-x-2.5 min-h-[52px]"
                 >
                   <Download className="w-5 h-5" />
-                  <span>Download macOS DMG Installer (v1.0.0 • 1.2 MB)</span>
+                  <span>Download macOS DMG Installer (1.2 MB)</span>
                 </a>
               </div>
 
@@ -405,7 +405,7 @@ export default function DownloadPage() {
           <div className="pt-4 border-t border-gatewise-border space-y-3">
             <h3 className="font-bold text-sm text-gatewise-text flex items-center space-x-1.5">
               <FileText className="w-4 h-4 text-gatewise-primary" />
-              <span>Production Release Notes · v1.0.0</span>
+              <span>Production Release Notes</span>
             </h3>
             <ul className="space-y-2 text-xs text-gatewise-secondary">
               <li className="flex items-start space-x-2">

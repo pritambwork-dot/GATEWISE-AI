@@ -11,7 +11,6 @@ import { VerificationProtocol } from '@/components/aura/sections/VerificationPro
 import { FeatureTriage } from '@/components/aura/sections/FeatureTriage';
 import { DownloadSection } from '@/components/aura/sections/DownloadSection';
 import { LogoCloud } from '@/components/aura/sections/LogoCloud';
-import { Testimonials } from '@/components/aura/sections/Testimonials';
 import { DataGovernance } from '@/components/aura/sections/DataGovernance';
 import { FinalCTA } from '@/components/aura/sections/FinalCTA';
 import { Footer } from '@/components/aura/sections/Footer';
@@ -94,9 +93,6 @@ export default function PublicHomePage() {
 
         {/* Section 11 — Institutional Trust Cloud */}
         <LogoCloud />
-
-        {/* Section 12 — Executive Testimonials */}
-        <Testimonials />
 
         {/* Section 13 — Zero-Image Data Governance */}
         <DataGovernance />

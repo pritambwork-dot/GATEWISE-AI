@@ -15,12 +15,12 @@ export const Hero: React.FC = () => {
       >
         <span className="w-2 h-2 rounded-full bg-[#1FB36B] animate-pulse shrink-0" />
         <span className="text-xs font-semibold text-white/90 tracking-tight uppercase shrink-0">
-          Production 1.0
+          Live Deployment
         </span>
         <span className="text-white/20">•</span>
         <span className="text-xs text-white/60 truncate">
-          <span className="hidden sm:inline">Verified for Institutional Campus Security</span>
-          <span className="sm:hidden">Institutional Verified</span>
+          <span className="hidden sm:inline">Active at IIM Sambalpur Campus</span>
+          <span className="sm:hidden">IIM Sambalpur</span>
         </span>
       </motion.div>
 

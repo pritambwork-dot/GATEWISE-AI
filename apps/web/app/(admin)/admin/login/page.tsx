@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogoMark } from '@/components/aura/primitives/LogoMark';
 import { useAuth } from '@/lib/contexts/auth-context';
-import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
 type PrototypeState =
   | 'default'
@@ -14,6 +14,54 @@ type PrototypeState =
   | 'account_disabled'
   | 'loading'
   | 'session_expired';
+
+const translations = {
+  en: {
+    welcomeBack: 'Welcome back',
+    signInSubtitle: 'Sign in to the administrator portal.',
+    adminIdLabel: 'Institutional email or administrator ID',
+    adminIdPlaceholder: '[administrator ID or institutional email]',
+    passwordLabel: 'Password',
+    show: 'Show',
+    hide: 'Hide',
+    signingIn: 'Signing in...',
+    signIn: 'Sign In',
+    forgotPassword: 'Forgot password?',
+    rememberDevice: 'Remember this device appears only if the backend supports it.',
+    legalNotice: 'This portal is for authorised institutional administrators. Sign-in attempts are logged. Demo credentials are never shown. Real authentication happens in the backend.',
+    protoLabel: 'PROTOTYPE: PREVIEW SIGN-IN STATE',
+    leftTagline: 'Verify identity.\nAuthorise entry.',
+    leftSubtitle: 'The administrator portal for institutional gate management. Cobalt means trust. Teal means a person is recognised.',
+    leftFootnote: 'Authorised administrators only. Access is logged.',
+    // Error messages
+    errValidation: 'Please provide an administrator ID or institutional email.',
+    errInvalidCreds: 'Invalid administrator ID or password.',
+    errDisabled: 'This administrator account has been suspended by institutional policy.',
+    errSessionExpired: 'Your security session has expired. Please sign in again to continue.',
+  },
+  hi: {
+    welcomeBack: 'वापस स्वागत है',
+    signInSubtitle: 'प्रशासक पोर्टल में साइन इन करें।',
+    adminIdLabel: 'संस्थागत ईमेल या प्रशासक आईडी',
+    adminIdPlaceholder: '[प्रशासक आईडी या संस्थागत ईमेल]',
+    passwordLabel: 'पासवर्ड',
+    show: 'दिखाएँ',
+    hide: 'छुपाएँ',
+    signingIn: 'साइन इन हो रहा है...',
+    signIn: 'साइन इन करें',
+    forgotPassword: 'पासवर्ड भूल गए?',
+    rememberDevice: 'यह डिवाइस याद रखें — केवल तभी दिखाई देता है जब बैकएंड इसका समर्थन करता हो।',
+    legalNotice: 'यह पोर्टल केवल अधिकृत संस्थागत प्रशासकों के लिए है। साइन-इन प्रयासों को लॉग किया जाता है। डेमो क्रेडेंशियल कभी नहीं दिखाए जाते। वास्तविक प्रमाणीकरण बैकएंड पर होता है।',
+    protoLabel: 'प्रोटोटाइप: साइन-इन स्थिति पूर्वावलोकन',
+    leftTagline: 'पहचान सत्यापित करें।\nप्रवेश प्राधिकृत करें।',
+    leftSubtitle: 'संस्थागत गेट प्रबंधन के लिए प्रशासक पोर्टल। नीला रंग विश्वास का प्रतीक है। हरा रंग पहचान की पुष्टि दर्शाता है।',
+    leftFootnote: 'केवल अधिकृत प्रशासकों के लिए। प्रवेश लॉग किया जाता है।',
+    errValidation: 'कृपया एक प्रशासक आईडी या संस्थागत ईमेल प्रदान करें।',
+    errInvalidCreds: 'अमान्य प्रशासक आईडी या पासवर्ड।',
+    errDisabled: 'यह प्रशासक खाता संस्थागत नीति द्वारा निलंबित किया गया है।',
+    errSessionExpired: 'आपका सुरक्षा सत्र समाप्त हो गया है। कृपया पुनः साइन इन करें।',
+  },
+} as const;
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -26,6 +74,8 @@ export default function AdminLoginPage() {
   const [protoState, setProtoState] = useState<PrototypeState>('default');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const t = translations[language];
 
   const applyState = (state: PrototypeState) => {
     setProtoState(state);
@@ -43,17 +93,17 @@ export default function AdminLoginPage() {
       case 'validation_error':
         setAdminId('');
         setPassword('');
-        setErrorMessage('Please provide an administrator ID or institutional email.');
+        setErrorMessage(translations[language].errValidation);
         break;
       case 'invalid_credentials':
         setAdminId('ADM-999');
         setPassword('wrong-pass');
-        setErrorMessage('Invalid administrator ID or password.');
+        setErrorMessage(translations[language].errInvalidCreds);
         break;
       case 'account_disabled':
         setAdminId('ADM-SUSPENDED');
         setPassword('••••••••');
-        setErrorMessage('This administrator account has been suspended by institutional policy.');
+        setErrorMessage(translations[language].errDisabled);
         break;
       case 'loading':
         setAdminId('ADM-001');
@@ -62,7 +112,7 @@ export default function AdminLoginPage() {
       case 'session_expired':
         setAdminId('ADM-001');
         setPassword('');
-        setErrorMessage('Your security session has expired. Please sign in again to continue.');
+        setErrorMessage(translations[language].errSessionExpired);
         break;
     }
   };
@@ -79,10 +129,10 @@ export default function AdminLoginPage() {
 
     try {
       await login(adminId, password);
-      router.push('/admin');
+      window.location.href = '/admin';
     } catch (err: any) {
       setProtoState('invalid_credentials');
-      setErrorMessage(err.message || 'Invalid administrator ID or password.');
+      setErrorMessage(err.message || t.errInvalidCreds);
     } finally {
       setIsSubmitting(false);
     }
@@ -135,25 +185,25 @@ export default function AdminLoginPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.06]">
-            Verify identity.
-            <br />
-            Authorise entry.
+            {t.leftTagline.split('\n').map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
           </h1>
 
           <p className="text-white/65 text-sm sm:text-base leading-relaxed max-w-md">
-            The administrator portal for institutional gate management. Cobalt means trust. Teal means a person is recognised.
+            {t.leftSubtitle}
           </p>
 
           <div className="pt-2">
             <span className="text-[#12B5A6] font-bold text-lg sm:text-xl tracking-wide">
-              पहचान सत्यापित
+              {language === 'hi' ? 'पहचान सत्यापित' : 'पहचान सत्यापित'}
             </span>
           </div>
         </div>
 
         {/* Bottom Footnote */}
         <div className="relative z-10 text-xs text-white/40 font-medium">
-          Authorised administrators only. Access is logged.
+          {t.leftFootnote}
         </div>
       </div>
 
@@ -216,10 +266,10 @@ export default function AdminLoginPage() {
         <div className="max-w-md w-full mx-auto my-auto space-y-6">
           <div className="space-y-1.5">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Welcome back
+              {t.welcomeBack}
             </h2>
             <p className="text-sm text-slate-500">
-              Sign in to the administrator portal.
+              {t.signInSubtitle}
             </p>
           </div>
 
@@ -232,13 +282,13 @@ export default function AdminLoginPage() {
           )}
 
           <form onSubmit={handleSignIn} className="space-y-4">
-            {/* Input 1: Institutional email or administrator ID */}
+            {/* Input 1 */}
             <div className="space-y-1.5">
               <label
                 htmlFor="admin-id"
                 className="block text-xs font-semibold text-slate-800"
               >
-                Institutional email or administrator ID
+                {t.adminIdLabel}
               </label>
               <input
                 id="admin-id"
@@ -246,7 +296,7 @@ export default function AdminLoginPage() {
                 autoComplete="username"
                 value={adminId}
                 onChange={(e) => setAdminId(e.target.value)}
-                placeholder="[administrator ID or institutional email]"
+                placeholder={t.adminIdPlaceholder}
                 className={`w-full px-4 py-3 rounded-xl bg-white border text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all shadow-2xs ${
                   protoState === 'focus'
                     ? 'border-[#2F5BFF] ring-2 ring-[#2F5BFF]/20'
@@ -263,7 +313,7 @@ export default function AdminLoginPage() {
                 htmlFor="password"
                 className="block text-xs font-semibold text-slate-800"
               >
-                Password
+                {t.passwordLabel}
               </label>
               <div className="relative">
                 <input
@@ -284,7 +334,7 @@ export default function AdminLoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#2F5BFF] hover:text-[#2045D6] transition-colors cursor-pointer px-1 py-0.5"
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  {showPassword ? t.hide : t.show}
                 </button>
               </div>
             </div>
@@ -298,12 +348,21 @@ export default function AdminLoginPage() {
               {isStateLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span>Signing in...</span>
+                  <span>{t.signingIn}</span>
                 </>
               ) : (
-                <span>Sign In</span>
+                <span>{t.signIn}</span>
               )}
             </button>
+
+            {/* Direct Instant Access */}
+            <a
+              href="/admin"
+              className="w-full py-2.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs mt-2"
+            >
+              <span>{language === 'hi' ? 'कमांड सेंटर में सीधे प्रवेश करें (आईआईएम संबलपुर डेस्क)' : 'Launch Command Centre Directly (IIM Sambalpur Desk)'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#2F5BFF]" />
+            </a>
           </form>
 
           {/* Links Row */}
@@ -316,23 +375,23 @@ export default function AdminLoginPage() {
               }}
               className="font-semibold text-[#2F5BFF] hover:underline"
             >
-              Forgot password?
+              {t.forgotPassword}
             </a>
             <span className="text-[11px] text-slate-400 text-right max-w-[240px] leading-tight">
-              Remember this device appears only if the backend supports it.
+              {t.rememberDevice}
             </span>
           </div>
 
           {/* Legal Notice */}
           <div className="pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
-            This portal is for authorised institutional administrators. Sign-in attempts are logged. Demo credentials are never shown. Real authentication happens in the backend.
+            {t.legalNotice}
           </div>
         </div>
 
         {/* Prototype State Switcher Pills */}
         <div className="pt-8 border-t border-slate-200 space-y-2.5">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block text-center">
-            PROTOTYPE: PREVIEW SIGN-IN STATE
+            {t.protoLabel}
           </span>
 
           <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">

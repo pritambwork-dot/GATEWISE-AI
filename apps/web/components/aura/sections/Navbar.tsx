@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Shield, Smartphone, Monitor, Lock, Download, ExternalLink } from 'lucide-react';
 import { LogoMark } from '../primitives/LogoMark';
-import { AppleButton } from '../primitives/AppleButton';
 
 const NAV_LINKS = [
   { name: 'Platform', href: '#platform' },
@@ -60,7 +59,7 @@ export const Navbar: React.FC = () => {
         <div className="hidden md:flex items-center gap-3">
           {/* Command Centre Login Button */}
           <a
-            href="/admin/login"
+            href="/admin"
             className="px-4 py-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-xs font-semibold text-white flex items-center gap-2 cursor-pointer shadow-sm min-h-[38px]"
           >
             <Lock className="w-3.5 h-3.5 text-[#12B5A6]" />
@@ -112,7 +111,7 @@ export const Navbar: React.FC = () => {
                 <span className="text-xs text-white/50 uppercase font-mono font-semibold">Operations Navigation</span>
                 <span className="text-xs text-[#1FB36B] font-mono font-bold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
-                  v1.0 Verified
+                  Active Verified
                 </span>
               </div>
               {NAV_LINKS.map((link) => (
@@ -128,12 +127,12 @@ export const Navbar: React.FC = () => {
               ))}
               <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
                 <a
-                  href="/admin/login"
+                  href="/admin"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 min-h-[48px] rounded-xl bg-white/10 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/15 active:bg-white/20 transition-all"
                 >
                   <Lock className="w-4 h-4 text-[#12B5A6]" />
-                  <span>Command Centre Login</span>
+                  <span>Command Centre</span>
                 </a>
                 <a
                   href="#downloads"

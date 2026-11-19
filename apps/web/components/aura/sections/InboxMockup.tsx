@@ -49,7 +49,7 @@ const LIVE_ENTRIES: EntryRecord[] = [
   {
     id: 'ananya',
     name: 'Dr. Ananya Sharma',
-    role: 'Dean of Academic Affairs',
+    role: 'Faculty, Strategic Management (IIM Sambalpur)',
     avatarLetter: 'A',
     avatarGradient: 'from-[#2F5BFF] to-[#070B1A]',
     gate: 'Main Gate 01',
@@ -62,8 +62,8 @@ const LIVE_ENTRIES: EntryRecord[] = [
       'YuNet isolated 5 facial landmarks in 64ms. SFace on-device cosine match computed at 0.884 (threshold 0.72). Automatic gate release triggered.',
     hash: 'e89a3f2b4c109d7845ba012efc45d31290bbacde4120986754321fedcba09876',
     details: {
-      enrollmentId: 'FAC-2021-084',
-      department: 'Faculty of Computer Science',
+      enrollmentId: 'IIMS-FAC-084',
+      department: 'Faculty of Management, IIM Sambalpur',
       barrierStatus: 'Auto-lifted (Clearance ID #9841)',
       guardOnDuty: 'Guard Vikram Singh (Post 01)',
     },
@@ -71,7 +71,7 @@ const LIVE_ENTRIES: EntryRecord[] = [
   {
     id: 'rahul',
     name: 'Rahul Verma',
-    role: 'Senior Scholar (#2024-CS-084)',
+    role: 'MBA Scholar (PGP 2024-26, IIM Sambalpur)',
     avatarLetter: 'R',
     avatarGradient: 'from-[#12B5A6] to-[#070B1A]',
     gate: 'Academic Core Gate 02',
@@ -84,8 +84,8 @@ const LIVE_ENTRIES: EntryRecord[] = [
       'Student pass validated against local edge SQLite database. Zero latency fallback engaged during momentary WAN latency.',
     hash: '3bc104fa8912e76d9018bcfa09148dceba902341efcb78901234567890abcdef',
     details: {
-      enrollmentId: 'STU-2024-119',
-      department: 'Information Systems PG',
+      enrollmentId: 'IIMS-PGP-119',
+      department: 'PGP Cohort, IIM Sambalpur',
       barrierStatus: 'Auto-lifted (Clearance ID #9840)',
       guardOnDuty: 'Guard Suresh Rao (Post 02)',
     },
@@ -93,7 +93,7 @@ const LIVE_ENTRIES: EntryRecord[] = [
   {
     id: 'raghavan',
     name: 'Raghavan Iyer',
-    role: 'VIP Guest — Dept of Science',
+    role: 'Executive Guest — MDP Programme',
     avatarLetter: 'R',
     avatarGradient: 'from-[#f59e0b] to-[#78350f]',
     gate: 'Main Gate 01',
@@ -103,11 +103,11 @@ const LIVE_ENTRIES: EntryRecord[] = [
     mode: 'Pre-Approved QR',
     hudImage: '/media/screenshots/guard/10_guard_visitor_intake.png',
     summary:
-      'Pre-scheduled QR access token cryptographically signed by Campus Registrar. Escort protocol waived per Dean authorization.',
+      'Pre-scheduled QR access token cryptographically signed by IIM Sambalpur Administration. Clearance validated at Main Gate 01.',
     hash: '7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456',
     details: {
-      enrollmentId: 'VIS-2026-092',
-      department: 'Invited Keynote Speaker',
+      enrollmentId: 'IIMS-VIS-092',
+      department: 'Executive MDP Guest Speaker',
       barrierStatus: 'Escorted Entry Approved',
       guardOnDuty: 'Guard Vikram Singh (Post 01)',
     },
@@ -118,20 +118,20 @@ const LIVE_ENTRIES: EntryRecord[] = [
     role: 'Perimeter Boundary Anomaly',
     avatarLetter: '?',
     avatarGradient: 'from-rose-600 to-red-950',
-    gate: 'North Logistics Gate 04',
+    gate: 'Hostel Perimeter Gate 03',
     time: '9:31 AM',
     decision: 'FLAGGED',
     cosineScore: 0.382,
     mode: 'YuNet + SFace',
     hudImage: '/media/screenshots/guard/08_guard_processing_hud.png',
     summary:
-      'Cosine similarity 0.382 fell significantly below security threshold (0.72). Zero match across all campus directories. Perimeter lockdown alert dispatched.',
+      'Cosine similarity 0.382 fell significantly below security threshold (0.72). Zero match across IIM Sambalpur rosters. Perimeter barrier remains locked.',
     hash: 'cc9810a45f928e12b7a9041289fed1029487cbea123490812480928130491823',
     details: {
       enrollmentId: 'UNREGISTERED_ENTITY',
       department: 'External Visitor (No Active Pass)',
       barrierStatus: 'LOCKED · INTERCEPTION ALERTED',
-      guardOnDuty: 'Guard Pradeep Jena (Post 04)',
+      guardOnDuty: 'Guard Pradeep Jena (Post 03)',
     },
   },
 ];
@@ -178,11 +178,11 @@ export const InboxMockup: React.FC = () => {
           <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
         </div>
         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
-          On-Premise Biometric Telemetry &amp; Access Stream
+          IIM Sambalpur Gate Telemetry &amp; Access Stream
         </h2>
         <p className="text-white/60 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
-          Experience the actual telemetry stream deployed across campus perimeter gates. Click through
-          live entry records to inspect real-time YuNet landmark crops, SFace cosine scores, and cryptographic signatures.
+          Real-time access telemetry deployed across IIM Sambalpur perimeter checkpoints. Inspect
+          on-device YuNet landmark isolation, SFace cosine scores, and cryptographic non-repudiation records.
         </p>
       </div>
 
@@ -385,7 +385,7 @@ export const InboxMockup: React.FC = () => {
             {/* Bottom Guard Telemetry */}
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50">
               <span className="font-mono">Device: Samsung XCover 6</span>
-              <span className="text-emerald-400 font-mono">BAT 94%</span>
+              <span className="text-[#1FB36B] font-mono">BAT 94%</span>
             </div>
           </div>
 
@@ -483,29 +483,9 @@ export const InboxMockup: React.FC = () => {
                 >
                   <span>← Feed</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('hud')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
-                    viewMode === 'hud'
-                      ? 'bg-white/15 text-white font-semibold'
-                      : 'text-white/50 hover:text-white'
-                  }`}
-                >
-                  HUD Viewfinder
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('video')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    viewMode === 'video'
-                      ? 'bg-white/15 text-white font-semibold'
-                      : 'text-white/50 hover:text-white'
-                  }`}
-                >
-                  <Play className="w-3 h-3 text-[#2F5BFF]" />
-                  <span>Guard Demo</span>
-                </button>
+                <span className="px-3 py-1 rounded text-xs font-semibold bg-white/15 text-white">
+                  Edge HUD Viewfinder
+                </span>
               </div>
 
               <div className="flex items-center gap-1.5 font-mono text-[10px] text-white/40">
