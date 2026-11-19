@@ -350,57 +350,60 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           transition={smoothSpring}
           className="relative z-30 hidden md:flex flex-col shrink-0 bg-white border-r border-slate-200/90 shadow-[1px_0_3px_rgba(0,0,0,0.02)] select-none"
         >
-          {/* 1. macOS Window Traffic Lights Header */}
-          <div className="h-14 px-4 flex items-center justify-between shrink-0 border-b border-slate-100">
-            {/* Traffic Lights */}
-            <div className="flex items-center gap-2 group/lights">
-              <span className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/40 flex items-center justify-center shadow-2xs" />
-              <span className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/40 flex items-center justify-center shadow-2xs" />
-              <span className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]/40 flex items-center justify-center shadow-2xs" />
-            </div>
+          {/* 1. Sidebar Top Header & Brand (h-16 matches top header line) */}
+          <div className="h-16 px-3.5 flex items-center justify-between shrink-0 border-b border-slate-100">
+            {!collapsed ? (
+              <>
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-2.5 p-1 rounded-xl transition-all hover:bg-slate-50 group min-w-0"
+                >
+                  <motion.div
+                    whileHover={{ rotate: 4, scale: 1.05 }}
+                    transition={appleSpring}
+                    className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2F5BFF] to-[#12B5A6] flex items-center justify-center shadow-xs shrink-0"
+                  >
+                    <LogoMark className="w-5 h-5 text-white" />
+                  </motion.div>
 
-            {/* Sidebar toggle icon */}
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.94 }}
-              onClick={() => setCollapsed(!collapsed)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-all cursor-pointer"
-              title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-            >
-              {collapsed ? <PanelLeft className="w-3.5 h-3.5" /> : <PanelLeftClose className="w-3.5 h-3.5" />}
-            </motion.button>
-          </div>
-
-          {/* 2. Brand Identity Tile */}
-          <div className="px-3.5 py-3 shrink-0">
-            <Link
-              href="/admin"
-              className="flex items-center gap-3 p-2 rounded-xl transition-all hover:bg-slate-50 group"
-            >
-              <motion.div
-                whileHover={{ rotate: 4, scale: 1.05 }}
-                transition={appleSpring}
-                className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2F5BFF] to-[#12B5A6] flex items-center justify-center shadow-xs shrink-0"
-              >
-                <LogoMark className="w-5 h-5 text-white" />
-              </motion.div>
-
-              {!collapsed && (
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1">
-                    <span className="text-[13px] font-extrabold text-slate-900 tracking-tight leading-none">
-                      GATEWISE
-                    </span>
-                    <span className="text-[11px] font-black text-[#12B5A6] leading-none">
-                      AI
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[13px] font-extrabold text-slate-900 tracking-tight leading-none">
+                        GATEWISE
+                      </span>
+                      <span className="text-[11px] font-black text-[#12B5A6] leading-none">
+                        AI
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#2F5BFF] font-semibold tracking-tight truncate mt-0.5">
+                      IIM Sambalpur Console
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-[#2F5BFF] font-semibold tracking-tight truncate mt-1">
-                    IIM Sambalpur Console
-                  </span>
-                </div>
-              )}
-            </Link>
+                </Link>
+
+                <motion.button
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => setCollapsed(true)}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-all cursor-pointer shrink-0 ml-1"
+                  title="Collapse Sidebar"
+                >
+                  <PanelLeftClose className="w-3.5 h-3.5" />
+                </motion.button>
+              </>
+            ) : (
+              <div className="w-full flex items-center justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => setCollapsed(false)}
+                  className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2F5BFF] to-[#12B5A6] flex items-center justify-center shadow-xs cursor-pointer"
+                  title="Expand Sidebar"
+                >
+                  <LogoMark className="w-5 h-5 text-white" />
+                </motion.button>
+              </div>
+            )}
           </div>
 
           {/* 3. Scrollable Navigation List */}
