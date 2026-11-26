@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LogoMark } from '@/components/aura/primitives/LogoMark';
 import { useAuth } from '@/lib/contexts/auth-context';
@@ -153,18 +154,26 @@ export default function AdminLoginPage() {
         <div className="absolute bottom-10 right-10 w-[350px] h-[350px] bg-[#12B5A6]/10 blur-[100px] rounded-full pointer-events-none" />
 
         {/* Top Header: LogoMark + GATEWISE AI */}
-        <div className="relative z-10 flex items-center gap-3">
+        <Link
+          href="/"
+          title="Return to Landing Page"
+          className="relative z-10 inline-flex items-center gap-3 w-fit group cursor-pointer hover:opacity-90 active:scale-95 transition-all"
+        >
           <LogoMark className="w-9 h-9" />
           <span className="text-xl font-bold tracking-tight text-white flex items-center">
             GATEWISE
             <span className="text-[#12B5A6] ml-1.5 font-extrabold">AI</span>
           </span>
-        </div>
+        </Link>
 
         {/* Center Hero Block */}
         <div className="relative z-10 my-16 lg:my-0 max-w-lg space-y-6">
           {/* Official Emblem */}
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-[#2F5BFF] flex items-center justify-center shadow-[0_20px_50px_rgba(47,91,255,0.35)]">
+          <Link
+            href="/"
+            title="Return to Landing Page"
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-[#2F5BFF] flex items-center justify-center shadow-[0_20px_50px_rgba(47,91,255,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
             <svg
               viewBox="0 0 48 48"
               fill="none"
@@ -186,7 +195,7 @@ export default function AdminLoginPage() {
               />
               <circle cx="24" cy="23" r="3.6" fill="#12B5A6" />
             </svg>
-          </div>
+          </Link>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.06]">
             {t.leftTagline.split('\n').map((line, i) => (
@@ -215,7 +224,11 @@ export default function AdminLoginPage() {
       <div className="bg-[#F7F7F5] text-slate-900 p-8 sm:p-14 lg:p-20 flex flex-col justify-between overflow-y-auto">
         {/* Top Row: Mini Squircle Logo & Language Toggle */}
         <div className="flex items-center justify-between pb-6">
-          <div className="w-11 h-11 rounded-2xl bg-[#2F5BFF] flex items-center justify-center shadow-xs">
+          <Link
+            href="/"
+            title="Return to Landing Page"
+            className="w-11 h-11 rounded-2xl bg-[#2F5BFF] flex items-center justify-center shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
             <svg
               viewBox="0 0 48 48"
               fill="none"
@@ -237,7 +250,7 @@ export default function AdminLoginPage() {
               />
               <circle cx="24" cy="23" r="3.5" fill="#12B5A6" />
             </svg>
-          </div>
+          </Link>
 
           {/* Language Switcher Pills */}
           <div className="flex items-center gap-1 p-1 rounded-full bg-slate-200/70 border border-slate-300/60 text-xs">
