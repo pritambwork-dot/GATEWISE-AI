@@ -309,6 +309,40 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
   if (pathname === '/admin/login') return <>{children}</>;
 
+  // STRICT RBAC ISOLATION: Guards must NEVER have access to admin dashboard
+  const isGuardSession =
+    user?.role === 'SECURITY_GUARD' ||
+    (typeof window !== 'undefined' &&
+      sessionStorage.getItem('gatewise_guard_auth') === 'true' &&
+      !localStorage.getItem('gatewise_admin_token'));
+
+  if (isGuardSession) {
+    return (
+      <DesktopOnlyGate>
+        <div className="min-h-screen bg-[#070B1A] text-white flex flex-col items-center justify-center p-6 text-center select-none">
+          <div className="w-16 h-16 rounded-3xl bg-[#C93338]/20 border border-[#C93338]/40 flex items-center justify-center text-[#C93338] mb-4">
+            <Shield className="w-8 h-8" />
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C93338]/15 border border-[#C93338]/30 text-[10px] font-bold text-[#C93338] uppercase tracking-wider mb-2">
+            <span>Role-Based Access Control</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">Access Restricted: Administrative Clearance Required</h1>
+          <p className="text-xs text-white/70 max-w-md mt-2 leading-relaxed">
+            Security guards are strictly restricted to the mobile scanning terminal. Administrative dashboards, people registries, and system configurations require authorized institutional administrator credentials.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/guard" className="px-5 py-2.5 rounded-full bg-[#2F5BFF] text-white text-xs font-bold shadow-md hover:bg-[#254cd6] transition-all">
+              Return to Guard Terminal
+            </Link>
+            <Link href="/admin/login" className="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition-all">
+              Sign In as Administrator
+            </Link>
+          </div>
+        </div>
+      </DesktopOnlyGate>
+    );
+  }
+
   const getBreadcrumbs = () => {
     if (pathname === '/admin') return { section: t.commandCentre, page: t.overviewDesk };
     if (pathname.startsWith('/admin/activity')) return { section: t.navOperations, page: t.liveOperations };

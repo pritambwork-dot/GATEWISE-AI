@@ -1,7 +1,8 @@
 import {
   DashboardMetrics, VerificationEvent, InstitutionalIdentity,
   VisitorPass, EnrollmentReferral, GuardUser, UserProfile,
-  AuditLogEntry, NotificationItem, RepositoryStatus, GateStatus
+  AuditLogEntry, NotificationItem, RepositoryStatus, GateStatus,
+  RegistrationRequest, RegisteredPerson, RegisteredVehicle, VerificationResult
 } from '../../types';
 
 const API_BASE = '/api/v1';
@@ -243,6 +244,122 @@ class ApiClient {
 
   async checkOutVisitor(passCode: string): Promise<VisitorPass> {
     return this.request<VisitorPass>(`/visitors/${passCode}/check-out`, { method: 'POST' });
+  }
+
+  // ==========================================
+  // MASTER VERIFICATION ENGINE
+  // ==========================================
+  async verifySession(params: {
+    face_identifier?: string;
+    vehicle_plate?: string;
+    guard_id?: string;
+    gate_id?: string;
+  }): Promise<VerificationResult> {
+    return this.request<VerificationResult>('/verification/verify', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  async recordEntryExit(params: {
+    event_type: 'ENTRY' | 'EXIT';
+    person_id?: string;
+    person_name?: string;
+    vehicle_plate?: string;
+    guard_id?: string;
+    guard_name?: string;
+    gate_id?: string;
+    gate_name?: string;
+    outcome: string;
+    decision: 'GRANT_ENTRY' | 'DENY_ENTRY' | 'RECORD_EXIT' | 'ESCALATED';
+    confidence_score?: number;
+  }): Promise<any> {
+    return this.request('/entry-exit', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
+  // ==========================================
+  // REGISTRATION REQUESTS (GUARD -> ADMIN)
+  // ==========================================
+  async listRegistrationRequests(status?: string): Promise<RegistrationRequest[]> {
+    const qs = status ? `?status=${status}` : '';
+    const res = await this.request<{ success: boolean; data: RegistrationRequest[] }>(`/registration-requests${qs}`);
+    return res.data || [];
+  }
+
+  async createRegistrationRequest(payload: {
+    full_name: string;
+    phone?: string;
+    category?: string;
+    purpose?: string;
+    expected_duration?: string;
+    face_photo_url?: string;
+    vehicle_plate?: string;
+    vehicle_photo_url?: string;
+    additional_notes?: string;
+    guard_id?: string;
+    guard_name?: string;
+  }): Promise<RegistrationRequest> {
+    const res = await this.request<{ success: boolean; data: RegistrationRequest }>('/registration-requests', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return res.data;
+  }
+
+  async approveRegistrationRequest(id: string, reviewNotes?: string): Promise<RegistrationRequest> {
+    const res = await this.request<{ success: boolean; data: RegistrationRequest }>('/registration-requests', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, status: 'APPROVED', review_notes: reviewNotes }),
+    });
+    return res.data;
+  }
+
+  async rejectRegistrationRequest(id: string, reviewNotes?: string): Promise<RegistrationRequest> {
+    const res = await this.request<{ success: boolean; data: RegistrationRequest }>('/registration-requests', {
+      method: 'PATCH',
+      body: JSON.stringify({ id, status: 'REJECTED', review_notes: reviewNotes }),
+    });
+    return res.data;
+  }
+
+  // ==========================================
+  // PERSONS & VEHICLES (ADMIN ONLY)
+  // ==========================================
+  async listPersons(params: { category?: string; search?: string } = {}): Promise<RegisteredPerson[]> {
+    const searchParams = new URLSearchParams();
+    if (params.category) searchParams.set('category', params.category);
+    if (params.search) searchParams.set('search', params.search);
+    const qs = searchParams.toString();
+    const res = await this.request<{ success: boolean; data: RegisteredPerson[] }>(`/persons${qs ? `?${qs}` : ''}`);
+    return res.data || [];
+  }
+
+  async createPerson(payload: Partial<RegisteredPerson>): Promise<RegisteredPerson> {
+    const res = await this.request<{ success: boolean; data: RegisteredPerson }>('/persons', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return res.data;
+  }
+
+  async listVehicles(params: { search?: string; type?: string } = {}): Promise<RegisteredVehicle[]> {
+    const searchParams = new URLSearchParams();
+    if (params.search) searchParams.set('search', params.search);
+    if (params.type) searchParams.set('type', params.type);
+    const qs = searchParams.toString();
+    const res = await this.request<{ success: boolean; data: RegisteredVehicle[] }>(`/vehicles${qs ? `?${qs}` : ''}`);
+    return res.data || [];
+  }
+
+  async createVehicle(payload: Partial<RegisteredVehicle>): Promise<RegisteredVehicle> {
+    const res = await this.request<{ success: boolean; data: RegisteredVehicle }>('/vehicles', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return res.data;
   }
 
   // ==========================================

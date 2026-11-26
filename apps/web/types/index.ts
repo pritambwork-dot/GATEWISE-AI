@@ -208,3 +208,85 @@ export interface RepositoryStatus {
     error?: string;
   };
 }
+
+export interface RegisteredVehicle {
+  id: string;
+  license_plate: string;
+  normalized_plate: string;
+  vehicle_type: 'Car' | 'Two-Wheeler' | 'Bus' | 'Commercial' | 'Emergency';
+  make_model?: string;
+  color?: string;
+  photo_url?: string;
+  is_authorized: boolean;
+  person_id?: string;
+  owner_name?: string;
+  registration_date?: string;
+}
+
+export interface RegisteredPerson {
+  id: string;
+  person_code: string;
+  full_name: string;
+  category: 'Faculty' | 'Student' | 'Staff' | 'Contractor' | 'Visitor' | 'VIP' | 'Delivery';
+  department: string;
+  designation?: string;
+  email?: string;
+  phone?: string;
+  photo_url?: string;
+  account_status: 'ACTIVE' | 'SUSPENDED' | 'EXPIRED';
+  registration_date: string;
+  valid_until: string;
+  associated_vehicles?: RegisteredVehicle[];
+}
+
+export interface RegistrationRequest {
+  id: string;
+  request_code: string;
+  submitted_by_guard_id: string;
+  submitted_by_guard_name: string;
+  full_name: string;
+  phone?: string;
+  category: 'Visitor' | 'Contractor' | 'VIP' | 'Delivery' | 'Temporary Staff';
+  purpose: string;
+  expected_duration: string;
+  face_photo_url?: string;
+  vehicle_plate?: string;
+  vehicle_photo_url?: string;
+  additional_notes?: string;
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'ADDITIONAL_INFO_REQUIRED';
+  reviewed_by_admin_id?: string;
+  review_notes?: string;
+  submitted_at: string;
+  reviewed_at?: string;
+}
+
+export type VerificationOutcomeCase =
+  | 'CASE_1_VERIFIED'
+  | 'CASE_2_PARTIALLY_VERIFIED'
+  | 'CASE_3_NOT_VERIFIED'
+  | 'ACCESS_DENIED';
+
+export interface VerificationResult {
+  case_outcome: VerificationOutcomeCase;
+  status_title: 'VERIFIED' | 'PARTIALLY VERIFIED' | 'NOT VERIFIED';
+  person?: {
+    id: string;
+    name: string;
+    category: string;
+    department?: string;
+    photo_url?: string;
+    face_matched: boolean;
+    confidence_score: number;
+  };
+  vehicle?: {
+    license_plate: string;
+    normalized_plate: string;
+    vehicle_matched: boolean;
+    is_associated_with_person: boolean;
+    vehicle_type?: string;
+  };
+  access_decision: 'AUTHORIZED' | 'PARTIALLY_AUTHORIZED' | 'NOT_AUTHORIZED' | 'ACCESS_DENIED';
+  timestamp: string;
+  failure_reason?: string;
+}
+
