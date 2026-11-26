@@ -4,6 +4,7 @@ import React from 'react';
 import { Navbar } from '@/components/aura/sections/Navbar';
 import { Hero } from '@/components/aura/sections/Hero';
 import { MenuBarStrip } from '@/components/aura/sections/MenuBarStrip';
+import { GuardWebAppScene } from '@/components/aura/sections/GuardWebAppScene';
 import { InboxMockup } from '@/components/aura/sections/InboxMockup';
 import { ProductVideoTeaser } from '@/components/aura/sections/ProductVideoTeaser';
 import { BentoCapabilities } from '@/components/aura/sections/BentoCapabilities';
@@ -60,7 +61,10 @@ export default function PublicHomePage() {
         {/* Section 3 — macOS Menu Bar Strip */}
         <MenuBarStrip />
 
-        {/* Section 4 — Live Gate Operations Console */}
+        {/* Section 4 — Guard Web App Scene (Field Terminal & Live Sync) */}
+        <GuardWebAppScene />
+
+        {/* Section 5 — Live Gate Operations Console */}
         <InboxMockup />
 
         {/* Section 5 — 4K Motion Video Teaser (2x Speed) */}

@@ -52,7 +52,7 @@ export const Hero: React.FC = () => {
         }}
         className="mt-6 sm:mt-8 text-white/65 max-w-2xl text-sm sm:text-lg leading-[1.6] text-center px-2"
       >
-        GATEWISE AI unites high-speed on-device Android guard verification with a centralized
+        GATEWISE AI unites high-speed on-device Guard Web Terminal verification with a centralized
         institutional command centre. Sub-300ms edge YuNet camera landmark tracking, SFace 128-D
         cosine vectors, and HMAC-SHA256 non-repudiation cryptographic ledgers on every entry.
       </motion.p>
@@ -80,21 +80,21 @@ export const Hero: React.FC = () => {
             <ArrowRight className="w-4 h-4 text-black transition-transform group-hover:translate-x-1 shrink-0" />
           </a>
 
-          {/* Primary Action 2: Multi-Platform Downloads */}
+          {/* Primary Action 2: Launch Guard Web App */}
           <a
-            href="#downloads"
+            href="/guard"
             className="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-full border border-white/20 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-sm font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
           >
-            <Download className="w-4 h-4 text-[#12B5A6] shrink-0" />
-            <span>Download Guard APK</span>
+            <Smartphone className="w-4 h-4 text-[#12B5A6] shrink-0" />
+            <span>Launch Guard Web App</span>
           </a>
 
-          {/* Tertiary Action: Live Operations */}
+          {/* Tertiary Action: Live Operations Scene */}
           <a
-            href="#operations"
+            href="#guard-web-scene"
             className="w-full sm:w-auto px-5 py-3.5 min-h-[48px] rounded-full border border-white/10 bg-black/40 hover:bg-white/5 active:scale-[0.98] transition-all text-xs font-semibold text-white/70 hover:text-white flex items-center justify-center gap-2"
           >
-            <span>Live Console</span>
+            <span>Live Sync Scene</span>
           </a>
         </div>
 
@@ -102,12 +102,12 @@ export const Hero: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 text-xs text-white/50 tracking-tight mt-1 px-2">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
             <Monitor className="w-3 h-3 text-[#2F5BFF]" />
-            <span>Web App &amp; PWA</span>
+            <span>Command Centre Web App</span>
           </span>
           <span className="text-white/20 hidden sm:inline">•</span>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70">
             <Smartphone className="w-3 h-3 text-[#1FB36B]" />
-            <span>Android Guard APK</span>
+            <span>Sovereign Guard Web Terminal (PWA)</span>
           </span>
         </div>
       </motion.div>

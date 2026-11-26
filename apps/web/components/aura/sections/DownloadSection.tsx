@@ -7,7 +7,7 @@ import {
 import { SectionEyebrow } from '../primitives/SectionEyebrow';
 
 export const DownloadSection: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'all' | 'web' | 'android'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'web' | 'guard'>('all');
   const [installCopied, setInstallCopied] = useState(false);
 
   const platforms = [
@@ -25,7 +25,7 @@ export const DownloadSection: React.FC = () => {
       size: 'Instant Stream / PWA Cached',
       requirements: 'Chrome 110+, Safari 16+, Edge 110+, Firefox 115+',
       primaryAction: {
-        label: 'Launch Web Command Centre',
+        label: 'Launch Command Centre',
         href: '/admin',
         isExternal: false,
       },
@@ -43,35 +43,35 @@ export const DownloadSection: React.FC = () => {
       checksum: 'W3C PWA Compliant • TLS 1.3 End-to-End Encrypted',
     },
     {
-      id: 'android',
-      name: 'Android Guard APK',
-      category: 'NATIVE ANDROID',
+      id: 'guard',
+      name: 'Guard Web Terminal',
+      category: 'SOVEREIGN WEB APP / PWA',
       badge: 'FIELD HARDENED',
       badgeColor: 'border-[#1FB36B]/30 bg-[#1FB36B]/10 text-[#1FB36B]',
       icon: Smartphone,
       headline: 'Sub-300ms On-Device Edge Biometric Terminal',
       description:
-        'Engineered for handheld ruggedized Android terminals and guard smartphones at active perimeter posts. Runs YuNet landmark tracking and SFace 128-D cosine vectors 100% on-device with zero raw photo retention.',
+        'Engineered for handheld guard smartphones and tablets at active perimeter posts. Runs YuNet landmark tracking and SFace 128-D cosine vectors 100% in-browser with zero raw photo retention and instant live sync with the Command Centre.',
       version: '',
-      size: '24.8 MB (Native Signed Package)',
-      requirements: 'Android 8.0 (Oreo, API 26) through Android 15+',
+      size: 'Instant Mobile Web App / Offline Cached',
+      requirements: 'Mobile Chrome, Safari, Samsung Internet, Edge (Android & iOS)',
       primaryAction: {
-        label: 'Download Native APK',
-        href: '/downloads/gatewise-guard-release.apk',
+        label: 'Launch Guard Web App',
+        href: '/guard',
         isExternal: false,
       },
       secondaryAction: {
-        label: 'Inspect SHA-256 Checksum',
-        href: '/downloads/gatewise-guard-release.apk.sha256',
+        label: 'Live Operations Scene',
+        href: '#guard-web-scene',
         isExternal: false,
       },
       features: [
         'Sub-300ms on-device edge camera face detection & vector matching',
-        'Offline SQLite local roster continuity when internet fails',
+        'Offline local roster continuity when internet connection drops',
         'Zero raw biometric photo persistence (DPDP Act 2023 compliant)',
-        'Signed release artifact verified for production distribution',
+        'Instant bidirectional synchronization with the Command Centre',
       ],
-      checksum: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      checksum: 'PWA Offline Enclave • Camera Scoped • HMAC-SHA256 Ledger',
     },
   ];
 
@@ -83,20 +83,20 @@ export const DownloadSection: React.FC = () => {
     <section id="downloads" className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 py-12 md:py-24">
       {/* Eyebrow & Title */}
       <div className="flex flex-col items-center text-center mb-8 sm:mb-12 space-y-3 sm:space-y-4">
-        <SectionEyebrow label="Verified Download Centre" tag="Production Binaries" />
+        <SectionEyebrow label="Verified Web Access Hub" tag="Zero Installation" />
         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
           Deploy GATEWISE AI Everywhere
         </h2>
         <p className="text-white/65 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed px-2">
-          Access the Command Centre instantly in your web browser or deploy the sovereign native Android Guard terminal APK.
+          Access both the Central Command Centre and the Handheld Guard Web Terminal instantly in your web browser with zero local installation required.
         </p>
 
         {/* Filter Pills - Responsive Horizontal Scrolling */}
         <div className="w-full flex items-center justify-start sm:justify-center gap-2 pt-2 sm:pt-4 overflow-x-auto no-scrollbar pb-1 px-1">
           {[
             { id: 'all', label: 'All Deployments (2)' },
-            { id: 'web', label: 'Web Command Centre (PWA)' },
-            { id: 'android', label: 'Android Guard APK' },
+            { id: 'web', label: 'Command Centre Web App' },
+            { id: 'guard', label: 'Guard Web Terminal (PWA)' },
           ].map((tab) => (
             <button
               key={tab.id}

@@ -57,22 +57,22 @@ export const Navbar: React.FC = () => {
 
         {/* Right Desktop: Command Centre Login & Download CTA */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Guard Web App CTA */}
+          <a
+            href="/guard"
+            className="px-3.5 py-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer shadow-sm min-h-[38px]"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-[#12B5A6]" />
+            <span>Guard Web App</span>
+          </a>
+
           {/* Command Centre Login Button */}
           <a
             href="/admin"
-            className="px-4 py-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all text-xs font-semibold text-white flex items-center gap-2 cursor-pointer shadow-sm min-h-[38px]"
+            className="px-4 py-2 rounded-full bg-white text-black hover:bg-white/90 active:scale-[0.98] transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-[0_0_20px_rgba(47,91,255,0.25)] min-h-[38px]"
           >
-            <Lock className="w-3.5 h-3.5 text-[#12B5A6]" />
+            <Lock className="w-3.5 h-3.5 text-black" />
             <span>Command Centre</span>
-          </a>
-
-          {/* Download Centre CTA */}
-          <a
-            href="#downloads"
-            className="group px-4 py-2 rounded-full bg-white text-black hover:bg-white/90 active:scale-[0.98] transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-[0_0_20px_rgba(47,91,255,0.25)] min-h-[38px]"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download Apps</span>
           </a>
         </div>
 
@@ -127,20 +127,20 @@ export const Navbar: React.FC = () => {
               ))}
               <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
                 <a
-                  href="/admin"
+                  href="/guard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-3 min-h-[48px] rounded-xl bg-white/10 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/15 active:bg-white/20 transition-all"
+                  className="w-full py-3 min-h-[48px] rounded-xl bg-[#2F5BFF] text-white font-bold text-xs flex items-center justify-center gap-2 active:bg-[#254cd6] transition-all shadow-md"
                 >
-                  <Lock className="w-4 h-4 text-[#12B5A6]" />
-                  <span>Command Centre</span>
+                  <Smartphone className="w-4 h-4 text-white" />
+                  <span>Launch Guard Web App</span>
                 </a>
                 <a
-                  href="#downloads"
+                  href="/admin"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 min-h-[48px] rounded-xl bg-white text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg active:bg-white/90 transition-all"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Download Apps &amp; Web Portal</span>
+                  <Lock className="w-4 h-4" />
+                  <span>Command Centre Dashboard</span>
                 </a>
               </div>
             </div>

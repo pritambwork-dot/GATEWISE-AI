@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/services/api';
 import { useLanguage } from '@/lib/contexts/language-context';
+import { liveSync } from '@/lib/services/live-sync';
 import { DashboardMetrics, VerificationEvent } from '@/types';
 
 const appleSpring = { type: 'spring', stiffness: 500, damping: 35 };
@@ -193,8 +194,50 @@ export default function InstitutionOverviewPage() {
     }
   };
 
+  const [liveSyncNotice, setLiveSyncNotice] = useState<string | null>(null);
+
   useEffect(() => {
     fetchOverviewData();
+
+    // Subscribe to live events from Guard Web App
+    const unsubscribe = liveSync.subscribe((msg) => {
+      if (msg.type === 'VERIFICATION_EVENT') {
+        const newEvent = msg.payload as VerificationEvent;
+        setEvents((prev) => [newEvent, ...prev.slice(0, 24)]);
+        setMetrics((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            total_scans_today: (prev.total_scans_today || 1428) + 1,
+            total_exceptions_today:
+              newEvent.guard_decision === 'DENY_ENTRY' || newEvent.outcome === 'IDENTIFIED_UNAUTHORIZED'
+                ? (prev.total_exceptions_today || 18) + 1
+                : prev.total_exceptions_today || 18,
+          };
+        });
+        setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+        setLiveSyncNotice(`Field Terminal Event: ${newEvent.person_name || 'Subject'} (${newEvent.guard_decision}) at ${newEvent.gate_name}`);
+        setTimeout(() => setLiveSyncNotice(null), 4000);
+      } else if (msg.type === 'VISITOR_CHECKED_IN') {
+        setMetrics((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            active_visitors_on_campus: (prev.active_visitors_on_campus || 42) + 1,
+          };
+        });
+      } else if (msg.type === 'VISITOR_CHECKED_OUT') {
+        setMetrics((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            active_visitors_on_campus: Math.max(0, (prev.active_visitors_on_campus || 42) - 1),
+          };
+        });
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const formatEventTime = (isoString?: string) => {
@@ -223,6 +266,26 @@ export default function InstitutionOverviewPage() {
       className="space-y-6 max-w-7xl mx-auto pb-12"
     >
       {/* ── Page Header ────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {liveSyncNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/90 shadow-xs flex items-center justify-between text-xs text-emerald-900"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-bold">⚡ Live Sync Event:</span>
+              <span>{liveSyncNotice}</span>
+            </div>
+            <span className="font-mono text-[10px] text-emerald-700 font-semibold uppercase">
+              Field Terminal Synced
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="text-xs text-slate-500 font-medium mb-1">

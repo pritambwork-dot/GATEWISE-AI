@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ChevronRight, ShieldCheck, Download, Monitor } from 'lucide-react';
+import { ChevronRight, ShieldCheck, Download, Monitor, Smartphone } from 'lucide-react';
 
 export const FinalCTA: React.FC = () => {
   return (
@@ -45,11 +45,11 @@ export const FinalCTA: React.FC = () => {
           </a>
 
           <a
-            href="#downloads"
+            href="/guard"
             className="w-full sm:w-auto px-6 py-3.5 min-h-[48px] rounded-full border border-white/20 bg-white/5 text-white text-sm font-semibold hover:bg-white/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Download className="w-4 h-4 text-[#12B5A6]" />
-            <span>Download Guard APK</span>
+            <Smartphone className="w-4 h-4 text-[#12B5A6]" />
+            <span>Launch Guard Web App</span>
           </a>
         </div>
 
