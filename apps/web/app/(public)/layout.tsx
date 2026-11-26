@@ -25,10 +25,10 @@ export default function PublicLayout({
     { href: '/download', label: 'Downloads' },
   ];
 
-  // If on the home landing page, render the full-screen cinematic experience directly
-  if (pathname === '/') {
+  // If on the home landing page or the standalone guard web terminal, render full experience directly
+  if (pathname === '/' || pathname === '/guard' || pathname === '/app') {
     return (
-      <main className="w-full min-h-screen bg-[#070B1A] text-white selection:bg-[#2F5BFF]/35 overflow-x-hidden font-sans">
+      <main className="w-full min-h-screen overflow-x-hidden font-sans">
         {children}
       </main>
     );
