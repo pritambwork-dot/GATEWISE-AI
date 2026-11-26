@@ -259,6 +259,11 @@ export interface RegisteredPerson {
   photos?: PersonPhoto[];
   biometric_template_hash?: string;
   account_status: PersonAccessStatus;
+  registration_status?: 'DRAFT' | 'PENDING_REVIEW' | 'REGISTERED' | 'REJECTED' | 'ARCHIVED';
+  access_status?: 'AUTHORIZED' | 'TEMPORARY' | 'SUSPENDED' | 'EXPIRED' | 'DENIED';
+  enrollment_status?: 'PENDING' | 'COMPLETED' | 'FAILED';
+  enrollment_error?: string;
+  biometrics_count?: number;
   creation_source: 'ADMIN_CREATED' | 'GUARD_CREATED';
   created_by_id: string;
   created_by_name: string;
@@ -313,13 +318,15 @@ export interface RegistrationRequest {
   purpose: string;
   expected_duration: string;
   face_photo_url?: string;
+  face_embedding?: number[];
+  quality_score?: number;
   vehicle_plate?: string;
   vehicle_type?: 'Car' | 'Two-Wheeler' | 'Bus' | 'Commercial' | 'Emergency';
   vehicle_photo_url?: string;
   additional_notes?: string;
   duplicate_warning?: string;
   requested_info_prompt?: string;
-  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'ADDITIONAL_INFO_REQUIRED';
+  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'ADDITIONAL_INFO_REQUIRED' | 'MORE_INFO_REQUIRED';
   reviewed_by_admin_id?: string;
   review_notes?: string;
   submitted_at: string;
@@ -335,6 +342,7 @@ export type VerificationOutcomeCase =
   | 'MANUAL_REVIEW_REQUIRED';
 
 export interface VerificationResult {
+  verification_code?: string;
   case_outcome: VerificationOutcomeCase;
   status_title: 'VERIFIED' | 'PARTIALLY VERIFIED' | 'NOT VERIFIED' | 'ACCESS EXPIRED' | 'ACCESS DENIED' | 'MANUAL REVIEW REQUIRED';
   person?: {

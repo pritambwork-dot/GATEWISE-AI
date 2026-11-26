@@ -63,45 +63,61 @@ export default function InstitutionOverviewPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [lastRefreshedTime, setLastRefreshedTime] = useState<string>('not yet');
 
-  const syncLocalTelemetry = () => {
+  const syncCloudTelemetry = () => {
     const localRequests = liveSync.getRegistrationRequests();
-    const localVisitors = liveSync.getVisitors();
     const localPersons = liveSync.getPersons();
     const localVehicles = liveSync.getVehicles();
     const activeGuardIds = liveSync.getActiveGuardIds();
+    const cloudMetrics = liveSync.getMetrics();
+    const cloudEvents = liveSync.getEvents();
 
-    setPendingCount(localRequests.filter((r) => r.status === 'PENDING_APPROVAL').length);
-    setActiveVisitorsCount(localVisitors.filter((v) => v.status === 'CHECKED_IN').length);
-    setTotalPeopleCount(localPersons.length);
-    setTotalVehiclesCount(localVehicles.length);
+    setPendingCount(
+      cloudMetrics?.pending_registration_requests ??
+        localRequests.filter((r) => r.status === 'PENDING_APPROVAL').length,
+    );
+    setActiveVisitorsCount(cloudMetrics?.entries_today ?? 0);
+    setTotalPeopleCount(cloudMetrics?.total_registered_people ?? localPersons.length);
+    setTotalVehiclesCount(cloudMetrics?.total_vehicles ?? localVehicles.length);
     setGuardCreatedCount(localPersons.filter((p) => p.creation_source === 'GUARD_CREATED').length);
-    setActiveGuardSessionsCount(activeGuardIds.length);
+    setActiveGuardSessionsCount(cloudMetrics?.active_guards ?? activeGuardIds.length);
+    setEvents(cloudEvents);
+    if (cloudMetrics) {
+      setMetrics({
+        active_gates_count: cloudMetrics.gates?.filter((g: any) => g.is_active !== false).length || 4,
+        total_scans_today: cloudMetrics.verifications_today,
+        auto_verified_percentage:
+          cloudMetrics.verifications_today > 0
+            ? Math.round((cloudMetrics.verified_today / cloudMetrics.verifications_today) * 100)
+            : 0,
+        total_exceptions_today: cloudMetrics.failed_verification_attempts,
+        active_visitors_on_campus: cloudMetrics.entries_today,
+        pending_enrollment_referrals: cloudMetrics.pending_registration_requests,
+        system_health_status: 'HEALTHY',
+        drive_sync_last_status: 'SUPABASE_REALTIME_CONNECTED',
+        drive_identities_count: cloudMetrics.total_registered_people,
+        gates: (cloudMetrics.gates || []).map((g: any) => ({
+          id: g.id,
+          name: g.name,
+          code: g.gate_code,
+          location: g.location_description || 'IIM Sambalpur Campus',
+          status: g.is_active !== false ? 'ACTIVE' : 'OFFLINE',
+          today_scans_count: 0,
+          today_verified_count: 0,
+          today_denied_count: 0,
+        })),
+        hourly_traffic: [],
+      });
+    }
   };
 
   const fetchOverviewData = async () => {
     setLoading(true);
     try {
-      const [metricsRes, eventsRes] = await Promise.allSettled([
-        api.getDashboardMetrics(),
-        api.getRecentEvents(undefined, 25)
-      ]);
-
-      const localEvents = liveSync.getEvents();
-
-      if (metricsRes.status === 'fulfilled' && metricsRes.value) {
-        setMetrics(metricsRes.value);
-      }
-
-      if (eventsRes.status === 'fulfilled' && Array.isArray(eventsRes.value) && eventsRes.value.length > 0) {
-        setEvents(eventsRes.value);
-      } else {
-        setEvents(localEvents);
-      }
-
-      syncLocalTelemetry();
+      await liveSync.refreshAdminState();
+      syncCloudTelemetry();
       setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
     } catch {
-      // Backend offline; retain live sync state
+      // Backend offline; retain latest state
     } finally {
       setLoading(false);
     }
@@ -112,17 +128,15 @@ export default function InstitutionOverviewPage() {
   useEffect(() => {
     fetchOverviewData();
 
-    // Subscribe to live events from Guard Web App & People Database updates
+    // Subscribe to real Supabase Realtime updates from Guard Mobile App & Database
     const unsubscribe = liveSync.subscribe((msg) => {
-      if (msg.type === 'VERIFICATION_EVENT') {
-        const newEvent = msg.payload as VerificationEvent;
-        setEvents((prev) => [newEvent, ...prev.slice(0, 24)]);
-        syncLocalTelemetry();
-        setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
-        setLiveSyncNotice(`Field Terminal Event: ${newEvent.person_name || 'Subject'} (${newEvent.guard_decision}) at ${newEvent.gate_name}`);
-        setTimeout(() => setLiveSyncNotice(null), 4000);
-      } else {
-        syncLocalTelemetry();
+      syncCloudTelemetry();
+      setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+      if (msg.type === 'VERIFICATION_RESULT_LOGGED' || msg.type === 'GATE_EVENT_RECORDED') {
+        const subject = msg.payload?.person_name || msg.payload?.vehicle_plate || 'Gate Activity';
+        const outcome = msg.payload?.status || msg.payload?.guard_decision || msg.payload?.event_type || 'LIVE';
+        setLiveSyncNotice(`Live Gate Event: ${subject} (${outcome})`);
+        setTimeout(() => setLiveSyncNotice(null), 4500);
       }
     });
 

@@ -284,7 +284,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get('tab') || '';
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const navGroups = getNavGroups(t, language);
 
@@ -311,11 +311,24 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  useEffect(() => {
+    if (pathname !== '/admin/login' && !authLoading && !user) {
+      const hasGuardSess =
+        typeof window !== 'undefined' &&
+        sessionStorage.getItem('gatewise_guard_auth') === 'true' &&
+        !localStorage.getItem('gatewise_admin_token');
+      if (!hasGuardSess) {
+        router.replace('/admin/login');
+      }
+    }
+  }, [pathname, authLoading, user, router]);
+
   if (pathname === '/admin/login') return <>{children}</>;
 
   // STRICT RBAC ISOLATION: Guards must NEVER have access to admin dashboard
   const isGuardSession =
     user?.role === 'SECURITY_GUARD' ||
+    (user?.role as string) === 'GUARD' ||
     (typeof window !== 'undefined' &&
       sessionStorage.getItem('gatewise_guard_auth') === 'true' &&
       !localStorage.getItem('gatewise_admin_token'));

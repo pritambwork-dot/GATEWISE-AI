@@ -54,17 +54,9 @@ export default function CampusVehiclesPage() {
   // Subscribe to real-time central DB changes
   useEffect(() => {
     const sync = () => setVehicles(liveSync.getVehicles().map(toViewRecord));
-    sync();
-    const unsub = liveSync.subscribe((msg) => {
-      if (
-        msg.type === 'VEHICLE_ADDED' ||
-        msg.type === 'PERSON_CREATED' ||
-        msg.type === 'PERSON_UPDATED' ||
-        msg.type === 'PERSON_DELETED' ||
-        msg.type === 'REGISTRATION_REQUEST_APPROVED'
-      ) {
-        sync();
-      }
+    liveSync.refreshAdminState().then(sync);
+    const unsub = liveSync.subscribe(() => {
+      sync();
     });
     return () => unsub();
   }, []);
@@ -78,11 +70,11 @@ export default function CampusVehiclesPage() {
   const [newPersonId, setNewPersonId] = useState('');
   const [newDepartment, setNewDepartment] = useState('Operations & Strategy');
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPlate.trim() || !newOwner.trim()) return;
 
-    liveSync.addVehicle({
+    await liveSync.addVehicle({
       license_plate: newPlate.trim().toUpperCase(),
       vehicle_type: newType === 'Two Wheeler' ? 'Two-Wheeler' : 'Car',
       make_model: newMakeModel.trim() || 'Standard Campus Vehicle',

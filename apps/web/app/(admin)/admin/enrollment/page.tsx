@@ -63,26 +63,22 @@ function EnrollmentContent() {
   const [bulkMessage, setBulkMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsub = liveSync.subscribe((msg) => {
-      if (
-        msg.type === 'REGISTRATION_REQUEST_CREATED' ||
-        msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
-        msg.type === 'REGISTRATION_REQUEST_REJECTED' ||
-        msg.type === 'REGISTRATION_REQUEST_INFO_REQUIRED'
-      ) {
-        setRequests(liveSync.getRegistrationRequests());
-      }
+    liveSync.refreshAdminState().then(() => setRequests(liveSync.getRegistrationRequests()));
+    const unsub = liveSync.subscribe(() => {
+      setRequests(liveSync.getRegistrationRequests());
     });
     return () => unsub();
   }, []);
 
-  const handleApproveRequest = (id: string) => {
-    liveSync.approveRegistrationRequest(id, 'Approved & Added to Central People Database');
+  const handleApproveRequest = async (id: string) => {
+    await liveSync.approveRegistrationRequest(id, {
+      review_notes: 'Approved & Added to Central People Database',
+    });
     setRequests(liveSync.getRegistrationRequests());
   };
 
-  const handleRejectRequest = (id: string) => {
-    liveSync.rejectRegistrationRequest(id, 'Rejected by Institutional Policy');
+  const handleRejectRequest = async (id: string) => {
+    await liveSync.rejectRegistrationRequest(id, 'Rejected by Institutional Policy');
     setRequests(liveSync.getRegistrationRequests());
   };
 
@@ -95,23 +91,23 @@ function EnrollmentContent() {
     setEditNotes(req.review_notes || '');
   };
 
-  const submitEditApprove = (e: React.FormEvent) => {
+  const submitEditApprove = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingRequest) return;
-    liveSync.approveRegistrationRequest(editingRequest.id, editNotes || 'Edited & Approved by Admin', {
+    await liveSync.approveRegistrationRequest(editingRequest.id, {
+      review_notes: editNotes || 'Edited & Approved by Admin',
       full_name: editName.trim(),
       category: editCategory,
-      vehicle_plate: editPlate.trim() ? editPlate.trim().toUpperCase() : undefined,
-      access_status: editStatus,
+      access_status: editStatus === 'TEMPORARILY_AUTHORIZED' ? 'TEMPORARY' : 'AUTHORIZED',
     });
     setRequests(liveSync.getRegistrationRequests());
     setEditingRequest(null);
   };
 
-  const submitInfoRequest = (e: React.FormEvent) => {
+  const submitInfoRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!infoModalReq || !infoPrompt.trim()) return;
-    liveSync.requestMoreInfoRegistrationRequest(infoModalReq.id, infoPrompt.trim());
+    await liveSync.requestMoreInfoRegistrationRequest(infoModalReq.id, infoPrompt.trim());
     setRequests(liveSync.getRegistrationRequests());
     setInfoModalReq(null);
     setInfoPrompt('');
@@ -125,6 +121,7 @@ function EnrollmentContent() {
     reader.onload = () => {
       const text = (reader.result as string) || '';
       const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      const existingPeople = liveSync.getPersons();
       const parsed = lines.slice(1).map((line, i) => {
         const cols = line.split(',').map((c) => c.trim());
         const full_name = cols[0] || '';
@@ -132,7 +129,12 @@ function EnrollmentContent() {
         const department = cols[2] || 'General Campus';
         const phone = cols[3] || '';
         const vehicle_plate = cols[4] || '';
-        let issue = !full_name ? 'Missing full name' : liveSync.checkDuplicates(full_name, phone, vehicle_plate);
+        const dup = phone ? existingPeople.find((p) => p.phone === phone) : undefined;
+        const issue = !full_name
+          ? 'Missing full name'
+          : dup
+          ? `Duplicate phone (${dup.full_name})`
+          : undefined;
         return { rowNum: i + 2, full_name, category, department, phone, vehicle_plate, issue };
       });
       setBulkRows(parsed);
@@ -140,11 +142,11 @@ function EnrollmentContent() {
     reader.readAsText(file);
   };
 
-  const confirmBulkImport = () => {
+  const confirmBulkImport = async () => {
     const valid = bulkRows.filter((r) => !r.issue);
-    valid.forEach((r) => {
-      liveSync.addPerson(
-        {
+    await Promise.all(
+      valid.map((r) =>
+        liveSync.addPerson({
           full_name: r.full_name,
           category: (['Faculty', 'Student', 'Staff', 'Contractor', 'Visitor', 'VIP', 'Delivery'].includes(r.category)
             ? r.category
@@ -169,10 +171,9 @@ function EnrollmentContent() {
                 },
               ]
             : [],
-        },
-        'COMMAND_CENTRE'
-      );
-    });
+        }),
+      ),
+    );
     setBulkMessage(`Imported ${valid.length} validated records into People Database (skipped ${bulkRows.length - valid.length} duplicates/errors).`);
     setBulkRows([]);
   };

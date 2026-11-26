@@ -56,7 +56,7 @@ class ApiClient {
       let errMsg = `Request failed: ${res.status} ${res.statusText}`;
       try {
         const errJson = await res.json();
-        errMsg = errJson.detail || errMsg;
+        errMsg = errJson.error || errJson.detail || errMsg;
       } catch {}
       throw new Error(errMsg);
     }
@@ -65,45 +65,38 @@ class ApiClient {
   }
 
   // ==========================================
-  // AUTHENTICATION
+  // AUTHENTICATION (REAL BACKEND ONLY)
   // ==========================================
-  async login(employee_id: string, password: string): Promise<{ access_token: string; refresh_token: string; user: UserProfile }> {
-    try {
-      const data = await this.request<{ access_token: string; refresh_token: string; user: UserProfile }>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ employee_id, password })
-      });
-      this.setToken(data.access_token);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('gatewise_admin_user', JSON.stringify(data.user));
-      }
-      return data;
-    } catch (err: any) {
-      console.warn('Network login failed, activating resilient institutional access:', err);
-      const isSuper = (employee_id || '').toUpperCase().includes('SUPER');
-      const fallbackUser: UserProfile = {
-        id: isSuper ? 'user-super-001' : 'user-admin-001',
-        employee_id: employee_id || (isSuper ? 'SUPER-001' : 'ADM-001'),
-        email: isSuper ? 'cso.security@iimsambalpur.ac.in' : 'admin.security@iimsambalpur.ac.in',
-        full_name: isSuper ? 'Col. Sanjeev Kaul' : 'Dr. Rajesh Iyer',
-        role: isSuper ? 'SUPER_ADMIN' : 'ADMIN',
-        account_status: 'ACTIVE',
-        avatar_url: isSuper
-          ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
-          : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-        mfa_enabled: true
-      };
-      const fallbackToken = 'gatewise_jwt_demo_' + Date.now();
-      this.setToken(fallbackToken);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('gatewise_admin_user', JSON.stringify(fallbackUser));
-      }
-      return {
-        access_token: fallbackToken,
-        refresh_token: 'gatewise_refresh_' + Date.now(),
-        user: fallbackUser
-      };
+  async login(employee_id: string, password: string): Promise<{ access_token: string; token_type?: string; user: UserProfile }> {
+    const data = await this.request<{ access_token: string; token_type?: string; user: UserProfile }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ identifier: employee_id, employee_id, password })
+    });
+    this.setToken(data.access_token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gatewise_admin_user', JSON.stringify(data.user));
     }
+    return data;
+  }
+
+  async guardLogin(identifier: string, password: string): Promise<{ access_token: string; token_type?: string; user: UserProfile & { gate_id?: string; gate_name?: string; guard_permissions?: any } }> {
+    const data = await this.request<{ access_token: string; token_type?: string; user: UserProfile & { gate_id?: string; gate_name?: string; guard_permissions?: any } }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ identifier, password })
+    });
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('gatewise_guard_token', data.access_token);
+      sessionStorage.setItem('gatewise_guard_auth', 'true');
+      sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
+        guardId: data.user.employee_id,
+        badgeNumber: data.user.employee_id,
+        guardName: data.user.full_name,
+        email: data.user.email,
+        gateId: data.user.gate_id || 'G-01',
+        gateName: data.user.gate_name || 'Main Campus Gate',
+      }));
+    }
+    return data;
   }
 
   async logout(): Promise<void> {
@@ -114,28 +107,8 @@ class ApiClient {
   }
 
   async getMe(): Promise<UserProfile> {
-    try {
-      return await this.request<UserProfile>('/auth/me');
-    } catch {
-      if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem('gatewise_admin_user');
-        if (stored) {
-          try {
-            return JSON.parse(stored);
-          } catch {}
-        }
-      }
-      return {
-        id: 'user-admin-001',
-        employee_id: 'ADM-001',
-        email: 'admin.security@iimsambalpur.ac.in',
-        full_name: 'Dr. Rajesh Iyer',
-        role: 'ADMIN',
-        account_status: 'ACTIVE',
-        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-        mfa_enabled: true
-      };
-    }
+    const data = await this.request<{ user?: UserProfile } & UserProfile>('/auth/me');
+    return data.user ? data.user : data;
   }
 
   // ==========================================

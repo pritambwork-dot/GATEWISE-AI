@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { liveSync } from '@/lib/services/live-sync';
 import { api } from '@/lib/services/api';
+import { extractFaceDescriptorFromFile, extractFaceDescriptorFromDataUrl } from '@/lib/biometrics';
 import {
   VerificationEvent,
   VisitorPass,
@@ -215,6 +216,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   const [scanPlateInput, setScanPlateInput] = useState<string>('');
   const [imageQualityMode, setImageQualityMode] = useState<'GOOD' | 'POOR' | 'MULTI_FACE'>('GOOD');
   const [capturedFacePreview, setCapturedFacePreview] = useState<string | null>(null);
+  const [capturedFaceEmbedding, setCapturedFaceEmbedding] = useState<number[] | undefined>(undefined);
+  const [capturedFaceQuality, setCapturedFaceQuality] = useState<number | null>(null);
 
   const [verificationStage, setVerificationStage] = useState<VerificationStage>('idle');
   const [verifyingStep, setVerifyingStep] = useState<number>(0);
@@ -239,7 +242,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   // LIVE TELEMETRY & DATA LISTS
   // -------------------------------------------------------------------------
   const [events, setEvents] = useState<VerificationEvent[]>(() => liveSync.getEvents());
-  const [visitors, setVisitors] = useState<VisitorPass[]>(() => liveSync.getVisitors());
+  const [visitors, setVisitors] = useState<VisitorPass[]>([]);
   const [requests, setRequests] = useState<RegistrationRequest[]>(() => liveSync.getRegistrationRequests());
   const [liveSyncToast, setLiveSyncToast] = useState<string | null>(null);
   const [signOutModalOpen, setSignOutModalOpen] = useState(false);
@@ -249,76 +252,62 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
   // Real-time synchronization (including instant Admin permission changes & revocation)
   useEffect(() => {
-    setGuardPermissions(liveSync.getGuardPermissions(activeOfficer.id));
+    if (!isAuthenticated) return;
+
+    try {
+      const rawSess = sessionStorage.getItem('gatewise_guard_session');
+      if (rawSess) {
+        const parsed = JSON.parse(rawSess);
+        setActiveOfficer((prev) => ({
+          ...prev,
+          id: parsed.guardId || prev.id,
+          name: parsed.guardName || prev.name,
+          gate: parsed.gateName || prev.gate,
+          gateCode: parsed.gateId || parsed.stationId || prev.gateCode,
+        }));
+      }
+    } catch {}
+
+    liveSync.refreshGuardState().then(() => {
+      setGuardPermissions(liveSync.getGuardPermissions(activeOfficer.id));
+      setEvents(liveSync.getEvents());
+      setRequests(liveSync.getRegistrationRequests());
+    });
 
     const unsubscribe = liveSync.subscribe((msg) => {
+      const latestGuards = liveSync.getGuards();
+      const myGuard = latestGuards.find(
+        (g) => g.badge_number === activeOfficer.id || g.username === activeOfficer.id.toLowerCase(),
+      );
+      if (myGuard && myGuard.account_status !== 'ACTIVE') {
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('gatewise_guard_auth');
+        sessionStorage.removeItem('gatewise_guard_token');
+        sessionStorage.removeItem('gatewise_guard_session');
+        setAuthError('Your guard session was suspended/deactivated by an administrator.');
+        return;
+      }
+      if (myGuard?.permissions) {
+        setGuardPermissions(myGuard.permissions);
+      }
+      setEvents(liveSync.getEvents());
+      setRequests(liveSync.getRegistrationRequests());
+
       if (msg.type === 'GUARD_PERMISSIONS_UPDATED') {
-        if (msg.payload?.guard_id === activeOfficer.id) {
-          setGuardPermissions(msg.payload);
-          setLiveSyncToast(
-            msg.payload.can_create_person_directly
-              ? lang === 'en'
-                ? 'Admin granted Direct Person Creation permission (Mode 2).'
-                : 'व्यवस्थापक ने प्रत्यक्ष व्यक्ति पंजीकरण अनुमति दी (मोड 2)।'
-              : lang === 'en'
-              ? 'Registration mode set to Approval Required (Mode 1).'
-              : 'पंजीकरण मोड: व्यवस्थापक अनुमोदन आवश्यक (मोड 1)।'
-          );
-        }
-      } else if (msg.type === 'GUARD_STATUS_CHANGED') {
-        if (
-          (msg.payload?.id === activeOfficer.id || msg.payload?.badge_number === activeOfficer.id) &&
-          msg.payload?.account_status !== 'ACTIVE'
-        ) {
-          // Immediate access revocation
-          setIsAuthenticated(false);
-          sessionStorage.removeItem('gatewise_guard_auth');
-          sessionStorage.removeItem('gatewise_guard_session');
-          setAuthError('Your guard session was suspended/deactivated by an administrator.');
-        }
-      } else if (msg.type === 'VERIFICATION_EVENT') {
-        setEvents(liveSync.getEvents());
-        if (msg.source === 'COMMAND_CENTRE') {
-          setLiveSyncToast(
-            lang === 'en'
-              ? `Command Centre recorded event: ${msg.payload.person_name || 'Entry'}`
-              : `कमांड सेंटर ने घटना दर्ज की: ${msg.payload.person_name || 'प्रवेश'}`
-          );
-        }
-      } else if (msg.type === 'VISITOR_REGISTERED' || msg.type === 'VISITOR_CHECKED_IN' || msg.type === 'VISITOR_CHECKED_OUT') {
-        setVisitors(liveSync.getVisitors());
-        setEvents(liveSync.getEvents());
-      } else if (
-        msg.type === 'REGISTRATION_REQUEST_CREATED' ||
-        msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
-        msg.type === 'REGISTRATION_REQUEST_REJECTED' ||
-        msg.type === 'REGISTRATION_REQUEST_INFO_REQUIRED'
-      ) {
-        setRequests(liveSync.getRegistrationRequests());
-        if (msg.type === 'REGISTRATION_REQUEST_APPROVED') {
-          setLiveSyncToast(
-            lang === 'en'
-              ? `Admin Approved & Added to People Database: ${msg.payload.full_name}`
-              : `व्यवस्थापक ने स्वीकृत किया: ${msg.payload.full_name}`
-          );
-        } else if (msg.type === 'REGISTRATION_REQUEST_REJECTED') {
-          setLiveSyncToast(
-            lang === 'en'
-              ? `Admin Rejected Request: ${msg.payload.full_name}`
-              : `व्यवस्थापक ने अनुरोध अस्वीकृत किया: ${msg.payload.full_name}`
-          );
-        } else if (msg.type === 'REGISTRATION_REQUEST_INFO_REQUIRED') {
-          setLiveSyncToast(
-            lang === 'en'
-              ? `More info requested for ${msg.payload.full_name}: ${msg.payload.requested_info_prompt}`
-              : `अतिरिक्त जानकारी आवश्यक: ${msg.payload.full_name}`
-          );
-        }
+        setLiveSyncToast(
+          myGuard?.permissions?.can_create_person_directly
+            ? lang === 'en'
+              ? 'Admin granted Direct Person Creation permission (Mode 2).'
+              : 'व्यवस्थापक ने प्रत्यक्ष व्यक्ति पंजीकरण अनुमति दी (मोड 2)।'
+            : lang === 'en'
+            ? 'Registration mode updated by Administrator.'
+            : 'पंजीकरण मोड व्यवस्थापक द्वारा अद्यतन किया गया।',
+        );
       }
     });
 
     return () => unsubscribe();
-  }, [lang, activeOfficer.id]);
+  }, [lang, activeOfficer.id, isAuthenticated]);
 
   // Clean auto-dismiss toast
   useEffect(() => {
@@ -356,100 +345,44 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   // -------------------------------------------------------------------------
   // AUTHENTICATION LOGIC (Centralized Guard Roster + Immediate Revocation)
   // -------------------------------------------------------------------------
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  // -------------------------------------------------------------------------
+  // AUTHENTICATION HANDLERS (Real Cloud Auth + Backend Active Status Check)
+  // -------------------------------------------------------------------------
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
     setAuthError(null);
 
-    const id = accountId.trim().toUpperCase();
+    const id = accountId.trim();
     const pass = password.trim();
 
-    setTimeout(() => {
+    try {
+      const res = await api.guardLogin(id, pass);
+      setActiveOfficer({
+        id: res.user.employee_id,
+        name: res.user.full_name,
+        nameHi: res.user.full_name,
+        gate: (res.user as any).gate_name || 'Main Gate 01',
+        gateCode: (res.user as any).gate_id || 'G-01',
+        shift: 'Active Shift',
+      });
+      setIsAuthenticated(true);
+      await liveSync.refreshGuardState();
+      setGuardPermissions(liveSync.getGuardPermissions(res.user.employee_id));
+      setEvents(liveSync.getEvents());
+      setRequests(liveSync.getRegistrationRequests());
+    } catch (err: any) {
+      setAuthError(err?.message || (lang === 'en' ? 'Invalid account ID or password.' : 'खाता आईडी या पासवर्ड अमान्य है।'));
+    } finally {
       setAuthLoading(false);
-
-      // 1. Check centralized admin-managed Guard Roster first
-      const centralGuard = liveSync.getGuardByBadgeOrUsername(id);
-      if (centralGuard) {
-        if (centralGuard.account_status !== 'ACTIVE') {
-          setAuthError(`Access revoked: Guard account is ${centralGuard.account_status}. Contact Administrator.`);
-          return;
-        }
-        if (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026' || pass.length >= 6) {
-          setIsAuthenticated(true);
-          sessionStorage.setItem('gatewise_guard_auth', 'true');
-          sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
-            guardId: centralGuard.badge_number,
-            guardName: centralGuard.full_name,
-            badgeNumber: centralGuard.badge_number,
-            stationId: centralGuard.assigned_gate_code,
-          }));
-          liveSync.setGuardSessionActive(centralGuard.badge_number, true);
-          setActiveOfficer({
-            id: centralGuard.badge_number,
-            name: centralGuard.full_name,
-            nameHi: centralGuard.full_name_hi || centralGuard.full_name,
-            gate: centralGuard.assigned_gate_name,
-            gateCode: centralGuard.assigned_gate_code,
-            shift: centralGuard.shift_name,
-          });
-          setGuardPermissions(centralGuard.permissions);
-          return;
-        }
-      }
-
-      // 2. Fallback default station guards (registers automatically into central roster on sign-in)
-      const stations: Record<string, { name: string; nameHi: string; gate: string; code: string; shift: string }> = {
-        'GRD-101': { name: 'Officer Vikram Singh', nameHi: 'अधिकारी विक्रम सिंह', gate: 'Main Gate 01', code: 'GATE-01', shift: 'Day Shift (06:00 - 18:00)' },
-        'GRD-102': { name: 'Officer Manoj Kumar', nameHi: 'अधिकारी मनोज कुमार', gate: 'Academic Core Gate 02', code: 'GATE-02', shift: 'Day Shift (06:00 - 18:00)' },
-        'GRD-103': { name: 'Officer Sunil Pradhan', nameHi: 'अधिकारी सुनील प्रधान', gate: 'Executive Housing Gate', code: 'GATE-03', shift: 'Night Shift (18:00 - 06:00)' },
-      };
-
-      if (stations[id] && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
-        const st = stations[id];
-        try {
-          liveSync.createGuard({
-            badge_number: id,
-            username: id.toLowerCase(),
-            full_name: st.name,
-            full_name_hi: st.nameHi,
-            assigned_gate_code: st.code,
-            assigned_gate_name: st.gate,
-            shift_name: st.shift,
-          }, 'GUARD_TERMINAL_AUTH');
-        } catch {}
-
-        setIsAuthenticated(true);
-        sessionStorage.setItem('gatewise_guard_auth', 'true');
-        sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
-          guardId: id,
-          guardName: st.name,
-          badgeNumber: id,
-          stationId: st.code,
-        }));
-        liveSync.setGuardSessionActive(id, true);
-        setActiveOfficer({
-          id,
-          name: st.name,
-          nameHi: st.nameHi,
-          gate: st.gate,
-          gateCode: st.code,
-          shift: st.shift,
-        });
-        setGuardPermissions(liveSync.getGuardPermissions(id));
-      } else {
-        setAuthError(
-          lang === 'en'
-            ? 'Invalid account ID or password.'
-            : 'खाता आईडी या पासवर्ड अमान्य है।'
-        );
-      }
-    }, 400);
+    }
   };
 
   const handleSignOut = () => {
-    liveSync.setGuardSessionActive(activeOfficer.id, false);
+    api.logout().catch(() => {});
     setIsAuthenticated(false);
     sessionStorage.removeItem('gatewise_guard_auth');
+    sessionStorage.removeItem('gatewise_guard_token');
     sessionStorage.removeItem('gatewise_guard_session');
     setSignOutModalOpen(false);
     setAccountId('');
@@ -458,8 +391,53 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   };
 
   // -------------------------------------------------------------------------
-  // VERIFICATION ENGINE EXECUTION (Queries Centralized People & Vehicle DB)
+  // VERIFICATION ENGINE EXECUTION (Queries Centralized Cloud Backend)
   // -------------------------------------------------------------------------
+  const handleGuardFaceFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ext = await extractFaceDescriptorFromFile(file);
+    if (!ext.ok || !ext.dataUrl) {
+      setLiveSyncToast(ext.error || 'Invalid or blurry photo captured.');
+      setCapturedFacePreview(null);
+      setCapturedFaceEmbedding(undefined);
+      setCapturedFaceQuality(ext.qualityScore ?? 10);
+      return;
+    }
+    setCapturedFacePreview(ext.dataUrl);
+    setCapturedFaceEmbedding(ext.embedding);
+    setCapturedFaceQuality(ext.qualityScore ?? 85);
+    setLiveSyncToast(
+      lang === 'en'
+        ? `Face image ready (Quality ${ext.qualityScore}/100) — tap Verify to check central DB.`
+        : `चेहरे की छवि तैयार (गुणवत्ता ${ext.qualityScore}/100)।`,
+    );
+  };
+
+  const captureFromGuardVideo = async (): Promise<{ dataUrl?: string; embedding?: number[] }> => {
+    if (capturedFacePreview && capturedFaceEmbedding) {
+      return { dataUrl: capturedFacePreview, embedding: capturedFaceEmbedding };
+    }
+    if (videoRef.current && cameraActive) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth || 480;
+      canvas.height = videoRef.current.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const ext = await extractFaceDescriptorFromDataUrl(dataUrl);
+        if (ext.ok) {
+          setCapturedFacePreview(dataUrl);
+          setCapturedFaceEmbedding(ext.embedding);
+          setCapturedFaceQuality(ext.qualityScore ?? 85);
+          return { dataUrl, embedding: ext.embedding };
+        }
+      }
+    }
+    return {};
+  };
+
   const startFaceScan = () => {
     setVerificationStage('viewfinder_face');
   };
@@ -468,74 +446,74 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     setVerificationStage('viewfinder_vehicle');
   };
 
-  const executePipelineVerification = () => {
+  const executePipelineVerification = async () => {
     setVerificationStage('verifying');
-    setVerifyingStep(0);
+    setVerifyingStep(1);
 
-    const subjectToVerify = scanFaceInput.trim() || currentScenario.personName;
-    const plateToVerify = scanPlateInput.trim() || currentScenario.vehiclePlate;
+    try {
+      const captured = await captureFromGuardVideo();
+      setVerifyingStep(2);
+      const plateToVerify = scanPlateInput.trim() || undefined;
+      setVerifyingStep(3);
 
-    const steps = [
-      () => setVerifyingStep(1),
-      () => setVerifyingStep(2),
-      () => setVerifyingStep(3),
-      () => setVerifyingStep(4),
-      () => {
-        const result = liveSync.verifyIdentityAndVehicle(
-          subjectToVerify,
-          plateToVerify,
-          {
-            imageQuality: imageQualityMode === 'POOR' ? 'POOR' : 'GOOD',
-            faceCount: imageQualityMode === 'MULTI_FACE' ? 2 : 1,
-            gateCode: activeOfficer.gateCode,
-          }
-        );
-        setCurrentResult(result);
-        setVerificationStage('outcome');
-      },
-    ];
+      const result = await liveSync.verifyIdentityAndVehicle({
+        face_image: captured.dataUrl,
+        face_embedding: captured.embedding,
+        vehicle_plate: plateToVerify,
+        guard_id: activeOfficer.id,
+        guard_name: activeOfficer.name,
+        gate_id: activeOfficer.gateCode,
+        direction: 'ENTRY',
+      });
 
-    steps.forEach((fn, idx) => {
-      setTimeout(fn, (idx + 1) * 200);
-    });
+      setVerifyingStep(4);
+      setCurrentResult(result);
+      setEvents(liveSync.getEvents());
+      setVerificationStage('outcome');
+    } catch (err: any) {
+      setVerificationStage('idle');
+      setLiveSyncToast(err?.message || 'Verification engine error.');
+    }
   };
 
-  const handleConfirmDecision = (decision: 'GRANT_ENTRY' | 'DENY_ENTRY') => {
+  const handleConfirmDecision = async (decision: 'GRANT_ENTRY' | 'DENY_ENTRY') => {
     if (!currentResult) return;
     if (decision === 'GRANT_ENTRY' && !guardPermissions.can_record_entry_exit) {
       setLiveSyncToast('Permission denied: Entry recording permission revoked by administrator.');
       return;
     }
 
-    const outcome = currentResult.case_outcome;
     const isGranted = decision === 'GRANT_ENTRY';
-
-    const newEvt = liveSync.addVerificationEvent(
-      {
-        gate_id: activeOfficer.gateCode,
-        gate_name: activeOfficer.gate,
-        guard_id: activeOfficer.id,
-        guard_name: activeOfficer.name,
-        person_id: currentResult.person?.id || 'UNKNOWN',
+    try {
+      const evtRes = await liveSync.recordGateEvent({
+        verification_code: currentResult.verification_code,
+        event_type: 'ENTRY',
+        person_code: currentResult.person?.id,
         person_name: currentResult.person?.name || 'Subject',
-        person_category: currentResult.person?.category || 'Identity',
-        outcome,
-        guard_decision: isGranted ? 'GRANT_ENTRY' : 'DENY_ENTRY',
-        similarity_score: currentResult.person?.confidence_score || 0.98,
-        decision_reason:
-          outcome === 'CASE_1_VERIFIED'
-            ? `Person & Vehicle verified. Plate: ${currentResult.vehicle?.license_plate || 'Pedestrian'}. Access granted.`
-            : outcome === 'CASE_2_PARTIALLY_VERIFIED'
-            ? `Partially verified: Person recognized, vehicle unassociated. Decision: ${decision}`
-            : currentResult.failure_reason || 'Verification event logged.',
-      },
-      'GUARD_WEB_APP'
-    );
+        vehicle_plate: currentResult.vehicle?.normalized_plate || scanPlateInput.trim() || undefined,
+        gate_code: activeOfficer.gateCode,
+        verification_outcome: currentResult.case_outcome,
+        guard_decision: isGranted ? 'ALLOW' : 'REJECT',
+        similarity_score: currentResult.person?.confidence_score,
+        rejection_reason: !isGranted ? currentResult.failure_reason || 'Denied by Guard' : undefined,
+      });
 
-    setEvents(liveSync.getEvents());
-    if (onEventSynced) onEventSynced(newEvt);
-    setVerificationStage('idle');
-    setCurrentResult(null);
+      setEvents(liveSync.getEvents());
+      if (onEventSynced && evtRes?.event) onEventSynced(evtRes.event);
+      setLiveSyncToast(
+        isGranted
+          ? lang === 'en'
+            ? 'Entry recorded in Central PostgreSQL.'
+            : 'प्रवेश केंद्रीय डेटाबेस में दर्ज किया गया।'
+          : lang === 'en'
+          ? 'Entry denial logged to Admin Command Centre.'
+          : 'प्रवेश अस्वीकृति लॉग की गई।',
+      );
+      setVerificationStage('idle');
+      setCurrentResult(null);
+    } catch (err: any) {
+      setLiveSyncToast(err?.message || 'Failed recording gate event.');
+    }
   };
 
   // -------------------------------------------------------------------------
@@ -556,73 +534,66 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     setRegModalOpen(true);
   };
 
-  const handleNewPersonSubmit = (e: React.FormEvent) => {
+  const handleNewPersonSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regFullName.trim()) return;
 
     setRegSubmitting(true);
 
-    setTimeout(() => {
-      try {
-        if (guardPermissions.can_create_person_directly) {
-          // WORKFLOW B: Guard creates record directly in Central People Database
-          const created = liveSync.createPersonDirectlyByGuard({
-            full_name: regFullName.trim(),
-            phone: regPhone.trim() || undefined,
-            category: regCategory,
-            purpose: regPurpose.trim() || 'Institutional Visit',
-            expected_duration: regDuration,
-            vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
-            additional_notes: regNotes.trim() || undefined,
-            guard_id: activeOfficer.id,
-            guard_name: activeOfficer.name,
-            gate_id: activeOfficer.gateCode,
-            face_photo_url: capturedFacePreview || undefined,
-          });
-          setLiveSyncToast(
-            lang === 'en'
-              ? `Direct Record Created (${created.person_code}) [${created.account_status}]. Admin notified.`
-              : `प्रत्यक्ष रिकॉर्ड बनाया गया (${created.person_code})। व्यवस्थापक को सूचित किया गया।`
-          );
-          setActiveTab('verify');
-        } else {
-          // WORKFLOW A: Submit pending request for Admin approval
-          const created = liveSync.submitRegistrationRequest(
-            {
-              full_name: regFullName.trim(),
-              phone: regPhone.trim() || undefined,
-              category: regCategory,
-              purpose: regPurpose.trim() || 'Institutional Visit',
-              expected_duration: regDuration,
-              vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
-              additional_notes: regNotes.trim() || undefined,
-              guard_id: activeOfficer.id,
-              guard_name: activeOfficer.name,
-              gate_id: activeOfficer.gateCode,
-              face_photo_url: capturedFacePreview || undefined,
-            },
-            'GUARD_WEB_APP'
-          );
-          setRequests(liveSync.getRegistrationRequests());
-          setActiveTab('requests');
-          setLiveSyncToast(
-            lang === 'en'
-              ? `Request ${created.request_code} sent for Admin approval.`
-              : `अनुरोध ${created.request_code} व्यवस्थापक अनुमोदन हेतु भेजा गया।`
-          );
-        }
-      } catch (err: any) {
-        setLiveSyncToast(err.message);
+    try {
+      if (guardPermissions.can_create_person_directly) {
+        const created = await liveSync.createPersonDirectlyByGuard({
+          full_name: regFullName.trim(),
+          phone: regPhone.trim() || undefined,
+          category: regCategory,
+          purpose: regPurpose.trim() || 'Institutional Visit',
+          vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
+          guard_id: activeOfficer.id,
+          guard_name: activeOfficer.name,
+          face_photo_url: capturedFacePreview || undefined,
+          face_embedding: capturedFaceEmbedding,
+        });
+        setLiveSyncToast(
+          lang === 'en'
+            ? `Direct Record Created (${created.person_code}) [${created.account_status}]. Synced to Central DB.`
+            : `प्रत्यक्ष रिकॉर्ड बनाया गया (${created.person_code})। केंद्रीय डेटाबेस में सहेजा गया।`
+        );
+        setActiveTab('verify');
+      } else {
+        const created = await liveSync.submitRegistrationRequest({
+          submitted_by_guard_id: activeOfficer.id,
+          submitted_by_guard_name: activeOfficer.name,
+          gate_id: activeOfficer.gateCode,
+          full_name: regFullName.trim(),
+          phone: regPhone.trim() || undefined,
+          category: regCategory,
+          purpose: regPurpose.trim() || 'Institutional Visit',
+          expected_duration: regDuration,
+          vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
+          additional_notes: regNotes.trim() || undefined,
+          face_photo_url: capturedFacePreview || undefined,
+          face_embedding: capturedFaceEmbedding,
+        });
+        setRequests(liveSync.getRegistrationRequests());
+        setActiveTab('requests');
+        setLiveSyncToast(
+          lang === 'en'
+            ? `Request ${created.request_code} sent for Admin approval.`
+            : `अनुरोध ${created.request_code} व्यवस्थापक अनुमोदन हेतु भेजा गया।`
+        );
       }
 
-      setRegSubmitting(false);
       setRegModalOpen(false);
       setRegFullName('');
       setRegPhone('');
       setRegPurpose('');
       setRegVehiclePlate('');
       setRegNotes('');
-    }, 350);
+    } catch (err: any) {
+      setLiveSyncToast(err?.message || 'Registration action blocked by server RBAC.');
+    } finally {
+      setRegSubmitting(false);
+    }
   };
 
   // Today counters
@@ -797,20 +768,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             </button>
           </form>
 
-          {/* Quick Authorized Credentials Pill */}
+          {/* Forgot Password */}
           <div className="pt-2 text-center space-y-2">
-            <button
-              type="button"
-              onClick={() => {
-                setAccountId('GRD-101');
-                setPassword('guard123');
-                setAuthError(null);
-              }}
-              className="text-xs font-semibold text-[#2F5BFF] hover:underline cursor-pointer"
-            >
-              ⚡ {lang === 'en' ? 'Fill Authorized Credentials (GRD-101 / guard123)' : 'अधिकृत क्रेडेंशियल भरें (GRD-101 / guard123)'}
-            </button>
-
             <div>
               <button
                 type="button"
@@ -1041,29 +1000,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 </div>
               </div>
 
-              {/* Scenario Selector for Testing All Operational Scenarios */}
               <div className="flex flex-col items-end">
                 <span className={`text-[10px] uppercase font-bold mb-1 ${embedded ? 'text-white/50' : 'text-black/40'}`}>
-                  {lang === 'en' ? 'Operational Test' : 'परीक्षण परिदृश्य'}
+                  {lang === 'en' ? 'Live Cloud Sync' : 'केंद्रीय सिंक'}
                 </span>
-                <select
-                  value={currentScenario.id}
-                  onChange={(e) => {
-                    const match = PRESET_SCENARIOS.find((s) => s.id === e.target.value);
-                    if (match) setCurrentScenario(match);
-                  }}
-                  className={`text-xs font-semibold rounded-lg px-2 py-1.5 border outline-none cursor-pointer max-w-[170px] truncate ${
-                    embedded
-                      ? 'bg-black/60 border-white/20 text-white'
-                      : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
-                  }`}
-                >
-                  {PRESET_SCENARIOS.map((s) => (
-                    <option key={s.id} value={s.id} className="text-black bg-white">
-                      {lang === 'en' ? s.labelEn : s.labelHi}
-                    </option>
-                  ))}
-                </select>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 text-[10px] font-bold border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  PostgreSQL Active
+                </span>
               </div>
             </div>
 
@@ -1140,21 +1084,37 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 </span>
               </div>
 
-              {/* Direct Lookup / Captured Biometric & Plate Identifiers */}
+              {/* Captured Biometric Frame & Vehicle Plate Input */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <label className="block text-[10px] font-bold opacity-60 mb-1">
-                    {lang === 'en' ? 'Subject Name / ID' : 'व्यक्ति नाम / आईडी'}
+                    {lang === 'en' ? 'Face Photo Scan' : 'चेहरा फोटो स्कैन'}
                   </label>
-                  <input
-                    type="text"
-                    value={scanFaceInput}
-                    onChange={(e) => setScanFaceInput(e.target.value)}
-                    placeholder={currentScenario.personName}
-                    className={`w-full px-2.5 py-2 rounded-xl border text-xs outline-none ${
+                  <label
+                    className={`w-full px-2.5 py-2 rounded-xl border text-xs flex items-center gap-2 cursor-pointer ${
                       embedded ? 'bg-black/40 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
                     }`}
-                  />
+                  >
+                    {capturedFacePreview ? (
+                      <img src={capturedFacePreview} alt="Face" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                    ) : (
+                      <Camera className="w-3.5 h-3.5 text-[#2F5BFF] shrink-0" />
+                    )}
+                    <span className="truncate font-semibold">
+                      {capturedFacePreview
+                        ? `Q:${capturedFaceQuality ?? 85}`
+                        : lang === 'en'
+                        ? 'Upload / Snap Face'
+                        : 'फोटो चुनें'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      data-testid="guard-face-upload"
+                      onChange={handleGuardFaceFileUpload}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold opacity-60 mb-1">
@@ -1162,30 +1122,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   </label>
                   <input
                     type="text"
+                    data-testid="guard-plate-input"
                     value={scanPlateInput}
                     onChange={(e) => setScanPlateInput(e.target.value.toUpperCase())}
-                    placeholder={currentScenario.vehiclePlate}
+                    placeholder="OD02AB1234"
                     className={`w-full px-2.5 py-2 rounded-xl border text-xs font-mono uppercase outline-none ${
                       embedded ? 'bg-black/40 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
                     }`}
                   />
                 </div>
-              </div>
-
-              {/* Edge-Case Frame Condition Selector */}
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="opacity-60 font-semibold">Camera Quality Check:</span>
-                <select
-                  value={imageQualityMode}
-                  onChange={(e) => setImageQualityMode(e.target.value as any)}
-                  className={`px-2 py-1 rounded-lg border outline-none ${
-                    embedded ? 'bg-black/50 border-white/10 text-white' : 'bg-slate-50 border-black/10 text-slate-800'
-                  }`}
-                >
-                  <option value="GOOD">Optimal Single Face</option>
-                  <option value="POOR">Simulate Poor Lighting / Blur</option>
-                  <option value="MULTI_FACE">Simulate Multiple Faces in Frame</option>
-                </select>
               </div>
 
               <button

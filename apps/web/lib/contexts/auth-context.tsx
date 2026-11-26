@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser({
           id: guardData?.guardId || 'GRD-101',
           employee_id: guardData?.badgeNumber || 'GRD-101',
-          email: 'guard.station@iimsambalpur.ac.in',
+          email: guardData?.email || 'grd101@iimsambalpur.ac.in',
           full_name: guardData?.guardName || 'Officer Vikram Singh',
           role: 'SECURITY_GUARD',
           account_status: 'ACTIVE',
@@ -48,38 +48,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedToken = localStorage.getItem('gatewise_admin_token');
       const storedUser = localStorage.getItem('gatewise_admin_user');
 
-      if (storedToken && storedUser) {
+      if (storedToken) {
+        api.setToken(storedToken);
+        setToken(storedToken);
+        if (storedUser) {
+          try {
+            setUser(JSON.parse(storedUser));
+          } catch {}
+        }
         try {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-          setToken(storedToken);
-          api.setToken(storedToken);
-
-          // Verify session freshness with backend if reachable
-          api.getMe().then((freshUser) => {
+          const freshUser = await api.getMe();
+          if ((freshUser.role as string) === 'GUARD' || freshUser.role === 'SECURITY_GUARD') {
+            localStorage.removeItem('gatewise_admin_token');
+            localStorage.removeItem('gatewise_admin_user');
+            setUser(freshUser);
+            setToken(null);
+          } else {
             setUser(freshUser);
             localStorage.setItem('gatewise_admin_user', JSON.stringify(freshUser));
-          }).catch((err) => {
-            // Do not clear session if network or backend is unreachable; retain validated admin session
-            console.warn('Backend verification offline; maintaining authenticated admin session:', err);
-          });
+          }
         } catch {
           localStorage.removeItem('gatewise_admin_token');
           localStorage.removeItem('gatewise_admin_user');
+          api.setToken(null);
+          setUser(null);
+          setToken(null);
         }
       } else {
-        // Seed default Admin session for immediate review if none stored
-        const defaultAdmin: UserProfile = {
-          id: 'user-admin-001',
-          employee_id: 'ADM-001',
-          email: 'admin.security@iimsambalpur.ac.in',
-          full_name: 'Dr. Rajesh Iyer',
-          role: 'ADMIN',
-          account_status: 'ACTIVE',
-          avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-          mfa_enabled: true
-        };
-        setUser(defaultAdmin);
+        setUser(null);
+        setToken(null);
       }
       setIsLoading(false);
     }

@@ -36,15 +36,17 @@ export const GuardWebAppScene: React.FC = () => {
 
     // Subscribe to live sync
     const unsubscribe = liveSync.subscribe((msg) => {
-      if (msg.type === 'VERIFICATION_EVENT') {
-        const ev = msg.payload as VerificationEvent;
-        setSyncedEvents((prev) => [ev, ...prev.slice(0, 5)]);
-        setTotalScans((prev) => prev + 1);
-
-        setRecentSyncPulse(
-          `Live Telemetry: ${ev.person_name || 'Subject'} (${ev.guard_decision}) at ${ev.gate_name}`
-        );
-        setTimeout(() => setRecentSyncPulse(null), 4000);
+      const latest = liveSync.getEvents();
+      setSyncedEvents(latest.slice(0, 6));
+      if (msg.type === 'VERIFICATION_RESULT_LOGGED' || msg.type === 'GATE_EVENT_RECORDED') {
+        const ev = latest[0];
+        if (ev) {
+          setTotalScans((prev) => prev + 1);
+          setRecentSyncPulse(
+            `Live Telemetry: ${ev.person_name || 'Subject'} (${ev.guard_decision}) at ${ev.gate_name}`
+          );
+          setTimeout(() => setRecentSyncPulse(null), 4000);
+        }
       }
     });
 
@@ -52,19 +54,7 @@ export const GuardWebAppScene: React.FC = () => {
   }, []);
 
   const handleSimulateQuickPass = () => {
-    liveSync.addVerificationEvent(
-      {
-        person_name: 'Dr. Ananya Sharma',
-        person_id: 'FAC-8041',
-        person_category: 'Faculty',
-        gate_name: 'Main Gate 01',
-        outcome: 'VERIFIED_AUTHORIZED',
-        guard_decision: 'GRANT_ENTRY',
-        similarity_score: 0.984,
-        decision_reason: 'Simulated instantaneous edge biometric match.',
-      },
-      'GUARD_WEB_APP'
-    );
+    liveSync.refreshActiveContext();
   };
 
   return (

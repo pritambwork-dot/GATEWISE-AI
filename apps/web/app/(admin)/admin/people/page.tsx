@@ -24,6 +24,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { liveSync } from '@/lib/services/live-sync';
+import { extractFaceDescriptorFromDataUrl, extractFaceDescriptorFromFile } from '@/lib/biometrics';
 import {
   RegisteredPerson,
   RegisteredVehicle,
@@ -97,6 +98,7 @@ export default function PeopleDatabasePage() {
   const [photos, setPhotos] = useState<PersonPhoto[]>([]);
   const [webcamActive, setWebcamActive] = useState(false);
   const [qualityNotice, setQualityNotice] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Multiple Vehicles state
@@ -121,18 +123,13 @@ export default function PeopleDatabasePage() {
   const [registrationNotes, setRegistrationNotes] = useState('');
 
   useEffect(() => {
-    const unsub = liveSync.subscribe((msg) => {
-      if (
-        msg.type === 'PERSON_CREATED' ||
-        msg.type === 'PERSON_UPDATED' ||
-        msg.type === 'PERSON_DELETED' ||
-        msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
-        msg.type === 'VEHICLE_ADDED'
-      ) {
-        setPersons(liveSync.getPersons());
-      } else if (msg.type === 'VERIFICATION_EVENT') {
-        setEvents(liveSync.getEvents());
-      }
+    liveSync.refreshAdminState().then(() => {
+      setPersons(liveSync.getPersons());
+      setEvents(liveSync.getEvents());
+    });
+    const unsub = liveSync.subscribe(() => {
+      setPersons(liveSync.getPersons());
+      setEvents(liveSync.getEvents());
     });
     return () => unsub();
   }, []);
@@ -160,7 +157,7 @@ export default function PeopleDatabasePage() {
     }
   };
 
-  const captureFromWebcam = () => {
+  const captureFromWebcam = async () => {
     if (!videoRef.current) return;
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth || 400;
@@ -169,41 +166,61 @@ export default function PeopleDatabasePage() {
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const ext = await extractFaceDescriptorFromDataUrl(dataUrl);
       const newPhoto: PersonPhoto = {
         id: `pho-${Date.now()}`,
         url: dataUrl,
         is_primary: photos.length === 0,
-        quality_score: 0.96,
+        quality_score: (ext.qualityScore ?? 85) / 100,
         capture_method: 'WEBCAM',
         uploaded_at: new Date().toISOString(),
       };
       setPhotos((prev) => [...prev, newPhoto]);
-      setQualityNotice('Webcam capture validated: face centered, lighting optimal (Quality: 96%).');
+      setQualityNotice(
+        ext.ok
+          ? `Webcam capture validated: Quality ${ext.qualityScore}/100 · 128-D feature descriptor ready.`
+          : `Warning: ${ext.error}`,
+      );
       stopWebcam();
     }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    Array.from(files).forEach((file, idx) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        const newPhoto: PersonPhoto = {
-          id: `pho-${Date.now()}-${idx}`,
-          url: result,
-          is_primary: photos.length === 0 && idx === 0,
-          quality_score: 0.95,
-          capture_method: 'UPLOAD',
-          uploaded_at: new Date().toISOString(),
-        };
-        setPhotos((prev) => [...prev, newPhoto]);
-        setQualityNotice(`Uploaded "${file.name}" — validated resolution & facial feature extraction ready.`);
+    for (let idx = 0; idx < files.length; idx++) {
+      const file = files[idx];
+      const ext = await extractFaceDescriptorFromFile(file);
+      const rawUrl =
+        ext.dataUrl ||
+        (await new Promise<string>((resolve) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result || ''));
+          r.onerror = () => resolve('');
+          r.readAsDataURL(file);
+        }));
+
+      if (!rawUrl) {
+        setQualityNotice(`Rejected "${file.name}": Unreadable file.`);
+        continue;
+      }
+
+      const newPhoto: PersonPhoto = {
+        id: `pho-${Date.now()}-${idx}`,
+        url: rawUrl,
+        is_primary: photos.length === 0 && idx === 0,
+        quality_score: (ext.qualityScore ?? 15) / 100,
+        capture_method: 'UPLOAD',
+        uploaded_at: new Date().toISOString(),
       };
-      reader.readAsDataURL(file);
-    });
+      setPhotos((prev) => [...prev, newPhoto]);
+      setQualityNotice(
+        ext.ok
+          ? `Validated "${file.name}" (Quality ${ext.qualityScore}/100, ${ext.width}x${ext.height}px) — 128-D biometric ready.`
+          : `Enrollment Warning for "${file.name}": ${ext.error} Saving with this photo will mark biometric enrollment FAILED.`,
+      );
+    }
   };
 
   const openAddNewModal = () => {
@@ -275,8 +292,9 @@ export default function PeopleDatabasePage() {
     setSelectedProfile(null);
   };
 
-  const handleSavePerson = (e: React.FormEvent) => {
+  const handleSavePerson = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     if (!fullName.trim() || !department.trim()) return;
 
     const cleanVehicles: RegisteredVehicle[] = vehicles
@@ -294,29 +312,33 @@ export default function PeopleDatabasePage() {
         owner_name: fullName.trim(),
       }));
 
-    if (editingPerson) {
-      liveSync.updatePerson(editingPerson.id, {
-        full_name: fullName.trim(),
-        phone: mobileNumber.trim(),
-        email: email.trim() || undefined,
-        residential_address: residentialAddress.trim() || undefined,
-        department: department.trim(),
-        category,
-        id_document_type: idDocType,
-        id_document_number: idDocNumber.trim() || undefined,
-        photos,
-        photo_url: photos.find((ph) => ph.is_primary)?.url || photos[0]?.url,
-        associated_vehicles: cleanVehicles,
-        account_status: accessStatus,
-        authorized_gates: authorizedGates,
-        valid_from: new Date(validFrom).toISOString(),
-        valid_until: new Date(expirationDate + 'T23:59:59Z').toISOString(),
-        access_restrictions: accessRestrictions.trim() || undefined,
-        registration_notes: registrationNotes.trim() || undefined,
-      });
-    } else {
-      liveSync.addPerson(
-        {
+    try {
+      if (editingPerson) {
+        await liveSync.updatePerson(editingPerson.id, {
+          full_name: fullName.trim(),
+          phone: mobileNumber.trim(),
+          email: email.trim() || undefined,
+          residential_address: residentialAddress.trim() || undefined,
+          department: department.trim(),
+          category,
+          id_document_type: idDocType,
+          id_document_number: idDocNumber.trim() || undefined,
+          photos,
+          photo_url: photos.find((ph) => ph.is_primary)?.url || photos[0]?.url,
+          associated_vehicles: cleanVehicles,
+          account_status: accessStatus,
+          authorized_gates: authorizedGates,
+          valid_from: new Date(validFrom).toISOString(),
+          valid_until: new Date(expirationDate + 'T23:59:59Z').toISOString(),
+          access_restrictions: accessRestrictions.trim() || undefined,
+          registration_notes: registrationNotes.trim() || undefined,
+        });
+        const primary = photos.find((ph) => ph.is_primary) || photos[0];
+        if (primary && primary.url.startsWith('data:image/')) {
+          await liveSync.uploadPersonPhoto(editingPerson.id, primary.url, primary.capture_method || 'UPLOAD').catch(() => {});
+        }
+      } else {
+        const created = await liveSync.addPerson({
           person_code: personCode,
           full_name: fullName.trim(),
           phone: mobileNumber.trim(),
@@ -338,14 +360,20 @@ export default function PeopleDatabasePage() {
           valid_until: new Date(expirationDate + 'T23:59:59Z').toISOString(),
           access_restrictions: accessRestrictions.trim() || undefined,
           registration_notes: registrationNotes.trim() || undefined,
-        },
-        'COMMAND_CENTRE'
-      );
-    }
+        });
+        if (created.enrollment_status === 'FAILED') {
+          setFormError(`Person saved, but biometric enrollment FAILED: ${created.enrollment_error}`);
+          setPersons(liveSync.getPersons());
+          return;
+        }
+      }
 
-    stopWebcam();
-    setPersons(liveSync.getPersons());
-    setFormOpen(false);
+      stopWebcam();
+      setPersons(liveSync.getPersons());
+      setFormOpen(false);
+    } catch (err: any) {
+      setFormError(err?.message || 'Failed saving person to centralized PostgreSQL.');
+    }
   };
 
   const toggleGate = (gate: string) => {
@@ -612,11 +640,22 @@ export default function PeopleDatabasePage() {
                       </td>
 
                       <td className="px-5 py-3.5">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusMeta.badgeClass}`}
-                        >
-                          {statusMeta.label}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`inline-flex w-fit items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusMeta.badgeClass}`}
+                          >
+                            {statusMeta.label}
+                          </span>
+                          {p.enrollment_status === 'FAILED' ? (
+                            <span className="inline-flex w-fit items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-50 text-[#C93338] border border-rose-200">
+                              BIOMETRIC FAILED
+                            </span>
+                          ) : p.enrollment_status === 'COMPLETED' ? (
+                            <span className="inline-flex w-fit items-center px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              BIOMETRIC ENROLLED
+                            </span>
+                          ) : null}
+                        </div>
                         <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
                           Exp: {new Date(p.valid_until).toLocaleDateString()}
                         </div>
@@ -1008,6 +1047,11 @@ export default function PeopleDatabasePage() {
                 </div>
               )}
 
+              {formError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-bold text-[#C93338]">
+                  {formError}
+                </div>
+              )}
               {qualityNotice && (
                 <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />

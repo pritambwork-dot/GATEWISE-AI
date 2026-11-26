@@ -64,38 +64,31 @@ function SecurityGuardsContent() {
   }, [tabParam]);
 
   useEffect(() => {
-    const unsub = liveSync.subscribe((msg) => {
-      if (
-        msg.type === 'GUARD_CREATED' ||
-        msg.type === 'GUARD_PERMISSIONS_UPDATED' ||
-        msg.type === 'GUARD_STATUS_CHANGED'
-      ) {
-        setGuards(liveSync.getGuards());
-        setAuditLogs(liveSync.getAuditLogs());
-      } else if (msg.type === 'PERSON_CREATED' || msg.type === 'PERSON_UPDATED' || msg.type === 'PERSON_DELETED') {
-        setPersons(liveSync.getPersons());
-      } else if (msg.type === 'AUDIT_LOGGED') {
-        setAuditLogs(liveSync.getAuditLogs());
-      }
+    liveSync.refreshAdminState().then(() => {
+      setGuards(liveSync.getGuards());
+      setPersons(liveSync.getPersons());
+      setAuditLogs(liveSync.getAuditLogs());
+    });
+    const unsub = liveSync.subscribe(() => {
+      setGuards(liveSync.getGuards());
+      setPersons(liveSync.getPersons());
+      setAuditLogs(liveSync.getAuditLogs());
     });
     return () => unsub();
   }, []);
 
-  const handleCreateGuard = (e: React.FormEvent) => {
+  const handleCreateGuard = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
     try {
-      liveSync.createGuard({
+      await liveSync.createGuard({
         badge_number: newBadge.trim().toUpperCase() || `GRD-${Math.floor(200 + Math.random() * 700)}`,
         username: newUsername.trim().toLowerCase(),
         full_name: newName.trim(),
         assigned_gate_code: newGateCode,
         assigned_gate_name: newGateName,
         shift_name: newShift,
-        permissions: {
-          registration_mode: newRegMode,
-          can_create_person_directly: newRegMode === 'DIRECT_PERMISSION',
-        },
+        registration_mode: newRegMode,
       });
       setGuards(liveSync.getGuards());
       setAuditLogs(liveSync.getAuditLogs());
@@ -108,14 +101,14 @@ function SecurityGuardsContent() {
     }
   };
 
-  const togglePermission = (guardId: string, field: keyof GuardPermissions, value: any) => {
-    liveSync.updateGuardPermissions(guardId, { [field]: value });
+  const togglePermission = async (guardId: string, field: keyof GuardPermissions, value: any) => {
+    await liveSync.updateGuardPermissions(guardId, { [field]: value });
     setGuards(liveSync.getGuards());
     setAuditLogs(liveSync.getAuditLogs());
   };
 
-  const handleModeSwitch = (guardId: string, mode: 'APPROVAL_REQUIRED' | 'DIRECT_PERMISSION') => {
-    liveSync.updateGuardPermissions(guardId, {
+  const handleModeSwitch = async (guardId: string, mode: 'APPROVAL_REQUIRED' | 'DIRECT_PERMISSION') => {
+    await liveSync.updateGuardPermissions(guardId, {
       registration_mode: mode,
       can_create_person_directly: mode === 'DIRECT_PERMISSION',
     });
@@ -298,9 +291,9 @@ function SecurityGuardsContent() {
                             </button>
                             <button
                               type="button"
-                              onClick={() => {
+                              onClick={async () => {
                                 const next = g.account_status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-                                liveSync.updateGuardStatus(g.id, next);
+                                await liveSync.updateGuardStatus(g.badge_number, next);
                                 setGuards(liveSync.getGuards());
                               }}
                               className={`px-3 py-1.5 rounded-lg font-bold cursor-pointer ${
