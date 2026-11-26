@@ -56,7 +56,12 @@ class ApiClient {
       let errMsg = `Request failed: ${res.status} ${res.statusText}`;
       try {
         const errJson = await res.json();
-        errMsg = errJson.error || errJson.detail || errMsg;
+        const rawErr = errJson.error ?? errJson.detail;
+        if (typeof rawErr === 'string' && rawErr) {
+          errMsg = rawErr;
+        } else if (rawErr && typeof rawErr === 'object') {
+          errMsg = rawErr.message || JSON.stringify(rawErr);
+        }
       } catch {}
       throw new Error(errMsg);
     }

@@ -1521,12 +1521,15 @@ export default function EmbersGatewiseLanding() {
             order: 3;
             width: 100%;
             justify-content: space-between;
-            gap: 8px;
-            margin-top: 4px;
+            gap: 6px;
+            margin-top: 2px;
+            flex-wrap: nowrap;
           }
 
           .gw-links a {
             font-size: 11px;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
           }
 
           .gw-menu {
@@ -1849,9 +1852,9 @@ export default function EmbersGatewiseLanding() {
 
           <ul className="gw-links">
             {[
-              { label: 'Admin Portal', href: '/admin/login' },
-              { label: 'Guard App', href: '/guard' },
-              { label: 'Architecture', href: '/how-it-works' },
+              { label: 'Admin', href: '/admin/login' },
+              { label: 'Guard', href: '/guard' },
+              { label: 'System', href: '/how-it-works' },
               { label: 'Security', href: '/security' },
               { label: 'Command', href: '#command', action: () => goToRef.current(1) },
             ].map((item, i) => (
