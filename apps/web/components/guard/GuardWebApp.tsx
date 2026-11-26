@@ -1920,7 +1920,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     <span className="text-white/60">Face:</span>
                     <span className={currentResult.person.face_matched ? 'text-[#1FB36B] font-bold' : 'text-[#C93338] font-bold'}>
                       {currentResult.person.face_matched ? 'Match found' : 'No match'}
-                      {currentResult.person.confidence_score ? ` (${(currentResult.person.confidence_score * 100).toFixed(1)}%)` : ''}
+                      {currentResult.person.confidence_score ? ` (${(currentResult.person.confidence_score > 1 ? currentResult.person.confidence_score : currentResult.person.confidence_score * 100).toFixed(1)}%)` : ''}
                     </span>
                   </div>
                 </>
