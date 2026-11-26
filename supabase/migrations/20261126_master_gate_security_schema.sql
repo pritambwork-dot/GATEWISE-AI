@@ -56,23 +56,80 @@ CREATE TABLE IF NOT EXISTS guards (
 );
 
 -- -----------------------------------------------------------------------------
--- 4. PERSONS TABLE (Authorized Master Registry: Faculty, Students, Staff, etc.)
+-- 4. PERSONS TABLE (Authorized Master Registry: Admin-Created & Guard-Created)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS persons (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    person_code VARCHAR(64) UNIQUE NOT NULL, -- e.g. 'FAC-8041', 'STU-2024-089'
+    person_code VARCHAR(64) UNIQUE NOT NULL, -- e.g. 'PER-2026-8041'
     full_name VARCHAR(255) NOT NULL,
     category VARCHAR(64) NOT NULL CHECK (category IN ('Faculty', 'Student', 'Staff', 'Contractor', 'Visitor', 'VIP', 'Delivery')),
     department VARCHAR(128) NOT NULL,
     designation VARCHAR(128),
     email VARCHAR(255),
     phone VARCHAR(32),
+    residential_address TEXT,
+    id_document_type VARCHAR(64),
+    id_document_number VARCHAR(128),
     photo_url TEXT,
-    account_status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'SUSPENDED', 'EXPIRED')),
+    account_status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE_AUTHORIZED'
+        CHECK (account_status IN ('ACTIVE_AUTHORIZED', 'PENDING_APPROVAL', 'TEMPORARILY_AUTHORIZED', 'SUSPENDED', 'EXPIRED', 'REJECTED', 'ARCHIVED')),
+    creation_source VARCHAR(32) NOT NULL DEFAULT 'ADMIN_CREATED' CHECK (creation_source IN ('ADMIN_CREATED', 'GUARD_CREATED')),
+    created_by_id UUID REFERENCES users(id),
+    created_by_name VARCHAR(255),
+    registration_notes TEXT,
     registration_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    valid_from TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     valid_until TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- -----------------------------------------------------------------------------
+-- 4B. PERSON_PHOTOS TABLE (Multiple Facial Photographs per Person)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS person_photos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    person_id UUID NOT NULL REFERENCES persons(id) ON DELETE CASCADE,
+    photo_url TEXT NOT NULL,
+    is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+    quality_score FLOAT NOT NULL DEFAULT 0.95 CHECK (quality_score >= 0.0 AND quality_score <= 1.0),
+    capture_method VARCHAR(32) NOT NULL DEFAULT 'UPLOAD' CHECK (capture_method IN ('UPLOAD', 'WEBCAM', 'MOBILE_GUARD')),
+    uploaded_by_id UUID REFERENCES users(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- -----------------------------------------------------------------------------
+-- 4C. GUARD_PERMISSIONS TABLE (Admin-Controlled Granular Registration & Action Rights)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS guard_permissions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    guard_id UUID UNIQUE NOT NULL REFERENCES guards(id) ON DELETE CASCADE,
+    registration_mode VARCHAR(32) NOT NULL DEFAULT 'APPROVAL_REQUIRED'
+        CHECK (registration_mode IN ('APPROVAL_REQUIRED', 'DIRECT_PERMISSION')),
+    direct_record_policy VARCHAR(32) NOT NULL DEFAULT 'TEMPORARY_ONLY'
+        CHECK (direct_record_policy IN ('ACTIVE_LIMITED', 'TEMPORARY_ONLY', 'PENDING_FINAL_REVIEW')),
+    can_submit_registration_requests BOOLEAN NOT NULL DEFAULT TRUE,
+    can_create_person_directly BOOLEAN NOT NULL DEFAULT FALSE,
+    can_register_vehicles BOOLEAN NOT NULL DEFAULT FALSE,
+    can_capture_upload_photos BOOLEAN NOT NULL DEFAULT TRUE,
+    can_edit_own_created_records BOOLEAN NOT NULL DEFAULT FALSE,
+    can_record_entry_exit BOOLEAN NOT NULL DEFAULT TRUE,
+    can_view_limited_history BOOLEAN NOT NULL DEFAULT TRUE,
+    updated_by_admin_id UUID REFERENCES administrators(id),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- -----------------------------------------------------------------------------
+-- 4D. GATE_LOCATIONS TABLE (Campus Gate Checkpoints)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS gate_locations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    gate_code VARCHAR(32) UNIQUE NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    gate_type VARCHAR(32) NOT NULL CHECK (gate_type IN ('PEDESTRIAN', 'VEHICLE', 'MIXED', 'SERVICE')),
+    location_description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- -----------------------------------------------------------------------------
@@ -248,6 +305,9 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE administrators ENABLE ROW LEVEL SECURITY;
 ALTER TABLE guards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE persons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE person_photos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE guard_permissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE gate_locations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vehicles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE person_vehicle_mapping ENABLE ROW LEVEL SECURITY;
 ALTER TABLE face_biometrics ENABLE ROW LEVEL SECURITY;
@@ -258,11 +318,14 @@ ALTER TABLE access_permissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- 1. Administrators have unrestricted read & write on all tables
+-- 1. Administrators have unrestricted read & write on all 16 tables
 CREATE POLICY admin_all_users ON users FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_administrators ON administrators FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_guards ON guards FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_persons ON persons FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
+CREATE POLICY admin_all_person_photos ON person_photos FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
+CREATE POLICY admin_all_guard_permissions ON guard_permissions FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
+CREATE POLICY admin_all_gate_locations ON gate_locations FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_vehicles ON vehicles FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_mapping ON person_vehicle_mapping FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_requests ON registration_requests FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
@@ -271,6 +334,21 @@ CREATE POLICY admin_all_entry_exit ON entry_exit_logs FOR ALL USING (auth.jwt() 
 CREATE POLICY admin_all_permissions ON access_permissions FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_notifications ON notifications FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
 CREATE POLICY admin_all_audit ON audit_logs FOR ALL USING (auth.jwt() ->> 'role' IN ('ADMIN', 'SUPER_ADMIN'));
+
+-- Guards CAN read their own assigned guard_permissions row
+CREATE POLICY guard_read_own_permissions ON guard_permissions FOR SELECT
+    USING (auth.uid() = guard_id);
+
+-- Guards CAN insert persons ONLY when guard_permissions.can_create_person_directly = TRUE
+CREATE POLICY guard_direct_create_person ON persons FOR INSERT
+    WITH CHECK (
+        creation_source = 'GUARD_CREATED'
+        AND created_by_id = auth.uid()
+        AND EXISTS (
+            SELECT 1 FROM guard_permissions gp
+            WHERE gp.guard_id = auth.uid() AND gp.can_create_person_directly = TRUE
+        )
+    );
 
 -- 2. Guard Strict Restrictions:
 -- Guards CANNOT browse persons or vehicles directly

@@ -209,6 +209,24 @@ export interface RepositoryStatus {
   };
 }
 
+export type PersonAccessStatus =
+  | 'ACTIVE_AUTHORIZED'
+  | 'PENDING_APPROVAL'
+  | 'TEMPORARILY_AUTHORIZED'
+  | 'SUSPENDED'
+  | 'EXPIRED'
+  | 'REJECTED'
+  | 'ARCHIVED';
+
+export interface PersonPhoto {
+  id: string;
+  url: string;
+  is_primary: boolean;
+  quality_score: number;
+  capture_method: 'UPLOAD' | 'WEBCAM' | 'MOBILE_GUARD';
+  uploaded_at: string;
+}
+
 export interface RegisteredVehicle {
   id: string;
   license_plate: string;
@@ -217,26 +235,70 @@ export interface RegisteredVehicle {
   make_model?: string;
   color?: string;
   photo_url?: string;
+  ownership_details?: string;
   is_authorized: boolean;
   person_id?: string;
   owner_name?: string;
   registration_date?: string;
+  valid_until?: string;
 }
 
 export interface RegisteredPerson {
   id: string;
   person_code: string;
   full_name: string;
-  category: 'Faculty' | 'Student' | 'Staff' | 'Contractor' | 'Visitor' | 'VIP' | 'Delivery';
+  category: 'Faculty' | 'Student' | 'Staff' | 'Contractor' | 'Visitor' | 'VIP' | 'Delivery' | 'Temporary Staff';
   department: string;
   designation?: string;
   email?: string;
   phone?: string;
+  residential_address?: string;
+  id_document_type?: string;
+  id_document_number?: string;
   photo_url?: string;
-  account_status: 'ACTIVE' | 'SUSPENDED' | 'EXPIRED';
+  photos?: PersonPhoto[];
+  biometric_template_hash?: string;
+  account_status: PersonAccessStatus;
+  creation_source: 'ADMIN_CREATED' | 'GUARD_CREATED';
+  created_by_id: string;
+  created_by_name: string;
+  authorized_gates: string[];
+  allowed_entry_categories?: string[];
+  access_restrictions?: string;
+  registration_notes?: string;
   registration_date: string;
+  valid_from: string;
   valid_until: string;
   associated_vehicles?: RegisteredVehicle[];
+}
+
+export interface GuardPermissions {
+  guard_id: string;
+  registration_mode: 'APPROVAL_REQUIRED' | 'DIRECT_PERMISSION';
+  direct_record_policy: 'ACTIVE_LIMITED' | 'TEMPORARY_ONLY' | 'PENDING_FINAL_REVIEW';
+  can_submit_registration_requests: boolean;
+  can_create_person_directly: boolean;
+  can_register_vehicles: boolean;
+  can_capture_upload_photos: boolean;
+  can_edit_own_created_records: boolean;
+  can_record_entry_exit: boolean;
+  can_view_limited_history: boolean;
+  updated_by_admin_id?: string;
+  updated_at: string;
+}
+
+export interface GuardAccount {
+  id: string;
+  badge_number: string;
+  username: string;
+  full_name: string;
+  full_name_hi?: string;
+  assigned_gate_code: string;
+  assigned_gate_name: string;
+  shift_name: string;
+  account_status: 'ACTIVE' | 'SUSPENDED' | 'DEACTIVATED';
+  permissions: GuardPermissions;
+  created_at: string;
 }
 
 export interface RegistrationRequest {
@@ -244,15 +306,19 @@ export interface RegistrationRequest {
   request_code: string;
   submitted_by_guard_id: string;
   submitted_by_guard_name: string;
+  gate_id?: string;
   full_name: string;
   phone?: string;
-  category: 'Visitor' | 'Contractor' | 'VIP' | 'Delivery' | 'Temporary Staff';
+  category: 'Visitor' | 'Contractor' | 'VIP' | 'Delivery' | 'Temporary Staff' | 'Student' | 'Faculty' | 'Staff';
   purpose: string;
   expected_duration: string;
   face_photo_url?: string;
   vehicle_plate?: string;
+  vehicle_type?: 'Car' | 'Two-Wheeler' | 'Bus' | 'Commercial' | 'Emergency';
   vehicle_photo_url?: string;
   additional_notes?: string;
+  duplicate_warning?: string;
+  requested_info_prompt?: string;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'ADDITIONAL_INFO_REQUIRED';
   reviewed_by_admin_id?: string;
   review_notes?: string;
@@ -264,11 +330,13 @@ export type VerificationOutcomeCase =
   | 'CASE_1_VERIFIED'
   | 'CASE_2_PARTIALLY_VERIFIED'
   | 'CASE_3_NOT_VERIFIED'
-  | 'ACCESS_DENIED';
+  | 'ACCESS_EXPIRED'
+  | 'ACCESS_DENIED'
+  | 'MANUAL_REVIEW_REQUIRED';
 
 export interface VerificationResult {
   case_outcome: VerificationOutcomeCase;
-  status_title: 'VERIFIED' | 'PARTIALLY VERIFIED' | 'NOT VERIFIED';
+  status_title: 'VERIFIED' | 'PARTIALLY VERIFIED' | 'NOT VERIFIED' | 'ACCESS EXPIRED' | 'ACCESS DENIED' | 'MANUAL REVIEW REQUIRED';
   person?: {
     id: string;
     name: string;
@@ -277,6 +345,8 @@ export interface VerificationResult {
     photo_url?: string;
     face_matched: boolean;
     confidence_score: number;
+    creation_source?: 'ADMIN_CREATED' | 'GUARD_CREATED';
+    access_status?: PersonAccessStatus;
   };
   vehicle?: {
     license_plate: string;
@@ -285,7 +355,13 @@ export interface VerificationResult {
     is_associated_with_person: boolean;
     vehicle_type?: string;
   };
-  access_decision: 'AUTHORIZED' | 'PARTIALLY_AUTHORIZED' | 'NOT_AUTHORIZED' | 'ACCESS_DENIED';
+  access_decision:
+    | 'AUTHORIZED'
+    | 'PARTIALLY_AUTHORIZED'
+    | 'NOT_AUTHORIZED'
+    | 'ACCESS_EXPIRED'
+    | 'ACCESS_DENIED'
+    | 'MANUAL_REVIEW_REQUIRED';
   timestamp: string;
   failure_reason?: string;
 }

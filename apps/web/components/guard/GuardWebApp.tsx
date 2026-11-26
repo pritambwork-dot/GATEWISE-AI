@@ -38,6 +38,7 @@ import {
   VisitorPass,
   RegistrationRequest,
   VerificationResult,
+  GuardPermissions,
 } from '@/types';
 
 export interface GuardWebAppProps {
@@ -201,10 +202,20 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     shift: 'Day Shift (06:00 - 18:00)',
   });
 
+  // Live Guard Permissions synchronized from Admin Dashboard
+  const [guardPermissions, setGuardPermissions] = useState<GuardPermissions>(() =>
+    liveSync.getGuardPermissions('GRD-101')
+  );
+
   // -------------------------------------------------------------------------
   // VERIFICATION WORKFLOW & CAMERA
   // -------------------------------------------------------------------------
   const [currentScenario, setCurrentScenario] = useState<VerificationScenario>(PRESET_SCENARIOS[0]);
+  const [scanFaceInput, setScanFaceInput] = useState<string>('');
+  const [scanPlateInput, setScanPlateInput] = useState<string>('');
+  const [imageQualityMode, setImageQualityMode] = useState<'GOOD' | 'POOR' | 'MULTI_FACE'>('GOOD');
+  const [capturedFacePreview, setCapturedFacePreview] = useState<string | null>(null);
+
   const [verificationStage, setVerificationStage] = useState<VerificationStage>('idle');
   const [verifyingStep, setVerifyingStep] = useState<number>(0);
   const [currentResult, setCurrentResult] = useState<VerificationResult | null>(null);
@@ -236,10 +247,36 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   const [activitySearch, setActivitySearch] = useState('');
   const [activityFilter, setActivityFilter] = useState<'all' | 'permitted' | 'denied' | 'pending'>('all');
 
-  // Real-time synchronization
+  // Real-time synchronization (including instant Admin permission changes & revocation)
   useEffect(() => {
+    setGuardPermissions(liveSync.getGuardPermissions(activeOfficer.id));
+
     const unsubscribe = liveSync.subscribe((msg) => {
-      if (msg.type === 'VERIFICATION_EVENT') {
+      if (msg.type === 'GUARD_PERMISSIONS_UPDATED') {
+        if (msg.payload?.guard_id === activeOfficer.id) {
+          setGuardPermissions(msg.payload);
+          setLiveSyncToast(
+            msg.payload.can_create_person_directly
+              ? lang === 'en'
+                ? 'Admin granted Direct Person Creation permission (Mode 2).'
+                : 'व्यवस्थापक ने प्रत्यक्ष व्यक्ति पंजीकरण अनुमति दी (मोड 2)।'
+              : lang === 'en'
+              ? 'Registration mode set to Approval Required (Mode 1).'
+              : 'पंजीकरण मोड: व्यवस्थापक अनुमोदन आवश्यक (मोड 1)।'
+          );
+        }
+      } else if (msg.type === 'GUARD_STATUS_CHANGED') {
+        if (
+          (msg.payload?.id === activeOfficer.id || msg.payload?.badge_number === activeOfficer.id) &&
+          msg.payload?.account_status !== 'ACTIVE'
+        ) {
+          // Immediate access revocation
+          setIsAuthenticated(false);
+          sessionStorage.removeItem('gatewise_guard_auth');
+          sessionStorage.removeItem('gatewise_guard_session');
+          setAuthError('Your guard session was suspended/deactivated by an administrator.');
+        }
+      } else if (msg.type === 'VERIFICATION_EVENT') {
         setEvents(liveSync.getEvents());
         if (msg.source === 'COMMAND_CENTRE') {
           setLiveSyncToast(
@@ -251,22 +288,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       } else if (msg.type === 'VISITOR_REGISTERED' || msg.type === 'VISITOR_CHECKED_IN' || msg.type === 'VISITOR_CHECKED_OUT') {
         setVisitors(liveSync.getVisitors());
         setEvents(liveSync.getEvents());
-        setLiveSyncToast(
-          lang === 'en'
-            ? `Visitor pass updated: ${msg.payload.visitor_name}`
-            : `आगंतुक पास अपडेट किया गया: ${msg.payload.visitor_name}`
-        );
       } else if (
         msg.type === 'REGISTRATION_REQUEST_CREATED' ||
         msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
-        msg.type === 'REGISTRATION_REQUEST_REJECTED'
+        msg.type === 'REGISTRATION_REQUEST_REJECTED' ||
+        msg.type === 'REGISTRATION_REQUEST_INFO_REQUIRED'
       ) {
         setRequests(liveSync.getRegistrationRequests());
         if (msg.type === 'REGISTRATION_REQUEST_APPROVED') {
           setLiveSyncToast(
             lang === 'en'
-              ? `Admin Approved Registration: ${msg.payload.full_name}`
-              : `व्यवस्थापक ने पंजीकरण स्वीकृत किया: ${msg.payload.full_name}`
+              ? `Admin Approved & Added to People Database: ${msg.payload.full_name}`
+              : `व्यवस्थापक ने स्वीकृत किया: ${msg.payload.full_name}`
           );
         } else if (msg.type === 'REGISTRATION_REQUEST_REJECTED') {
           setLiveSyncToast(
@@ -274,12 +307,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               ? `Admin Rejected Request: ${msg.payload.full_name}`
               : `व्यवस्थापक ने अनुरोध अस्वीकृत किया: ${msg.payload.full_name}`
           );
+        } else if (msg.type === 'REGISTRATION_REQUEST_INFO_REQUIRED') {
+          setLiveSyncToast(
+            lang === 'en'
+              ? `More info requested for ${msg.payload.full_name}: ${msg.payload.requested_info_prompt}`
+              : `अतिरिक्त जानकारी आवश्यक: ${msg.payload.full_name}`
+          );
         }
       }
     });
 
     return () => unsubscribe();
-  }, [lang]);
+  }, [lang, activeOfficer.id]);
 
   // Clean auto-dismiss toast
   useEffect(() => {
@@ -315,7 +354,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   }, [verificationStage]);
 
   // -------------------------------------------------------------------------
-  // AUTHENTICATION LOGIC (Security Guard Roster)
+  // AUTHENTICATION LOGIC (Centralized Guard Roster + Immediate Revocation)
   // -------------------------------------------------------------------------
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -328,57 +367,75 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     setTimeout(() => {
       setAuthLoading(false);
 
-      if (id === 'GRD-101' && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
+      // 1. Check centralized admin-managed Guard Roster first
+      const centralGuard = liveSync.getGuardByBadgeOrUsername(id);
+      if (centralGuard) {
+        if (centralGuard.account_status !== 'ACTIVE') {
+          setAuthError(`Access revoked: Guard account is ${centralGuard.account_status}. Contact Administrator.`);
+          return;
+        }
+        if (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026' || pass.length >= 6) {
+          setIsAuthenticated(true);
+          sessionStorage.setItem('gatewise_guard_auth', 'true');
+          sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
+            guardId: centralGuard.badge_number,
+            guardName: centralGuard.full_name,
+            badgeNumber: centralGuard.badge_number,
+            stationId: centralGuard.assigned_gate_code,
+          }));
+          liveSync.setGuardSessionActive(centralGuard.badge_number, true);
+          setActiveOfficer({
+            id: centralGuard.badge_number,
+            name: centralGuard.full_name,
+            nameHi: centralGuard.full_name_hi || centralGuard.full_name,
+            gate: centralGuard.assigned_gate_name,
+            gateCode: centralGuard.assigned_gate_code,
+            shift: centralGuard.shift_name,
+          });
+          setGuardPermissions(centralGuard.permissions);
+          return;
+        }
+      }
+
+      // 2. Fallback default station guards (registers automatically into central roster on sign-in)
+      const stations: Record<string, { name: string; nameHi: string; gate: string; code: string; shift: string }> = {
+        'GRD-101': { name: 'Officer Vikram Singh', nameHi: 'अधिकारी विक्रम सिंह', gate: 'Main Gate 01', code: 'GATE-01', shift: 'Day Shift (06:00 - 18:00)' },
+        'GRD-102': { name: 'Officer Manoj Kumar', nameHi: 'अधिकारी मनोज कुमार', gate: 'Academic Core Gate 02', code: 'GATE-02', shift: 'Day Shift (06:00 - 18:00)' },
+        'GRD-103': { name: 'Officer Sunil Pradhan', nameHi: 'अधिकारी सुनील प्रधान', gate: 'Executive Housing Gate', code: 'GATE-03', shift: 'Night Shift (18:00 - 06:00)' },
+      };
+
+      if (stations[id] && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
+        const st = stations[id];
+        try {
+          liveSync.createGuard({
+            badge_number: id,
+            username: id.toLowerCase(),
+            full_name: st.name,
+            full_name_hi: st.nameHi,
+            assigned_gate_code: st.code,
+            assigned_gate_name: st.gate,
+            shift_name: st.shift,
+          }, 'GUARD_TERMINAL_AUTH');
+        } catch {}
+
         setIsAuthenticated(true);
         sessionStorage.setItem('gatewise_guard_auth', 'true');
         sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
-          guardId: 'GRD-101',
-          guardName: 'Officer Vikram Singh',
-          badgeNumber: 'GRD-101',
-          stationId: 'GATE-01'
+          guardId: id,
+          guardName: st.name,
+          badgeNumber: id,
+          stationId: st.code,
         }));
+        liveSync.setGuardSessionActive(id, true);
         setActiveOfficer({
-          id: 'GRD-101',
-          name: 'Officer Vikram Singh',
-          nameHi: 'अधिकारी विक्रम सिंह',
-          gate: 'Main Gate 01',
-          gateCode: 'GATE-01',
-          shift: 'Day Shift (06:00 - 18:00)',
+          id,
+          name: st.name,
+          nameHi: st.nameHi,
+          gate: st.gate,
+          gateCode: st.code,
+          shift: st.shift,
         });
-      } else if (id === 'GRD-102' && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
-        setIsAuthenticated(true);
-        sessionStorage.setItem('gatewise_guard_auth', 'true');
-        sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
-          guardId: 'GRD-102',
-          guardName: 'Officer Manoj Kumar',
-          badgeNumber: 'GRD-102',
-          stationId: 'GATE-02'
-        }));
-        setActiveOfficer({
-          id: 'GRD-102',
-          name: 'Officer Manoj Kumar',
-          nameHi: 'अधिकारी मनोज कुमार',
-          gate: 'Academic Core Gate 02',
-          gateCode: 'GATE-02',
-          shift: 'Day Shift (06:00 - 18:00)',
-        });
-      } else if (id === 'GRD-103' && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
-        setIsAuthenticated(true);
-        sessionStorage.setItem('gatewise_guard_auth', 'true');
-        sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
-          guardId: 'GRD-103',
-          guardName: 'Officer Sunil Pradhan',
-          badgeNumber: 'GRD-103',
-          stationId: 'GATE-03'
-        }));
-        setActiveOfficer({
-          id: 'GRD-103',
-          name: 'Officer Sunil Pradhan',
-          nameHi: 'अधिकारी सुनील प्रधान',
-          gate: 'Executive Housing Gate',
-          gateCode: 'GATE-03',
-          shift: 'Night Shift (18:00 - 06:00)',
-        });
+        setGuardPermissions(liveSync.getGuardPermissions(id));
       } else {
         setAuthError(
           lang === 'en'
@@ -386,10 +443,11 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             : 'खाता आईडी या पासवर्ड अमान्य है।'
         );
       }
-    }, 450);
+    }, 400);
   };
 
   const handleSignOut = () => {
+    liveSync.setGuardSessionActive(activeOfficer.id, false);
     setIsAuthenticated(false);
     sessionStorage.removeItem('gatewise_guard_auth');
     sessionStorage.removeItem('gatewise_guard_session');
@@ -400,7 +458,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   };
 
   // -------------------------------------------------------------------------
-  // VERIFICATION ENGINE EXECUTION (Section 3 & Section 9)
+  // VERIFICATION ENGINE EXECUTION (Queries Centralized People & Vehicle DB)
   // -------------------------------------------------------------------------
   const startFaceScan = () => {
     setVerificationStage('viewfinder_face');
@@ -414,6 +472,9 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     setVerificationStage('verifying');
     setVerifyingStep(0);
 
+    const subjectToVerify = scanFaceInput.trim() || currentScenario.personName;
+    const plateToVerify = scanPlateInput.trim() || currentScenario.vehiclePlate;
+
     const steps = [
       () => setVerifyingStep(1),
       () => setVerifyingStep(2),
@@ -421,8 +482,13 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       () => setVerifyingStep(4),
       () => {
         const result = liveSync.verifyIdentityAndVehicle(
-          currentScenario.personName,
-          currentScenario.vehiclePlate
+          subjectToVerify,
+          plateToVerify,
+          {
+            imageQuality: imageQualityMode === 'POOR' ? 'POOR' : 'GOOD',
+            faceCount: imageQualityMode === 'MULTI_FACE' ? 2 : 1,
+            gateCode: activeOfficer.gateCode,
+          }
         );
         setCurrentResult(result);
         setVerificationStage('outcome');
@@ -430,12 +496,16 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     ];
 
     steps.forEach((fn, idx) => {
-      setTimeout(fn, (idx + 1) * 220);
+      setTimeout(fn, (idx + 1) * 200);
     });
   };
 
   const handleConfirmDecision = (decision: 'GRANT_ENTRY' | 'DENY_ENTRY') => {
     if (!currentResult) return;
+    if (decision === 'GRANT_ENTRY' && !guardPermissions.can_record_entry_exit) {
+      setLiveSyncToast('Permission denied: Entry recording permission revoked by administrator.');
+      return;
+    }
 
     const outcome = currentResult.case_outcome;
     const isGranted = decision === 'GRANT_ENTRY';
@@ -454,7 +524,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         similarity_score: currentResult.person?.confidence_score || 0.98,
         decision_reason:
           outcome === 'CASE_1_VERIFIED'
-            ? `Person & Vehicle verified. Plate: ${currentResult.vehicle?.license_plate}. Access granted.`
+            ? `Person & Vehicle verified. Plate: ${currentResult.vehicle?.license_plate || 'Pedestrian'}. Access granted.`
             : outcome === 'CASE_2_PARTIALLY_VERIFIED'
             ? `Partially verified: Person recognized, vehicle unassociated. Decision: ${decision}`
             : currentResult.failure_reason || 'Verification event logged.',
@@ -469,8 +539,23 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   };
 
   // -------------------------------------------------------------------------
-  // NEW PERSON REGISTRATION REQUEST SUBMISSION (Section 4)
+  // NEW PERSON WORKFLOW A (REQUEST) vs WORKFLOW B (DIRECT CREATION)
   // -------------------------------------------------------------------------
+  const openRegistrationFlow = (prefillName?: string, prefillPlate?: string, prefillPurpose?: string) => {
+    if (!guardPermissions.can_submit_registration_requests && !guardPermissions.can_create_person_directly) {
+      setLiveSyncToast(
+        lang === 'en'
+          ? 'Permission Denied: Admin has disabled registration rights for this guard account.'
+          : 'अनुमति अस्वीकृत: व्यवस्थापक ने इस गार्ड के लिए पंजीकरण अधिकार अक्षम कर दिए हैं।'
+      );
+      return;
+    }
+    if (prefillName !== undefined) setRegFullName(prefillName);
+    if (prefillPlate !== undefined) setRegVehiclePlate(prefillPlate);
+    if (prefillPurpose !== undefined) setRegPurpose(prefillPurpose);
+    setRegModalOpen(true);
+  };
+
   const handleNewPersonSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!regFullName.trim()) return;
@@ -478,40 +563,66 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     setRegSubmitting(true);
 
     setTimeout(() => {
-      const created = liveSync.submitRegistrationRequest(
-        {
-          full_name: regFullName.trim(),
-          phone: regPhone.trim() || undefined,
-          category: regCategory,
-          purpose: regPurpose.trim() || 'Institutional Visit',
-          expected_duration: regDuration,
-          vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
-          additional_notes: regNotes.trim() || undefined,
-          guard_id: activeOfficer.id,
-          guard_name: activeOfficer.name,
-          face_photo_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
-        },
-        'GUARD_WEB_APP'
-      );
+      try {
+        if (guardPermissions.can_create_person_directly) {
+          // WORKFLOW B: Guard creates record directly in Central People Database
+          const created = liveSync.createPersonDirectlyByGuard({
+            full_name: regFullName.trim(),
+            phone: regPhone.trim() || undefined,
+            category: regCategory,
+            purpose: regPurpose.trim() || 'Institutional Visit',
+            expected_duration: regDuration,
+            vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
+            additional_notes: regNotes.trim() || undefined,
+            guard_id: activeOfficer.id,
+            guard_name: activeOfficer.name,
+            gate_id: activeOfficer.gateCode,
+            face_photo_url: capturedFacePreview || undefined,
+          });
+          setLiveSyncToast(
+            lang === 'en'
+              ? `Direct Record Created (${created.person_code}) [${created.account_status}]. Admin notified.`
+              : `प्रत्यक्ष रिकॉर्ड बनाया गया (${created.person_code})। व्यवस्थापक को सूचित किया गया।`
+          );
+          setActiveTab('verify');
+        } else {
+          // WORKFLOW A: Submit pending request for Admin approval
+          const created = liveSync.submitRegistrationRequest(
+            {
+              full_name: regFullName.trim(),
+              phone: regPhone.trim() || undefined,
+              category: regCategory,
+              purpose: regPurpose.trim() || 'Institutional Visit',
+              expected_duration: regDuration,
+              vehicle_plate: regVehiclePlate.trim() ? regVehiclePlate.trim().toUpperCase() : undefined,
+              additional_notes: regNotes.trim() || undefined,
+              guard_id: activeOfficer.id,
+              guard_name: activeOfficer.name,
+              gate_id: activeOfficer.gateCode,
+              face_photo_url: capturedFacePreview || undefined,
+            },
+            'GUARD_WEB_APP'
+          );
+          setRequests(liveSync.getRegistrationRequests());
+          setActiveTab('requests');
+          setLiveSyncToast(
+            lang === 'en'
+              ? `Request ${created.request_code} sent for Admin approval.`
+              : `अनुरोध ${created.request_code} व्यवस्थापक अनुमोदन हेतु भेजा गया।`
+          );
+        }
+      } catch (err: any) {
+        setLiveSyncToast(err.message);
+      }
 
-      setRequests(liveSync.getRegistrationRequests());
       setRegSubmitting(false);
       setRegModalOpen(false);
-      setActiveTab('requests');
-
-      // Reset form
       setRegFullName('');
       setRegPhone('');
       setRegPurpose('');
       setRegVehiclePlate('');
       setRegNotes('');
-
-      setLiveSyncToast(
-        lang === 'en'
-          ? `Registration request ${created.request_code} submitted for admin approval.`
-          : `पंजीकरण अनुरोध ${created.request_code} व्यवस्थापक अनुमोदन हेतु प्रस्तुत किया गया।`
-      );
-    }, 400);
+    }, 350);
   };
 
   // Today counters
@@ -1007,26 +1118,75 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
             {/* COMBINED SCANNING ACTION (Face + Vehicle in one session) */}
             <div
-              className={`p-4 rounded-[22px] border ${
+              className={`p-4 rounded-[22px] border space-y-3 ${
                 embedded ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#2F5BFF]" />
                   <span className="font-bold text-xs">
                     {lang === 'en' ? 'Combined Verification Session' : 'संयुक्त सत्यापन सत्र (चेहरा + वाहन)'}
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-[#12B5A6] font-semibold">
-                  {currentScenario.vehiclePlate}
+                <span
+                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                    guardPermissions.can_create_person_directly
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : 'bg-blue-50 text-[#2F5BFF] border-blue-200'
+                  }`}
+                >
+                  {guardPermissions.can_create_person_directly ? 'Mode 2: Direct Create' : 'Mode 1: Approval Req'}
                 </span>
               </div>
-              <p className={`text-xs ${embedded ? 'text-white/60' : 'text-black/50'} leading-relaxed mb-3`}>
-                {lang === 'en'
-                  ? `Simultaneously check subject (${currentScenario.personName}) and vehicle (${currentScenario.vehiclePlate}) against the administrator database.`
-                  : `व्यवस्थापक डेटाबेस से व्यक्ति (${currentScenario.personName}) और वाहन की एक साथ जांच करें।`}
-              </p>
+
+              {/* Direct Lookup / Captured Biometric & Plate Identifiers */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label className="block text-[10px] font-bold opacity-60 mb-1">
+                    {lang === 'en' ? 'Subject Name / ID' : 'व्यक्ति नाम / आईडी'}
+                  </label>
+                  <input
+                    type="text"
+                    value={scanFaceInput}
+                    onChange={(e) => setScanFaceInput(e.target.value)}
+                    placeholder={currentScenario.personName}
+                    className={`w-full px-2.5 py-2 rounded-xl border text-xs outline-none ${
+                      embedded ? 'bg-black/40 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold opacity-60 mb-1">
+                    {lang === 'en' ? 'Plate (blank = pedestrian)' : 'वाहन नंबर'}
+                  </label>
+                  <input
+                    type="text"
+                    value={scanPlateInput}
+                    onChange={(e) => setScanPlateInput(e.target.value.toUpperCase())}
+                    placeholder={currentScenario.vehiclePlate}
+                    className={`w-full px-2.5 py-2 rounded-xl border text-xs font-mono uppercase outline-none ${
+                      embedded ? 'bg-black/40 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Edge-Case Frame Condition Selector */}
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="opacity-60 font-semibold">Camera Quality Check:</span>
+                <select
+                  value={imageQualityMode}
+                  onChange={(e) => setImageQualityMode(e.target.value as any)}
+                  className={`px-2 py-1 rounded-lg border outline-none ${
+                    embedded ? 'bg-black/50 border-white/10 text-white' : 'bg-slate-50 border-black/10 text-slate-800'
+                  }`}
+                >
+                  <option value="GOOD">Optimal Single Face</option>
+                  <option value="POOR">Simulate Poor Lighting / Blur</option>
+                  <option value="MULTI_FACE">Simulate Multiple Faces in Frame</option>
+                </select>
+              </div>
 
               <button
                 type="button"
@@ -1042,18 +1202,28 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </button>
             </div>
 
-            {/* NEW PERSON REGISTRATION SHORTCUT */}
+            {/* NEW PERSON REGISTRATION SHORTCUT (Respects Admin Permission Mode) */}
             <button
               type="button"
-              onClick={() => setRegModalOpen(true)}
+              onClick={() => openRegistrationFlow(scanFaceInput || '', scanPlateInput || '')}
               className={`w-full p-3.5 rounded-[18px] border border-dashed flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
-                embedded
+                guardPermissions.can_create_person_directly
+                  ? 'border-amber-400/50 bg-amber-500/10 text-amber-700 hover:bg-amber-500/15'
+                  : embedded
                   ? 'border-white/20 bg-white/[0.02] text-white/80 hover:bg-white/[0.06]'
                   : 'border-[#2F5BFF]/30 bg-[#2F5BFF]/5 text-[#2F5BFF] hover:bg-[#2F5BFF]/10'
               }`}
             >
               <UserPlus className="w-4 h-4 text-[#12B5A6]" />
-              <span>{lang === 'en' ? '+ ADD NEW PERSON (Request Approval)' : '+ नया व्यक्ति जोड़ें (अनुमोदन अनुरोध)'}</span>
+              <span>
+                {guardPermissions.can_create_person_directly
+                  ? lang === 'en'
+                    ? '+ ADD NEW PERSON (Direct Creation Mode)'
+                    : '+ नया व्यक्ति जोड़ें (प्रत्यक्ष पंजीकरण)'
+                  : lang === 'en'
+                  ? '+ ADD NEW PERSON (Request Approval)'
+                  : '+ नया व्यक्ति जोड़ें (अनुमोदन अनुरोध)'}
+              </span>
             </button>
 
             {/* Today Counters Summary */}
@@ -1753,12 +1923,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   <Check className="w-10 h-10 stroke-[3]" />
                 </div>
               )}
-              {currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' && (
+              {(currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' || currentResult.case_outcome === 'MANUAL_REVIEW_REQUIRED') && (
                 <div className="w-20 h-20 rounded-full bg-[#FFB547] flex items-center justify-center text-black shadow-[0_0_35px_rgba(255,181,71,0.4)]">
                   <AlertTriangle className="w-10 h-10 stroke-[2.5]" />
                 </div>
               )}
-              {(currentResult.case_outcome === 'CASE_3_NOT_VERIFIED' || currentResult.case_outcome === 'ACCESS_DENIED') && (
+              {(currentResult.case_outcome === 'CASE_3_NOT_VERIFIED' || currentResult.case_outcome === 'ACCESS_DENIED' || currentResult.case_outcome === 'ACCESS_EXPIRED') && (
                 <div className="w-20 h-20 rounded-full bg-[#C93338] flex items-center justify-center text-white shadow-[0_0_35px_rgba(201,51,56,0.4)]">
                   <AlertCircle className="w-10 h-10 stroke-[3]" />
                 </div>
@@ -1772,7 +1942,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   className={`text-2xl font-extrabold tracking-tight ${
                     currentResult.case_outcome === 'CASE_1_VERIFIED'
                       ? 'text-[#1FB36B]'
-                      : currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED'
+                      : currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' || currentResult.case_outcome === 'MANUAL_REVIEW_REQUIRED'
                       ? 'text-[#FFB547]'
                       : 'text-[#C93338]'
                   }`}
@@ -1795,17 +1965,21 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
             {/* Structured Result Card matching Section 3 specifications */}
             <div className="my-3 p-4 rounded-[22px] bg-white/[0.04] border border-white/10 space-y-2.5 text-xs">
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-white/60">Person:</span>
-                <span className="font-bold">{currentResult.person?.name}</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-white/60">Face:</span>
-                <span className={currentResult.person?.face_matched ? 'text-[#1FB36B] font-bold' : 'text-[#C93338] font-bold'}>
-                  {currentResult.person?.face_matched ? 'Match found' : 'No match'}
-                  {currentResult.person?.confidence_score ? ` (${(currentResult.person.confidence_score * 100).toFixed(1)}%)` : ''}
-                </span>
-              </div>
+              {currentResult.person && (
+                <>
+                  <div className="flex justify-between py-1 border-b border-white/5">
+                    <span className="text-white/60">Person:</span>
+                    <span className="font-bold">{currentResult.person.name}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-white/5">
+                    <span className="text-white/60">Face:</span>
+                    <span className={currentResult.person.face_matched ? 'text-[#1FB36B] font-bold' : 'text-[#C93338] font-bold'}>
+                      {currentResult.person.face_matched ? 'Match found' : 'No match'}
+                      {currentResult.person.confidence_score ? ` (${(currentResult.person.confidence_score * 100).toFixed(1)}%)` : ''}
+                    </span>
+                  </div>
+                </>
+              )}
               {currentResult.vehicle?.license_plate && (
                 <>
                   <div className="flex justify-between py-1 border-b border-white/5">
@@ -1836,7 +2010,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   className={
                     currentResult.access_decision === 'AUTHORIZED'
                       ? 'text-[#1FB36B] font-bold'
-                      : currentResult.access_decision === 'PARTIALLY_AUTHORIZED'
+                      : currentResult.access_decision === 'PARTIALLY_AUTHORIZED' || currentResult.access_decision === 'MANUAL_REVIEW_REQUIRED'
                       ? 'text-[#FFB547] font-bold'
                       : 'text-[#C93338] font-bold'
                   }
@@ -1852,7 +2026,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </div>
             </div>
 
-            {/* ACTIONS ACCORDING TO CASE SPECIFICATIONS (Section 3 Prompt) */}
+            {/* ACTIONS ACCORDING TO CASE SPECIFICATIONS */}
             <div className="space-y-2 pb-2">
               {/* CASE 1 ACTIONS: Record Entry & Cancel */}
               {currentResult.case_outcome === 'CASE_1_VERIFIED' && (
@@ -1875,17 +2049,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 </>
               )}
 
-              {/* CASE 2 ACTIONS: Request Vehicle Registration & Deny Entry / Escalate */}
+              {/* CASE 2 ACTIONS: Request Vehicle Registration & Deny Entry */}
               {currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' && (
                 <>
                   <button
                     type="button"
                     onClick={() => {
-                      setRegFullName(currentResult.person?.name || '');
-                      setRegVehiclePlate(currentResult.vehicle?.license_plate || '');
-                      setRegPurpose('Vehicle addition for registered person');
-                      setRegModalOpen(true);
                       setVerificationStage('idle');
+                      openRegistrationFlow(
+                        currentResult.person?.name || '',
+                        currentResult.vehicle?.license_plate || '',
+                        'Vehicle addition for registered person'
+                      );
                     }}
                     className="w-full min-h-[50px] rounded-full bg-[#FFB547] text-black font-extrabold text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
@@ -1902,22 +2077,58 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 </>
               )}
 
-              {/* CASE 3 ACTIONS: Retry Scan, Request New Person Registration, Deny Entry */}
-              {(currentResult.case_outcome === 'CASE_3_NOT_VERIFIED' || currentResult.case_outcome === 'ACCESS_DENIED') && (
-                <>
+              {/* MANUAL REVIEW (POOR LIGHTING / MULTIPLE FACES) */}
+              {currentResult.case_outcome === 'MANUAL_REVIEW_REQUIRED' && (
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      setRegFullName(currentResult.person?.name !== 'UNKNOWN' ? currentResult.person?.name || '' : '');
-                      setRegVehiclePlate(currentResult.vehicle?.license_plate || '');
-                      setRegModalOpen(true);
-                      setVerificationStage('idle');
-                    }}
-                    className="w-full min-h-[50px] rounded-full bg-[#2F5BFF] text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    onClick={() => setVerificationStage('idle')}
+                    className="py-3 rounded-full bg-[#FFB547] text-black font-extrabold text-xs flex items-center justify-center gap-1 cursor-pointer"
                   >
-                    <UserPlus className="w-4 h-4" />
-                    <span>{lang === 'en' ? 'Request New Person Registration' : 'नया व्यक्ति पंजीकरण का अनुरोध करें'}</span>
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>{lang === 'en' ? 'Retry Scan' : 'पुनः प्रयास'}</span>
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => handleConfirmDecision('DENY_ENTRY')}
+                    className="py-3 rounded-full bg-[#C93338]/20 border border-[#C93338]/40 text-[#C93338] font-bold text-xs cursor-pointer"
+                  >
+                    <span>{lang === 'en' ? 'Escalate / Deny' : 'अस्वीकृत'}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* CASE 3 / EXPIRED / DENIED ACTIONS */}
+              {(currentResult.case_outcome === 'CASE_3_NOT_VERIFIED' ||
+                currentResult.case_outcome === 'ACCESS_DENIED' ||
+                currentResult.case_outcome === 'ACCESS_EXPIRED') && (
+                <>
+                  {currentResult.case_outcome === 'CASE_3_NOT_VERIFIED' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setVerificationStage('idle');
+                        openRegistrationFlow(
+                          currentResult.person?.name !== 'UNREGISTERED' && currentResult.person?.name !== 'Unrecognized Individual'
+                            ? currentResult.person?.name || ''
+                            : '',
+                          currentResult.vehicle?.license_plate || ''
+                        );
+                      }}
+                      className="w-full min-h-[50px] rounded-full bg-[#2F5BFF] text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>
+                        {guardPermissions.can_create_person_directly
+                          ? lang === 'en'
+                            ? 'Add New Person (Direct Mode)'
+                            : 'नया व्यक्ति जोड़ें (प्रत्यक्ष मोड)'
+                          : lang === 'en'
+                          ? 'Request New Person Registration'
+                          : 'नया व्यक्ति पंजीकरण का अनुरोध करें'}
+                      </span>
+                    </button>
+                  )}
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -1963,13 +2174,23 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             >
               <div className="flex items-center justify-between pb-2 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <UserPlus className="w-5 h-5 text-[#2F5BFF]" />
+                  <UserPlus className={`w-5 h-5 ${guardPermissions.can_create_person_directly ? 'text-amber-500' : 'text-[#2F5BFF]'}`} />
                   <div>
                     <h3 className="font-bold text-sm">
-                      {lang === 'en' ? 'Request New Person Registration' : 'नया व्यक्ति पंजीकरण अनुरोध'}
+                      {guardPermissions.can_create_person_directly
+                        ? lang === 'en'
+                          ? 'Direct Person Registration'
+                          : 'प्रत्यक्ष व्यक्ति पंजीकरण'
+                        : lang === 'en'
+                        ? 'Request New Person Registration'
+                        : 'नया व्यक्ति पंजीकरण अनुरोध'}
                     </h3>
                     <p className="text-[10px] opacity-60">
-                      {lang === 'en' ? 'Submits PENDING request for Admin approval' : 'व्यवस्थापक अनुमोदन हेतु लंबित अनुरोध'}
+                      {guardPermissions.can_create_person_directly
+                        ? `Mode 2 Authorized (${guardPermissions.direct_record_policy}) · Tagged GUARD_CREATED`
+                        : lang === 'en'
+                        ? 'Submits PENDING request for Admin approval'
+                        : 'व्यवस्थापक अनुमोदन हेतु लंबित अनुरोध'}
                     </p>
                   </div>
                 </div>
@@ -2108,7 +2329,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     {regSubmitting ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <span>{lang === 'en' ? 'Submit Registration Request' : 'पंजीकरण अनुरोध प्रस्तुत करें'}</span>
+                      <span>
+                        {guardPermissions.can_create_person_directly
+                          ? lang === 'en'
+                            ? 'Create Record in Central DB'
+                            : 'डेटाबेस में सीधे सहेजें'
+                          : lang === 'en'
+                          ? 'Submit Registration Request'
+                          : 'पंजीकरण अनुरोध प्रस्तुत करें'}
+                      </span>
                     )}
                   </button>
                 </div>

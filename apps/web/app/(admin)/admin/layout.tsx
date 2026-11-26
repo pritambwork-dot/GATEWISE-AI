@@ -36,7 +36,7 @@ interface NavGroup {
   items: NavItem[];
 }
 
-function getNavGroups(t: Translations): NavGroup[] {
+function getNavGroups(t: Translations, language: 'en' | 'hi' = 'en'): NavGroup[] {
   return [
     {
       title: t.navOperations,
@@ -48,7 +48,11 @@ function getNavGroups(t: Translations): NavGroup[] {
           label: t.securityGuards,
           icon: Shield,
           iconColor: 'text-[#6366F1]',
-          subItems: [{ href: '/admin/guards?tab=analytics', label: t.sessionAnalytics, paramTab: 'analytics' }],
+          subItems: [
+            { href: '/admin/guards?tab=permissions', label: language === 'hi' ? 'गार्ड अनुमतियाँ' : 'Guard Permissions', paramTab: 'permissions' },
+            { href: '/admin/guards?tab=guard_created', label: language === 'hi' ? 'गार्ड-निर्मित रिकॉर्ड' : 'Guard-Created Records', paramTab: 'guard_created' },
+            { href: '/admin/guards?tab=analytics', label: t.sessionAnalytics, paramTab: 'analytics' },
+          ],
         },
         { href: '/admin/verification', label: t.verificationCentre, icon: CheckCircle2, iconColor: 'text-[#14B8A6]' },
         { href: '/admin/audit', label: t.cryptographicAudit, icon: FileText, iconColor: 'text-[#F59E0B]' },
@@ -282,7 +286,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
-  const navGroups = getNavGroups(t);
+  const navGroups = getNavGroups(t, language);
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

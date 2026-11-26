@@ -67,7 +67,17 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const authHeader = request.headers.get('authorization') || '';
+    const isGuard = authHeader.toLowerCase().includes('guard');
     const body = await request.json();
+
+    if (isGuard && body.direct_permission_verified !== true) {
+      return NextResponse.json(
+        { success: false, detail: 'Forbidden: Guard requires Admin Direct Registration Permission.' },
+        { status: 403 }
+      );
+    }
+
     const {
       full_name,
       category = 'Visitor',
@@ -75,9 +85,11 @@ export async function POST(request: Request) {
       designation,
       email,
       phone,
-      photo_url = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
+      photo_url = '',
       valid_until = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
       associated_vehicles = [],
+      account_status = 'ACTIVE',
+      creation_source = isGuard ? 'GUARD_CREATED' : 'ADMIN_CREATED',
     } = body;
 
     if (!full_name || !full_name.trim()) {
@@ -87,9 +99,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const personCode = `${category.substring(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const personCode = `PER-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const newPerson: PersonEntry = {
+    const newPerson: any = {
       id: `per-${Date.now()}`,
       person_code: personCode,
       full_name: full_name.trim(),
@@ -99,7 +111,8 @@ export async function POST(request: Request) {
       email,
       phone,
       photo_url,
-      account_status: 'ACTIVE',
+      account_status,
+      creation_source,
       registration_date: new Date().toISOString(),
       valid_until,
       associated_vehicles,
@@ -121,4 +134,26 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(request: Request) {
+  const authHeader = request.headers.get('authorization') || '';
+  if (authHeader.toLowerCase().includes('guard')) {
+    return NextResponse.json({ detail: 'Forbidden: Guards cannot modify master database records.' }, { status: 403 });
+  }
+  const body = await request.json();
+  const { id, ...patch } = body;
+  PERSONS_STORE = PERSONS_STORE.map((p) => (p.id === id || p.person_code === id ? { ...p, ...patch } : p));
+  return NextResponse.json({ success: true });
+}
+
+export async function DELETE(request: Request) {
+  const authHeader = request.headers.get('authorization') || '';
+  if (authHeader.toLowerCase().includes('guard')) {
+    return NextResponse.json({ detail: 'Forbidden: Guards cannot delete records.' }, { status: 403 });
+  }
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+  PERSONS_STORE = PERSONS_STORE.filter((p) => p.id !== id && p.person_code !== id);
+  return NextResponse.json({ success: true });
 }

@@ -56,8 +56,27 @@ export default function InstitutionOverviewPage() {
   const [events, setEvents] = useState<VerificationEvent[]>([]);
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [activeVisitorsCount, setActiveVisitorsCount] = useState<number>(0);
+  const [totalPeopleCount, setTotalPeopleCount] = useState<number>(0);
+  const [totalVehiclesCount, setTotalVehiclesCount] = useState<number>(0);
+  const [guardCreatedCount, setGuardCreatedCount] = useState<number>(0);
+  const [activeGuardSessionsCount, setActiveGuardSessionsCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [lastRefreshedTime, setLastRefreshedTime] = useState<string>('not yet');
+
+  const syncLocalTelemetry = () => {
+    const localRequests = liveSync.getRegistrationRequests();
+    const localVisitors = liveSync.getVisitors();
+    const localPersons = liveSync.getPersons();
+    const localVehicles = liveSync.getVehicles();
+    const activeGuardIds = liveSync.getActiveGuardIds();
+
+    setPendingCount(localRequests.filter((r) => r.status === 'PENDING_APPROVAL').length);
+    setActiveVisitorsCount(localVisitors.filter((v) => v.status === 'CHECKED_IN').length);
+    setTotalPeopleCount(localPersons.length);
+    setTotalVehiclesCount(localVehicles.length);
+    setGuardCreatedCount(localPersons.filter((p) => p.creation_source === 'GUARD_CREATED').length);
+    setActiveGuardSessionsCount(activeGuardIds.length);
+  };
 
   const fetchOverviewData = async () => {
     setLoading(true);
@@ -68,8 +87,6 @@ export default function InstitutionOverviewPage() {
       ]);
 
       const localEvents = liveSync.getEvents();
-      const localRequests = liveSync.getRegistrationRequests();
-      const localVisitors = liveSync.getVisitors();
 
       if (metricsRes.status === 'fulfilled' && metricsRes.value) {
         setMetrics(metricsRes.value);
@@ -81,8 +98,7 @@ export default function InstitutionOverviewPage() {
         setEvents(localEvents);
       }
 
-      setPendingCount(localRequests.filter((r) => r.status === 'PENDING_APPROVAL').length);
-      setActiveVisitorsCount(localVisitors.filter((v) => v.status === 'CHECKED_IN').length);
+      syncLocalTelemetry();
       setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
     } catch {
       // Backend offline; retain live sync state
@@ -96,33 +112,17 @@ export default function InstitutionOverviewPage() {
   useEffect(() => {
     fetchOverviewData();
 
-    // Subscribe to live events from Guard Web App
+    // Subscribe to live events from Guard Web App & People Database updates
     const unsubscribe = liveSync.subscribe((msg) => {
       if (msg.type === 'VERIFICATION_EVENT') {
         const newEvent = msg.payload as VerificationEvent;
         setEvents((prev) => [newEvent, ...prev.slice(0, 24)]);
-        setMetrics((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            total_scans_today: (prev.total_scans_today || 0) + 1,
-            total_exceptions_today:
-              newEvent.guard_decision === 'DENY_ENTRY' || newEvent.outcome === 'IDENTIFIED_UNAUTHORIZED'
-                ? (prev.total_exceptions_today || 0) + 1
-                : prev.total_exceptions_today || 0,
-          };
-        });
+        syncLocalTelemetry();
         setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
         setLiveSyncNotice(`Field Terminal Event: ${newEvent.person_name || 'Subject'} (${newEvent.guard_decision}) at ${newEvent.gate_name}`);
         setTimeout(() => setLiveSyncNotice(null), 4000);
-      } else if (
-        msg.type === 'REGISTRATION_REQUEST_CREATED' ||
-        msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
-        msg.type === 'REGISTRATION_REQUEST_REJECTED'
-      ) {
-        setPendingCount(liveSync.getRegistrationRequests().filter((r) => r.status === 'PENDING_APPROVAL').length);
-      } else if (msg.type === 'VISITOR_CHECKED_IN' || msg.type === 'VISITOR_CHECKED_OUT') {
-        setActiveVisitorsCount(liveSync.getVisitors().filter((v) => v.status === 'CHECKED_IN').length);
+      } else {
+        syncLocalTelemetry();
       }
     });
 
@@ -152,7 +152,7 @@ export default function InstitutionOverviewPage() {
   const completedVerifs = events.length || totalScans;
   const pendingReviews = Math.max(metrics?.pending_enrollment_referrals ?? 0, pendingCount);
   const activeVisitors = Math.max(metrics?.active_visitors_on_campus ?? 0, activeVisitorsCount);
-  const activeGuards = new Set(events.map((e) => e.guard_id).filter(Boolean)).size;
+  const activeGuards = Math.max(activeGuardSessionsCount, new Set(events.map((e) => e.guard_id).filter(Boolean)).size);
   const activeGates = metrics?.active_gates_count ?? (metrics?.gates?.length || 0);
 
   const verificationPct = totalScans > 0 ? ((completedVerifs / totalScans) * 100).toFixed(1) + '%' : '—';
@@ -476,6 +476,31 @@ export default function InstitutionOverviewPage() {
           </p>
           <div className="mt-4 border-b border-dashed border-sky-200" />
         </div>
+      </motion.div>
+
+      {/* ── Central Registry Quick Summary (People, Vehicles, Guard-Created) ── */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link href="/admin/people" className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:border-[#2F5BFF]/40 transition-all flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-semibold text-slate-500">Registered People Database</span>
+            <div className="text-xl font-extrabold text-slate-900 mt-0.5">{totalPeopleCount}</div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400" />
+        </Link>
+        <Link href="/admin/vehicles" className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:border-[#2F5BFF]/40 transition-all flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-semibold text-slate-500">Registered Vehicles</span>
+            <div className="text-xl font-extrabold text-slate-900 mt-0.5">{totalVehiclesCount}</div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400" />
+        </Link>
+        <Link href="/admin/guards?tab=guard_created" className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:border-amber-400/60 transition-all flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-semibold text-slate-500">Directly Created Guard Records</span>
+            <div className="text-xl font-extrabold text-amber-600 mt-0.5">{guardCreatedCount}</div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400" />
+        </Link>
       </motion.div>
 
       {/* ── Blue Callout Banner ───────────────────────────────────── */}

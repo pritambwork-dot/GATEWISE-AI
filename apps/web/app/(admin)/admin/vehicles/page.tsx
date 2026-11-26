@@ -12,6 +12,8 @@ import {
   ShieldCheck,
   X
 } from 'lucide-react';
+import { liveSync } from '@/lib/services/live-sync';
+import { RegisteredVehicle } from '@/types';
 
 interface VehicleRecord {
   id: string;
@@ -26,22 +28,45 @@ interface VehicleRecord {
   status: 'ACTIVE' | 'EXPIRED' | 'PENDING';
 }
 
-const VEHICLES_STORAGE_KEY = 'gatewise_vehicles_v2';
+function toViewRecord(v: RegisteredVehicle): VehicleRecord {
+  return {
+    id: v.id,
+    plate: v.license_plate,
+    type: v.vehicle_type === 'Two-Wheeler' ? 'Two Wheeler' : 'Four Wheeler',
+    makeModel: v.make_model || 'Registered Vehicle',
+    ownerName: v.owner_name || 'Campus Member',
+    linkedPersonId: v.person_id || 'UNLINKED',
+    department: v.ownership_details || 'Central Registry',
+    accessGroup: 'Verified Gate Access',
+    validity: v.valid_until ? new Date(v.valid_until).toLocaleDateString() : 'Active',
+    status: v.is_authorized ? 'ACTIVE' : 'EXPIRED',
+  };
+}
 
 export default function CampusVehiclesPage() {
-  const [vehicles, setVehicles] = useState<VehicleRecord[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleRecord[]>(() =>
+    liveSync.getVehicles().map(toViewRecord)
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  // Load persisted vehicles without seeding demo data
+  // Subscribe to real-time central DB changes
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(VEHICLES_STORAGE_KEY);
-      if (raw) {
-        setVehicles(JSON.parse(raw));
+    const sync = () => setVehicles(liveSync.getVehicles().map(toViewRecord));
+    sync();
+    const unsub = liveSync.subscribe((msg) => {
+      if (
+        msg.type === 'VEHICLE_ADDED' ||
+        msg.type === 'PERSON_CREATED' ||
+        msg.type === 'PERSON_UPDATED' ||
+        msg.type === 'PERSON_DELETED' ||
+        msg.type === 'REGISTRATION_REQUEST_APPROVED'
+      ) {
+        sync();
       }
-    } catch {}
+    });
+    return () => unsub();
   }, []);
 
   // Register vehicle modal state
@@ -57,24 +82,18 @@ export default function CampusVehiclesPage() {
     e.preventDefault();
     if (!newPlate.trim() || !newOwner.trim()) return;
 
-    const newRec: VehicleRecord = {
-      id: `veh-${Date.now()}`,
-      plate: newPlate.trim().toUpperCase(),
-      type: newType,
-      makeModel: newMakeModel.trim() || 'Standard Campus Vehicle',
-      ownerName: newOwner.trim(),
-      linkedPersonId: newPersonId.trim() || 'FAC-NEW',
-      department: newDepartment,
-      accessGroup: 'General Campus Access',
-      validity: '31 Dec 2027',
-      status: 'ACTIVE',
-    };
+    liveSync.addVehicle({
+      license_plate: newPlate.trim().toUpperCase(),
+      vehicle_type: newType === 'Two Wheeler' ? 'Two-Wheeler' : 'Car',
+      make_model: newMakeModel.trim() || 'Standard Campus Vehicle',
+      owner_name: newOwner.trim(),
+      person_id: newPersonId.trim() || undefined,
+      ownership_details: newDepartment,
+      is_authorized: true,
+      valid_until: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    });
 
-    const updated = [newRec, ...vehicles];
-    setVehicles(updated);
-    try {
-      localStorage.setItem(VEHICLES_STORAGE_KEY, JSON.stringify(updated));
-    } catch {}
+    setVehicles(liveSync.getVehicles().map(toViewRecord));
     setRegisterModalOpen(false);
     setNewPlate('');
     setNewMakeModel('');

@@ -37,12 +37,38 @@ function EnrollmentContent() {
   const [approvalCategory, setApprovalCategory] = useState('');
   const [approvalStatus, setApprovalStatus] = useState('');
 
+  // Edit-before-approval & Request-Info Modals
+  const [editingRequest, setEditingRequest] = useState<RegistrationRequest | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCategory, setEditCategory] = useState<RegistrationRequest['category']>('Visitor');
+  const [editPlate, setEditPlate] = useState('');
+  const [editStatus, setEditStatus] = useState<'ACTIVE_AUTHORIZED' | 'TEMPORARILY_AUTHORIZED'>('TEMPORARILY_AUTHORIZED');
+  const [editNotes, setEditNotes] = useState('');
+
+  const [infoModalReq, setInfoModalReq] = useState<RegistrationRequest | null>(null);
+  const [infoPrompt, setInfoPrompt] = useState('');
+
+  // Bulk CSV Import state
+  const [bulkRows, setBulkRows] = useState<
+    Array<{
+      rowNum: number;
+      full_name: string;
+      category: string;
+      department: string;
+      phone: string;
+      vehicle_plate: string;
+      issue?: string;
+    }>
+  >([]);
+  const [bulkMessage, setBulkMessage] = useState<string | null>(null);
+
   useEffect(() => {
     const unsub = liveSync.subscribe((msg) => {
       if (
         msg.type === 'REGISTRATION_REQUEST_CREATED' ||
         msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
-        msg.type === 'REGISTRATION_REQUEST_REJECTED'
+        msg.type === 'REGISTRATION_REQUEST_REJECTED' ||
+        msg.type === 'REGISTRATION_REQUEST_INFO_REQUIRED'
       ) {
         setRequests(liveSync.getRegistrationRequests());
       }
@@ -51,7 +77,7 @@ function EnrollmentContent() {
   }, []);
 
   const handleApproveRequest = (id: string) => {
-    liveSync.approveRegistrationRequest(id, 'Approved by Institutional Administrator');
+    liveSync.approveRegistrationRequest(id, 'Approved & Added to Central People Database');
     setRequests(liveSync.getRegistrationRequests());
   };
 
@@ -60,11 +86,103 @@ function EnrollmentContent() {
     setRequests(liveSync.getRegistrationRequests());
   };
 
+  const openEditApproveModal = (req: RegistrationRequest) => {
+    setEditingRequest(req);
+    setEditName(req.full_name);
+    setEditCategory(req.category);
+    setEditPlate(req.vehicle_plate || '');
+    setEditStatus('TEMPORARILY_AUTHORIZED');
+    setEditNotes(req.review_notes || '');
+  };
+
+  const submitEditApprove = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRequest) return;
+    liveSync.approveRegistrationRequest(editingRequest.id, editNotes || 'Edited & Approved by Admin', {
+      full_name: editName.trim(),
+      category: editCategory,
+      vehicle_plate: editPlate.trim() ? editPlate.trim().toUpperCase() : undefined,
+      access_status: editStatus,
+    });
+    setRequests(liveSync.getRegistrationRequests());
+    setEditingRequest(null);
+  };
+
+  const submitInfoRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!infoModalReq || !infoPrompt.trim()) return;
+    liveSync.requestMoreInfoRegistrationRequest(infoModalReq.id, infoPrompt.trim());
+    setRequests(liveSync.getRegistrationRequests());
+    setInfoModalReq(null);
+    setInfoPrompt('');
+  };
+
+  const handleBulkCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBulkMessage(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = (reader.result as string) || '';
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      const parsed = lines.slice(1).map((line, i) => {
+        const cols = line.split(',').map((c) => c.trim());
+        const full_name = cols[0] || '';
+        const category = cols[1] || 'Visitor';
+        const department = cols[2] || 'General Campus';
+        const phone = cols[3] || '';
+        const vehicle_plate = cols[4] || '';
+        let issue = !full_name ? 'Missing full name' : liveSync.checkDuplicates(full_name, phone, vehicle_plate);
+        return { rowNum: i + 2, full_name, category, department, phone, vehicle_plate, issue };
+      });
+      setBulkRows(parsed);
+    };
+    reader.readAsText(file);
+  };
+
+  const confirmBulkImport = () => {
+    const valid = bulkRows.filter((r) => !r.issue);
+    valid.forEach((r) => {
+      liveSync.addPerson(
+        {
+          full_name: r.full_name,
+          category: (['Faculty', 'Student', 'Staff', 'Contractor', 'Visitor', 'VIP', 'Delivery'].includes(r.category)
+            ? r.category
+            : 'Visitor') as any,
+          department: r.department,
+          phone: r.phone,
+          account_status: 'ACTIVE_AUTHORIZED',
+          creation_source: 'ADMIN_CREATED',
+          created_by_id: 'ADM-001',
+          created_by_name: 'Bulk CSV Import',
+          authorized_gates: ['ALL'],
+          valid_from: new Date().toISOString(),
+          valid_until: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+          associated_vehicles: r.vehicle_plate
+            ? [
+                {
+                  id: `veh-bulk-${Date.now()}-${r.rowNum}`,
+                  license_plate: r.vehicle_plate.toUpperCase(),
+                  normalized_plate: r.vehicle_plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase(),
+                  vehicle_type: 'Car',
+                  is_authorized: true,
+                },
+              ]
+            : [],
+        },
+        'COMMAND_CENTRE'
+      );
+    });
+    setBulkMessage(`Imported ${valid.length} validated records into People Database (skipped ${bulkRows.length - valid.length} duplicates/errors).`);
+    setBulkRows([]);
+  };
+
   const filteredRequests = requests.filter((r) => {
     if (approvalStatus && approvalStatus !== 'all') {
       if (approvalStatus === 'Pending' && r.status !== 'PENDING_APPROVAL') return false;
       if (approvalStatus === 'Approved' && r.status !== 'APPROVED') return false;
       if (approvalStatus === 'Rejected' && r.status !== 'REJECTED') return false;
+      if (approvalStatus === 'InfoRequired' && r.status !== 'ADDITIONAL_INFO_REQUIRED') return false;
     }
     if (approvalCategory && approvalCategory !== 'all') {
       if (r.category.toLowerCase() !== approvalCategory.toLowerCase()) return false;
@@ -486,76 +604,100 @@ function EnrollmentContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={5} className="py-20 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
-                          <FileSpreadsheet className="w-6 h-6" />
+                  {bulkRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-20 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
+                            <FileSpreadsheet className="w-6 h-6" />
+                          </div>
+                          <h3 className="text-base font-bold text-slate-900 mb-1">No import batch</h3>
+                          <p className="text-xs text-slate-500 max-w-sm">
+                            Upload a CSV file below (columns: Full Name, Category, Department, Phone, Vehicle Plate) to preview and validate duplicates.
+                          </p>
                         </div>
-                        <h3 className="text-base font-bold text-slate-900 mb-1">No import batch</h3>
-                        <p className="text-xs text-slate-500 max-w-sm">
-                          Row-specific errors list here after a workbook is validated.
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ) : (
+                    bulkRows.map((row) => (
+                      <tr key={row.rowNum} className="border-b border-slate-100 text-xs">
+                        <td className="px-5 py-3 font-mono font-bold text-slate-700">#{row.rowNum}</td>
+                        <td className="px-5 py-3 font-semibold text-slate-900">{row.full_name || '—'}</td>
+                        <td className="px-5 py-3 text-slate-600">
+                          {row.issue ? <span className="text-rose-600 font-semibold">{row.issue}</span> : 'Valid row'}
+                        </td>
+                        <td className="px-5 py-3 text-slate-500">
+                          {row.vehicle_plate || 'No vehicle'} · {row.category}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              row.issue ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'
+                            }`}
+                          >
+                            {row.issue ? 'WARNING' : 'READY'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
             <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
-              <span>0 shown · count unavailable until the backend responds</span>
-              <div className="flex items-center gap-2">
-                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Previous</button>
-                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Next</button>
-              </div>
+              <span>{bulkRows.length} rows staged for validation</span>
+              {bulkRows.length > 0 && (
+                <button
+                  type="button"
+                  onClick={confirmBulkImport}
+                  className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#1FB36B] text-white hover:bg-emerald-700 cursor-pointer"
+                >
+                  Confirm Import ({bulkRows.filter((r) => !r.issue).length} Valid)
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Upload Workbook Card (Page 18 Bottom) */}
+          {bulkMessage && (
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+              {bulkMessage}
+            </div>
+          )}
+
+          {/* Upload Workbook Card */}
           <div className="bg-white rounded-2xl p-8 border border-dashed border-slate-300 text-center space-y-4">
             <h3 className="text-base font-bold text-slate-900">
-              Upload an institution-approved XLSX or CSV workbook
+              Upload an institution-approved CSV workbook
             </h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-              Rows are validated, checked for duplicates and mapped to photographs. Invalid rows are listed with their row number and reason. Nothing is skipped silently and nothing enrols automatically.
+              Rows are validated, checked for duplicates against existing People Database records, and staged for confirmation. Existing records are never overwritten silently.
             </p>
             <div className="flex items-center justify-center gap-3 pt-2">
-              <button className="px-5 py-2.5 rounded-full text-xs font-semibold bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs">
-                Choose workbook
-              </button>
-              <button className="px-4 py-2.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
-                Download blank template
-              </button>
+              <label className="px-5 py-2.5 rounded-full text-xs font-semibold bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs cursor-pointer">
+                <span>Choose CSV File</span>
+                <input type="file" accept=".csv" onChange={handleBulkCsvUpload} className="hidden" />
+              </label>
             </div>
           </div>
         </div>
       )}
 
-      {/* VIEW 3: Registration Approval (Page 19) */}
+      {/* VIEW 3: NEW REGISTRATION REQUESTS */}
       {activeTab === 'approvals' && (
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                  Registration approval
+                  NEW REGISTRATION REQUESTS
                 </h1>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
-                  Confirmed core capability
+                  Guard Workflow A Queue
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Approve or reject submitted records before they join the master registry.
+                Review guard-submitted person photographs and vehicle details. Approved requests automatically create authorized records in People Database.
               </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button className="px-4 py-2 rounded-full text-xs font-medium bg-[#C93338] text-white hover:bg-[#B3262B] transition-colors shadow-xs">
-                Reject selected
-              </button>
-              <button className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs">
-                Approve selected
-              </button>
             </div>
           </div>
 
@@ -567,7 +709,7 @@ function EnrollmentContent() {
                 type="text"
                 value={approvalSearch}
                 onChange={(e) => setApprovalSearch(e.target.value)}
-                placeholder="Search submissions by name or request ID"
+                placeholder="Search submissions by name, request ID, or plate"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
               />
             </div>
@@ -592,6 +734,7 @@ function EnrollmentContent() {
               <option value="Pending">Pending Approval</option>
               <option value="Approved">Approved</option>
               <option value="Rejected">Rejected</option>
+              <option value="InfoRequired">More Information Required</option>
             </select>
           </div>
 
@@ -602,12 +745,12 @@ function EnrollmentContent() {
                 <thead>
                   <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                     <th className="px-5 py-3">REQUEST ID</th>
-                    <th className="px-5 py-3">NAME & DETAILS</th>
+                    <th className="px-5 py-3">NAME, PHOTO &amp; DETAILS</th>
                     <th className="px-5 py-3">CATEGORY</th>
                     <th className="px-5 py-3">SUBMITTED BY</th>
                     <th className="px-5 py-3">VEHICLE</th>
                     <th className="px-5 py-3">STATUS</th>
-                    <th className="px-5 py-3 text-right">ADMIN DECISION</th>
+                    <th className="px-5 py-3 text-right">ADMIN ACTIONS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-xs">
@@ -629,18 +772,33 @@ function EnrollmentContent() {
                     filteredRequests.map((req) => (
                       <tr key={req.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-5 py-3.5 font-mono text-xs font-semibold text-slate-900">
-                          {req.request_code}
+                          <div>{req.request_code}</div>
+                          <div className="text-[10px] text-slate-400 font-normal">
+                            {new Date(req.submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
                         </td>
                         <td className="px-5 py-3.5">
-                          <div className="font-semibold text-slate-900">{req.full_name}</div>
-                          <div className="text-[11px] text-slate-500 mt-0.5">
-                            {req.purpose} · Duration: {req.expected_duration}
-                          </div>
-                          {req.phone && (
-                            <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                              {req.phone}
+                          <div className="flex items-center gap-2.5">
+                            {req.face_photo_url ? (
+                              <img src={req.face_photo_url} alt="" className="w-9 h-9 rounded-full object-cover border border-slate-200" />
+                            ) : (
+                              <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-xs">
+                                {req.full_name.charAt(0)}
+                              </div>
+                            )}
+                            <div>
+                              <div className="font-semibold text-slate-900">{req.full_name}</div>
+                              <div className="text-[11px] text-slate-500 mt-0.5">
+                                {req.purpose} · {req.expected_duration}
+                              </div>
+                              {req.phone && <div className="text-[10px] text-slate-400 font-mono">{req.phone}</div>}
+                              {req.duplicate_warning && (
+                                <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-[10px] font-bold text-amber-800">
+                                  ⚠ {req.duplicate_warning}
+                                </div>
+                              )}
                             </div>
-                          )}
+                          </div>
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
@@ -649,7 +807,7 @@ function EnrollmentContent() {
                         </td>
                         <td className="px-5 py-3.5 text-slate-600">
                           <div className="font-medium text-slate-800">{req.submitted_by_guard_name}</div>
-                          <div className="text-[10px] text-slate-400">{req.submitted_by_guard_id}</div>
+                          <div className="text-[10px] text-slate-400">{req.submitted_by_guard_id} · {req.gate_id || 'GATE-01'}</div>
                         </td>
                         <td className="px-5 py-3.5">
                           {req.vehicle_plate ? (
@@ -683,26 +841,40 @@ function EnrollmentContent() {
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right">
-                          {req.status === 'PENDING_APPROVAL' ? (
-                            <div className="inline-flex items-center gap-1.5">
+                          {req.status === 'PENDING_APPROVAL' || req.status === 'ADDITIONAL_INFO_REQUIRED' ? (
+                            <div className="inline-flex flex-wrap justify-end items-center gap-1.5">
                               <button
                                 onClick={() => handleApproveRequest(req.id)}
-                                className="px-3 py-1.5 rounded-lg bg-[#1FB36B] hover:bg-[#199457] text-white text-xs font-semibold shadow-xs flex items-center gap-1 cursor-pointer transition-all"
+                                className="px-2.5 py-1.5 rounded-lg bg-[#1FB36B] hover:bg-[#199457] text-white text-[11px] font-semibold shadow-xs flex items-center gap-1 cursor-pointer"
                               >
-                                <Check className="w-3.5 h-3.5" />
-                                <span>Approve</span>
+                                <Check className="w-3 h-3" />
+                                <span>Approve &amp; Create</span>
+                              </button>
+                              <button
+                                onClick={() => openEditApproveModal(req)}
+                                className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                              >
+                                Edit &amp; Approve
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setInfoModalReq(req);
+                                  setInfoPrompt('');
+                                }}
+                                className="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#2F5BFF] text-[11px] font-semibold cursor-pointer"
+                              >
+                                Request Info
                               </button>
                               <button
                                 onClick={() => handleRejectRequest(req.id)}
-                                className="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-[#C93338] border border-red-200 text-xs font-semibold cursor-pointer transition-all"
+                                className="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-[#C93338] border border-red-200 text-[11px] font-semibold cursor-pointer"
                               >
-                                <X className="w-3.5 h-3.5" />
-                                <span>Reject</span>
+                                Reject
                               </button>
                             </div>
                           ) : (
                             <span className="text-[11px] text-slate-400 italic">
-                              Decision recorded
+                              {req.review_notes || 'Decision recorded'}
                             </span>
                           )}
                         </td>
@@ -716,6 +888,65 @@ function EnrollmentContent() {
               <span>{filteredRequests.length} requests in queue</span>
             </div>
           </div>
+
+          {/* Edit Details Before Approval Modal */}
+          {editingRequest && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <form onSubmit={submitEditApprove} className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 text-xs">
+                <h3 className="font-bold text-base text-slate-900">Edit Details Before Approval ({editingRequest.request_code})</h3>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Full Name</label>
+                  <input type="text" required value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Category</label>
+                    <select value={editCategory} onChange={(e) => setEditCategory(e.target.value as any)} className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                      <option value="Visitor">Visitor</option>
+                      <option value="Contractor">Contractor</option>
+                      <option value="VIP">VIP</option>
+                      <option value="Delivery">Delivery</option>
+                      <option value="Temporary Staff">Temporary Staff</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Vehicle Plate</label>
+                    <input type="text" value={editPlate} onChange={(e) => setEditPlate(e.target.value.toUpperCase())} className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Access Permission Granted</label>
+                  <select value={editStatus} onChange={(e) => setEditStatus(e.target.value as any)} className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                    <option value="TEMPORARILY_AUTHORIZED">Temporarily Authorized (7 Days)</option>
+                    <option value="ACTIVE_AUTHORIZED">Active and Authorized</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Approval Notes</label>
+                  <input type="text" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} placeholder="Administrative verification note" className="w-full px-3 py-2 rounded-xl border border-slate-200" />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button type="button" onClick={() => setEditingRequest(null)} className="px-4 py-2 rounded-full border border-slate-200 font-semibold cursor-pointer">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-full bg-[#1FB36B] text-white font-bold cursor-pointer">Approve &amp; Create Record</button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Request More Info Modal */}
+          {infoModalReq && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <form onSubmit={submitInfoRequest} className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 text-xs">
+                <h3 className="font-bold text-base text-slate-900">Request Additional Information</h3>
+                <p className="text-slate-500">Ask guard {infoModalReq.submitted_by_guard_id} for missing documents or clearer photographs for {infoModalReq.full_name}.</p>
+                <textarea required rows={3} value={infoPrompt} onChange={(e) => setInfoPrompt(e.target.value)} placeholder="e.g. Please re-capture vehicle RC / clearer front photograph..." className="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none" />
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setInfoModalReq(null)} className="px-4 py-2 rounded-full border border-slate-200 font-semibold cursor-pointer">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-full bg-[#2F5BFF] text-white font-bold cursor-pointer">Send Info Request</button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       )}
 
