@@ -26,6 +26,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function initAuth() {
       if (typeof window === 'undefined') return;
+
+      // Check for Guard Session: Guards MUST NEVER be given Admin clearance
+      if (sessionStorage.getItem('gatewise_guard_auth') === 'true' && !localStorage.getItem('gatewise_admin_token')) {
+        const guardRaw = sessionStorage.getItem('gatewise_guard_session');
+        let guardData: any = null;
+        try { guardData = guardRaw ? JSON.parse(guardRaw) : null; } catch {}
+        setUser({
+          id: guardData?.guardId || 'GRD-101',
+          employee_id: guardData?.badgeNumber || 'GRD-101',
+          email: 'guard.station@iimsambalpur.ac.in',
+          full_name: guardData?.guardName || 'Officer Vikram Singh',
+          role: 'SECURITY_GUARD',
+          account_status: 'ACTIVE',
+          mfa_enabled: false
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const storedToken = localStorage.getItem('gatewise_admin_token');
       const storedUser = localStorage.getItem('gatewise_admin_user');
 

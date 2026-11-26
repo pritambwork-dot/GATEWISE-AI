@@ -331,6 +331,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       if (id === 'GRD-101' && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
         setIsAuthenticated(true);
         sessionStorage.setItem('gatewise_guard_auth', 'true');
+        sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
+          guardId: 'GRD-101',
+          guardName: 'Officer Vikram Singh',
+          badgeNumber: 'GRD-101',
+          stationId: 'GATE-01'
+        }));
         setActiveOfficer({
           id: 'GRD-101',
           name: 'Officer Vikram Singh',
@@ -342,6 +348,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       } else if (id === 'GRD-102' && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
         setIsAuthenticated(true);
         sessionStorage.setItem('gatewise_guard_auth', 'true');
+        sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
+          guardId: 'GRD-102',
+          guardName: 'Officer Manoj Kumar',
+          badgeNumber: 'GRD-102',
+          stationId: 'GATE-02'
+        }));
         setActiveOfficer({
           id: 'GRD-102',
           name: 'Officer Manoj Kumar',
@@ -353,6 +365,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       } else if (id === 'GRD-103' && (pass === 'guard123' || pass === 'gatewise' || pass === 'iim2026')) {
         setIsAuthenticated(true);
         sessionStorage.setItem('gatewise_guard_auth', 'true');
+        sessionStorage.setItem('gatewise_guard_session', JSON.stringify({
+          guardId: 'GRD-103',
+          guardName: 'Officer Sunil Pradhan',
+          badgeNumber: 'GRD-103',
+          stationId: 'GATE-03'
+        }));
         setActiveOfficer({
           id: 'GRD-103',
           name: 'Officer Sunil Pradhan',
@@ -374,6 +392,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   const handleSignOut = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('gatewise_guard_auth');
+    sessionStorage.removeItem('gatewise_guard_session');
     setSignOutModalOpen(false);
     setAccountId('');
     setPassword('');
