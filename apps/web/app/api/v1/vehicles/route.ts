@@ -13,44 +13,7 @@ interface VehicleEntry {
   registration_date: string;
 }
 
-let VEHICLES_STORE: VehicleEntry[] = [
-  {
-    id: 'veh-001',
-    license_plate: 'OD-15-AB-1234',
-    normalized_plate: 'OD15AB1234',
-    vehicle_type: 'Car',
-    make_model: 'Tata Safari XZA+',
-    color: 'Orcus White',
-    owner_id: 'per-001',
-    owner_name: 'Dr. Rahul Sharma (Faculty)',
-    is_authorized: true,
-    registration_date: '2023-07-20T10:00:00Z',
-  },
-  {
-    id: 'veh-002',
-    license_plate: 'OD-15-K-5521',
-    normalized_plate: 'OD15K5521',
-    vehicle_type: 'Car',
-    make_model: 'Honda City ZX',
-    color: 'Lunar Silver',
-    owner_id: 'per-002',
-    owner_name: 'Dr. Ananya Sharma (Dean Academics)',
-    is_authorized: true,
-    registration_date: '2022-08-10T11:00:00Z',
-  },
-  {
-    id: 'veh-003',
-    license_plate: 'OD-15-M-4012',
-    normalized_plate: 'OD15M4012',
-    vehicle_type: 'Two-Wheeler',
-    make_model: 'Yamaha FZ-S V4',
-    color: 'Racing Blue',
-    owner_id: 'per-003',
-    owner_name: 'Rahul Verma (Student)',
-    is_authorized: true,
-    registration_date: '2024-06-25T14:30:00Z',
-  },
-];
+let VEHICLES_STORE: VehicleEntry[] = [];
 
 function normalizePlate(plate: string): string {
   return plate.replace(/[^A-Za-z0-9]/g, '').toUpperCase();

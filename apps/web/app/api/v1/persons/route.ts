@@ -21,74 +21,7 @@ interface PersonEntry {
   }>;
 }
 
-let PERSONS_STORE: PersonEntry[] = [
-  {
-    id: 'per-001',
-    person_code: 'FAC-8041',
-    full_name: 'Dr. Rahul Sharma',
-    category: 'Faculty',
-    department: 'Operations & Strategy',
-    designation: 'Associate Professor',
-    email: 'rahul.sharma@iimsambalpur.ac.in',
-    phone: '+91 94370 22100',
-    photo_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
-    account_status: 'ACTIVE',
-    registration_date: '2023-07-15T09:00:00Z',
-    valid_until: '2028-06-30T23:59:59Z',
-    associated_vehicles: [
-      {
-        license_plate: 'OD-15-AB-1234',
-        vehicle_type: 'Car',
-        make_model: 'Tata Safari XZA+',
-        is_authorized: true,
-      },
-    ],
-  },
-  {
-    id: 'per-002',
-    person_code: 'FAC-8042',
-    full_name: 'Dr. Ananya Sharma',
-    category: 'Faculty',
-    department: 'Dean Academics',
-    designation: 'Professor & Dean',
-    email: 'ananya.sharma@iimsambalpur.ac.in',
-    phone: '+91 94370 55122',
-    photo_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
-    account_status: 'ACTIVE',
-    registration_date: '2022-08-01T09:00:00Z',
-    valid_until: '2027-07-31T23:59:59Z',
-    associated_vehicles: [
-      {
-        license_plate: 'OD-15-K-5521',
-        vehicle_type: 'Car',
-        make_model: 'Honda City ZX',
-        is_authorized: true,
-      },
-    ],
-  },
-  {
-    id: 'per-003',
-    person_code: 'STU-2024-089',
-    full_name: 'Rahul Verma',
-    category: 'Student',
-    department: 'MBA 2024-26',
-    designation: 'MBA Scholar',
-    email: 'rahul.v24@iimsambalpur.ac.in',
-    phone: '+91 98301 44510',
-    photo_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80',
-    account_status: 'ACTIVE',
-    registration_date: '2024-06-20T09:00:00Z',
-    valid_until: '2026-05-31T23:59:59Z',
-    associated_vehicles: [
-      {
-        license_plate: 'OD-15-M-4012',
-        vehicle_type: 'Two-Wheeler',
-        make_model: 'Yamaha FZ-S V4',
-        is_authorized: true,
-      },
-    ],
-  },
-];
+let PERSONS_STORE: PersonEntry[] = [];
 
 export async function GET(request: Request) {
   try {

@@ -54,6 +54,8 @@ export default function InstitutionOverviewPage() {
   const [chartRange, setChartRange] = useState<'today' | '7d' | '30d' | 'custom'>('today');
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [events, setEvents] = useState<VerificationEvent[]>([]);
+  const [pendingCount, setPendingCount] = useState<number>(0);
+  const [activeVisitorsCount, setActiveVisitorsCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [lastRefreshedTime, setLastRefreshedTime] = useState<string>('not yet');
 
@@ -62,133 +64,28 @@ export default function InstitutionOverviewPage() {
     try {
       const [metricsRes, eventsRes] = await Promise.allSettled([
         api.getDashboardMetrics(),
-        api.getRecentEvents(undefined, 8)
+        api.getRecentEvents(undefined, 25)
       ]);
+
+      const localEvents = liveSync.getEvents();
+      const localRequests = liveSync.getRegistrationRequests();
+      const localVisitors = liveSync.getVisitors();
 
       if (metricsRes.status === 'fulfilled' && metricsRes.value) {
         setMetrics(metricsRes.value);
       }
+
       if (eventsRes.status === 'fulfilled' && Array.isArray(eventsRes.value) && eventsRes.value.length > 0) {
         setEvents(eventsRes.value);
       } else {
-        // Fallback grounded sample events for IIM Sambalpur
-        setEvents([
-          {
-            id: 'evt-iim-101',
-            timestamp: new Date(Date.now() - 1000 * 60 * 3).toISOString(),
-            person_name: 'Dr. Ananya Sharma',
-            person_id: 'FAC-8041',
-            gate_id: 'gate-01',
-            gate_name: 'Main Gate 01',
-            guard_id: 'GRD-101',
-            guard_name: 'Vikram Singh',
-            similarity_score: 0.984,
-            outcome: 'VERIFIED_AUTHORIZED',
-            guard_decision: 'GRANT_ENTRY',
-            cryptographic_signature: 'sig-iim-9a2c1b',
-            sync_status: 'SYNCED',
-            candidate: {
-              identity_id: 'FAC-8041',
-              person_name: 'Dr. Ananya Sharma',
-              person_id: 'FAC-8041',
-              category: 'Faculty',
-              department: 'Operations & Strategy',
-              reference_photo_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-              similarity_score: 0.984
-            }
-          },
-          {
-            id: 'evt-iim-102',
-            timestamp: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-            person_name: 'Rahul Verma',
-            person_id: 'STU-2024-089',
-            gate_id: 'gate-02',
-            gate_name: 'Academic Core Gate 02',
-            guard_id: 'GRD-102',
-            guard_name: 'Manoj Kumar',
-            similarity_score: 0.962,
-            outcome: 'VERIFIED_AUTHORIZED',
-            guard_decision: 'GRANT_ENTRY',
-            cryptographic_signature: 'sig-iim-4c7d8e',
-            sync_status: 'SYNCED',
-            candidate: {
-              identity_id: 'STU-2024-089',
-              person_name: 'Rahul Verma',
-              person_id: 'STU-2024-089',
-              category: 'Student',
-              department: 'MBA 2024-26',
-              reference_photo_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-              similarity_score: 0.962
-            }
-          },
-          {
-            id: 'evt-iim-103',
-            timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-            person_name: 'Raghavan Iyer',
-            person_id: 'VIS-9021',
-            gate_id: 'gate-01',
-            gate_name: 'Main Gate 01',
-            guard_id: 'GRD-101',
-            guard_name: 'Vikram Singh',
-            similarity_score: 0.841,
-            outcome: 'REFERRED_SECURITY',
-            guard_decision: 'REFER_TO_VISITOR_DESK',
-            cryptographic_signature: 'sig-iim-7f1a3b',
-            sync_status: 'SYNCED',
-            candidate: {
-              identity_id: 'VIS-9021',
-              person_name: 'Raghavan Iyer',
-              person_id: 'VIS-9021',
-              category: 'Visitor',
-              department: 'Guest Lecture',
-              reference_photo_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-              similarity_score: 0.841
-            }
-          },
-          {
-            id: 'evt-iim-104',
-            timestamp: new Date(Date.now() - 1000 * 60 * 22).toISOString(),
-            person_name: 'Pooja Deshmukh',
-            person_id: 'RES-4412',
-            gate_id: 'gate-03',
-            gate_name: 'Hostel Perimeter Gate 03',
-            guard_id: 'GRD-103',
-            guard_name: 'Suresh Patel',
-            similarity_score: 0.975,
-            outcome: 'VERIFIED_AUTHORIZED',
-            guard_decision: 'GRANT_ENTRY',
-            cryptographic_signature: 'sig-iim-8e3d2c',
-            sync_status: 'SYNCED',
-            candidate: {
-              identity_id: 'RES-4412',
-              person_name: 'Pooja Deshmukh',
-              person_id: 'RES-4412',
-              category: 'Research Scholar',
-              department: 'Economics & Public Policy',
-              reference_photo_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-              similarity_score: 0.975
-            }
-          },
-          {
-            id: 'evt-iim-105',
-            timestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-            person_name: 'Unregistered Subject',
-            person_id: 'UNREG-004',
-            gate_id: 'gate-01',
-            gate_name: 'Main Gate 01',
-            guard_id: 'GRD-101',
-            guard_name: 'Vikram Singh',
-            similarity_score: 0.412,
-            outcome: 'DENIED_ENTRY',
-            guard_decision: 'DENY_ENTRY',
-            cryptographic_signature: 'sig-iim-1b9c4f',
-            sync_status: 'SYNCED'
-          }
-        ]);
+        setEvents(localEvents);
       }
+
+      setPendingCount(localRequests.filter((r) => r.status === 'PENDING_APPROVAL').length);
+      setActiveVisitorsCount(localVisitors.filter((v) => v.status === 'CHECKED_IN').length);
       setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
     } catch {
-      // Backend not yet ready or offline; keep clean empty/awaiting state
+      // Backend offline; retain live sync state
     } finally {
       setLoading(false);
     }
@@ -208,32 +105,24 @@ export default function InstitutionOverviewPage() {
           if (!prev) return prev;
           return {
             ...prev,
-            total_scans_today: (prev.total_scans_today || 1428) + 1,
+            total_scans_today: (prev.total_scans_today || 0) + 1,
             total_exceptions_today:
               newEvent.guard_decision === 'DENY_ENTRY' || newEvent.outcome === 'IDENTIFIED_UNAUTHORIZED'
-                ? (prev.total_exceptions_today || 18) + 1
-                : prev.total_exceptions_today || 18,
+                ? (prev.total_exceptions_today || 0) + 1
+                : prev.total_exceptions_today || 0,
           };
         });
         setLastRefreshedTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
         setLiveSyncNotice(`Field Terminal Event: ${newEvent.person_name || 'Subject'} (${newEvent.guard_decision}) at ${newEvent.gate_name}`);
         setTimeout(() => setLiveSyncNotice(null), 4000);
-      } else if (msg.type === 'VISITOR_CHECKED_IN') {
-        setMetrics((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            active_visitors_on_campus: (prev.active_visitors_on_campus || 42) + 1,
-          };
-        });
-      } else if (msg.type === 'VISITOR_CHECKED_OUT') {
-        setMetrics((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            active_visitors_on_campus: Math.max(0, (prev.active_visitors_on_campus || 42) - 1),
-          };
-        });
+      } else if (
+        msg.type === 'REGISTRATION_REQUEST_CREATED' ||
+        msg.type === 'REGISTRATION_REQUEST_APPROVED' ||
+        msg.type === 'REGISTRATION_REQUEST_REJECTED'
+      ) {
+        setPendingCount(liveSync.getRegistrationRequests().filter((r) => r.status === 'PENDING_APPROVAL').length);
+      } else if (msg.type === 'VISITOR_CHECKED_IN' || msg.type === 'VISITOR_CHECKED_OUT') {
+        setActiveVisitorsCount(liveSync.getVisitors().filter((v) => v.status === 'CHECKED_IN').length);
       }
     });
 
@@ -241,22 +130,41 @@ export default function InstitutionOverviewPage() {
   }, []);
 
   const formatEventTime = (isoString?: string) => {
-    if (!isoString) return '09:41 AM';
+    if (!isoString) return '—';
     const d = new Date(isoString);
-    if (isNaN(d.getTime())) return '09:41 AM';
+    if (isNaN(d.getTime())) return '—';
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Operational metrics with live fallback
-  const totalScans = metrics?.total_scans_today ?? 1428;
-  const completedVerifs = metrics ? Math.round(metrics.total_scans_today * 0.95) : 1384;
-  const verifiedIds = metrics ? Math.round(metrics.total_scans_today * 0.92) : 1320;
-  const authEntries = metrics ? Math.round(metrics.total_scans_today * 0.9) : 1296;
-  const deniedEntries = metrics?.total_exceptions_today ?? 18;
-  const pendingReviews = metrics?.pending_enrollment_referrals ?? 6;
-  const activeVisitors = metrics?.active_visitors_on_campus ?? 42;
-  const activeGuards = 14;
-  const activeGates = metrics?.active_gates_count ?? 4;
+  // Real metrics strictly derived from backend or live terminal telemetry (0 when idle)
+  const totalScans = Math.max(metrics?.total_scans_today ?? 0, events.length);
+  const verifiedIds = events.filter(
+    (e) => e.outcome === 'VERIFIED_AUTHORIZED' || e.outcome === 'CASE_1_VERIFIED'
+  ).length;
+  const authEntries = events.filter((e) => e.guard_decision === 'GRANT_ENTRY').length;
+  const deniedEntries = Math.max(
+    metrics?.total_exceptions_today ?? 0,
+    events.filter((e) => e.guard_decision === 'DENY_ENTRY' || e.outcome === 'DENIED_ENTRY' || e.outcome === 'ACCESS_DENIED').length
+  );
+  const referredEntries = events.filter(
+    (e) => e.outcome === 'REFERRED_SECURITY' || e.outcome === 'CASE_2_PARTIALLY_VERIFIED'
+  ).length;
+  const completedVerifs = events.length || totalScans;
+  const pendingReviews = Math.max(metrics?.pending_enrollment_referrals ?? 0, pendingCount);
+  const activeVisitors = Math.max(metrics?.active_visitors_on_campus ?? 0, activeVisitorsCount);
+  const activeGuards = new Set(events.map((e) => e.guard_id).filter(Boolean)).size;
+  const activeGates = metrics?.active_gates_count ?? (metrics?.gates?.length || 0);
+
+  const verificationPct = totalScans > 0 ? ((completedVerifs / totalScans) * 100).toFixed(1) + '%' : '—';
+  const deniedPct = totalScans > 0 ? ((deniedEntries / totalScans) * 100).toFixed(1) + '%' : '0%';
+  const permittedPct = totalScans > 0 ? ((authEntries / totalScans) * 100).toFixed(1) + '%' : '0%';
+
+  const formattedToday = new Date().toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 
   return (
     <motion.div
@@ -289,7 +197,7 @@ export default function InstitutionOverviewPage() {
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="text-xs text-slate-500 font-medium mb-1">
-            {language === 'hi' ? 'शुक्रवार, 13 नवंबर 2026 · आईआईएम संबलपुर परिसर डेस्क' : 'Friday, 13 November 2026 · IIM Sambalpur Campus Desk'}
+            {formattedToday} · {language === 'hi' ? 'आईआईएम संबलपुर परिसर डेस्क' : 'IIM Sambalpur Campus Desk'}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
             {t.overviewHeading}
@@ -406,7 +314,7 @@ export default function InstitutionOverviewPage() {
               {completedVerifs.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-              96.9%
+              {verificationPct}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
@@ -472,7 +380,7 @@ export default function InstitutionOverviewPage() {
               {deniedEntries.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
-              1.2%
+              {deniedPct}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
@@ -560,7 +468,7 @@ export default function InstitutionOverviewPage() {
               {activeGates.toLocaleString()}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-sky-50 text-sky-700 border border-sky-200">
-              {language === 'hi' ? '4 चेकपॉइंट' : '4 Checkpoints'}
+              {language === 'hi' ? `${activeGates} चेकपॉइंट` : `${activeGates} Checkpoints`}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
@@ -637,34 +545,56 @@ export default function InstitutionOverviewPage() {
 
             {/* Light Theme Activity Bar Graph */}
             <div className="h-64 rounded-xl border border-slate-100 bg-slate-50/50 p-4 flex flex-col justify-end">
-              <div className="flex items-end justify-between gap-3 h-48 px-2">
-                {[
-                  { time: '08:00', total: 60, auth: 55, den: 1 },
-                  { time: '09:00', total: 95, auth: 90, den: 2 },
-                  { time: '10:00', total: 85, auth: 82, den: 0 },
-                  { time: '11:00', total: 70, auth: 68, den: 1 },
-                  { time: '12:00', total: 50, auth: 49, den: 0 },
-                  { time: '13:00', total: 65, auth: 62, den: 1 },
-                  { time: '14:00', total: 80, auth: 77, den: 1 },
-                  { time: '15:00', total: 90, auth: 87, den: 2 },
-                ].map((slot, i) => (
-                  <div key={slot.time} className="flex-1 flex flex-col items-center gap-2 group">
-                    <div className="w-full flex items-end justify-center gap-1 h-36">
-                      <div
-                        style={{ height: `${slot.total}%` }}
-                        className="w-3 rounded-t-sm bg-[#2F5BFF]/85 group-hover:bg-[#2F5BFF] transition-all"
-                        title={`Total: ${slot.total}`}
-                      />
-                      <div
-                        style={{ height: `${slot.auth}%` }}
-                        className="w-3 rounded-t-sm bg-[#1FB36B]/85 group-hover:bg-[#1FB36B] transition-all"
-                        title={`Authorised: ${slot.auth}`}
-                      />
+              {events.length === 0 && (!metrics?.hourly_traffic || metrics.hourly_traffic.length === 0) ? (
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-2 text-slate-400">
+                  <Activity className="w-7 h-7 text-slate-300" />
+                  <p className="text-xs font-medium text-slate-600">
+                    {language === 'hi' ? 'आज कोई सत्यापन स्कैन दर्ज नहीं किया गया' : 'No verification scans recorded today'}
+                  </p>
+                  <p className="text-[11px] text-slate-400 max-w-xs">
+                    {language === 'hi' ? 'फ़ील्ड गार्ड टर्मिनल से लाइव स्कैन होते ही यहाँ गतिविधि ग्राफ़ दिखेगा।' : 'Activity bars will populate automatically as guards verify identities.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-end justify-between gap-3 h-48 px-2">
+                  {(metrics?.hourly_traffic && metrics.hourly_traffic.length > 0
+                    ? metrics.hourly_traffic.map((slot) => ({
+                        time: slot.hour,
+                        total: Math.min(100, Math.max(8, (slot.verified_entries + slot.denied_entries) * 10)),
+                        auth: Math.min(100, Math.max(8, slot.verified_entries * 10)),
+                      }))
+                    : ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'].map((hr) => {
+                        const hrPrefix = parseInt(hr.split(':')[0], 10);
+                        const slotEvts = events.filter((e) => {
+                          const h = new Date(e.timestamp).getHours();
+                          return h >= hrPrefix && h < hrPrefix + 2;
+                        });
+                        const authCount = slotEvts.filter((e) => e.guard_decision === 'GRANT_ENTRY').length;
+                        return {
+                          time: hr,
+                          total: slotEvts.length > 0 ? Math.min(100, slotEvts.length * 20) : 4,
+                          auth: authCount > 0 ? Math.min(100, authCount * 20) : 0,
+                        };
+                      })
+                  ).map((slot) => (
+                    <div key={slot.time} className="flex-1 flex flex-col items-center gap-2 group">
+                      <div className="w-full flex items-end justify-center gap-1 h-36">
+                        <div
+                          style={{ height: `${slot.total}%` }}
+                          className="w-3 rounded-t-sm bg-[#2F5BFF]/85 group-hover:bg-[#2F5BFF] transition-all"
+                          title={`Total: ${slot.total}`}
+                        />
+                        <div
+                          style={{ height: `${slot.auth}%` }}
+                          className="w-3 rounded-t-sm bg-[#1FB36B]/85 group-hover:bg-[#1FB36B] transition-all"
+                          title={`Authorised: ${slot.auth}`}
+                        />
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">{slot.time}</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono">{slot.time}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -680,27 +610,17 @@ export default function InstitutionOverviewPage() {
               <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
                 <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="40" fill="transparent" stroke="#F1F5F9" strokeWidth="14" />
-                  <circle
-                    cx="50" cy="50" r="40" fill="transparent"
-                    stroke="#1FB36B" strokeWidth="14"
-                    strokeDasharray="251.2"
-                    strokeDashoffset="25"
-                  />
-                  <circle
-                    cx="50" cy="50" r="40" fill="transparent"
-                    stroke="#2F5BFF" strokeWidth="14"
-                    strokeDasharray="251.2"
-                    strokeDashoffset="230"
-                  />
-                  <circle
-                    cx="50" cy="50" r="40" fill="transparent"
-                    stroke="#C93338" strokeWidth="14"
-                    strokeDasharray="251.2"
-                    strokeDashoffset="246"
-                  />
+                  {totalScans > 0 && (
+                    <circle
+                      cx="50" cy="50" r="40" fill="transparent"
+                      stroke="#1FB36B" strokeWidth="14"
+                      strokeDasharray="251.2"
+                      strokeDashoffset={251.2 - (251.2 * (authEntries / Math.max(1, totalScans)))}
+                    />
+                  )}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className="text-lg font-extrabold text-slate-900 block leading-none">90.8%</span>
+                  <span className="text-lg font-extrabold text-slate-900 block leading-none">{permittedPct}</span>
                   <span className="text-[9px] text-slate-400 uppercase font-mono mt-0.5">
                     {language === 'hi' ? 'स्वीकृत' : 'Permitted'}
                   </span>
@@ -713,25 +633,25 @@ export default function InstitutionOverviewPage() {
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#1FB36B]" /> {t.badgeAuthorized}
                   </span>
-                  <span className="text-slate-900 font-bold font-mono">1,296</span>
+                  <span className="text-slate-900 font-bold font-mono">{authEntries.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#C93338]" /> {t.badgeDenied}
                   </span>
-                  <span className="text-slate-900 font-bold font-mono">18</span>
+                  <span className="text-slate-900 font-bold font-mono">{deniedEntries.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" /> {t.badgeReferred}
                   </span>
-                  <span className="text-slate-900 font-bold font-mono">88</span>
+                  <span className="text-slate-900 font-bold font-mono">{referredEntries.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-amber-500" /> {language === 'hi' ? 'लंबित' : 'Pending'}
                   </span>
-                  <span className="text-slate-900 font-bold font-mono">6</span>
+                  <span className="text-slate-900 font-bold font-mono">{pendingReviews.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-700">
                   <span className="flex items-center gap-2">
@@ -756,33 +676,40 @@ export default function InstitutionOverviewPage() {
               </Link>
             </div>
 
-            {/* Real IIM Sambalpur Gate Posts */}
-            <div className="space-y-2.5">
-              {[
-                { name: 'Main Gate 01', id: 'GT-01', guards: 4, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
-                { name: 'Academic Core Gate 02', id: 'GT-02', guards: 3, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
-                { name: 'Hostel Perimeter Gate 03', id: 'GT-03', guards: 4, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
-                { name: 'Service Gate 04', id: 'GT-04', guards: 3, status: language === 'hi' ? 'सक्रिय प्रवेश' : 'Active Ingress' },
-              ].map((g) => (
-                <div key={g.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-6 h-6 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-mono text-[10px] font-bold">
-                      {g.id}
+            {/* Live Gate Checkpoints */}
+            {(!metrics?.gates || metrics.gates.length === 0) ? (
+              <div className="py-8 text-center space-y-2 border border-dashed border-slate-200 rounded-xl bg-slate-50/40">
+                <DoorClosed className="w-6 h-6 text-slate-300 mx-auto" />
+                <p className="text-xs font-semibold text-slate-600">
+                  {language === 'hi' ? 'कोई सक्रिय गेट चेकपॉइंट कनेक्ट नहीं है' : 'No active gate checkpoints connected'}
+                </p>
+                <p className="text-[11px] text-slate-400 px-4">
+                  {language === 'hi' ? 'नए चेकपॉइंट जोड़ने के लिए गेट प्रबंधन खोलें।' : 'Configure gates in Manage gates to stream checkpoint status.'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {metrics.gates.map((g) => (
+                  <div key={g.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-6 h-6 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-mono text-[10px] font-bold">
+                        {g.code}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-slate-900 block">{g.name}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {g.location}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="font-semibold text-slate-900 block">{g.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        {language === 'hi' ? `${g.guards} गार्ड तैनात` : `${g.guards} Guards on Shift`}
-                      </span>
-                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      {g.status === 'ACTIVE' ? (language === 'hi' ? 'सक्रिय' : 'Active') : g.status}
+                    </span>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {g.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
@@ -813,7 +740,21 @@ export default function InstitutionOverviewPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
-              {events.map((ev) => {
+              {events.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <Shield className="w-7 h-7 text-slate-300" />
+                      <p className="text-xs font-semibold text-slate-600">
+                        {language === 'hi' ? 'अभी तक कोई सत्यापन रिकॉर्ड नहीं हुआ है' : 'No verification events recorded yet'}
+                      </p>
+                      <p className="text-[11px] text-slate-400 max-w-md">
+                        {language === 'hi' ? 'जब गार्ड मोबाइल ऐप से किसी व्यक्ति या वाहन को सत्यापित करेगा, तो डेटा यहाँ दिखाई देगा।' : 'Live verification scans confirmed from authenticated mobile guard terminals will stream here automatically.'}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : events.map((ev) => {
                 const isAuth = ev.outcome === 'VERIFIED_AUTHORIZED';
                 const isDenied = ev.outcome === 'DENIED_ENTRY' || ev.outcome === 'ACCESS_DENIED';
                 const isReferred = ev.outcome === 'REFERRED_SECURITY' || ev.outcome === 'POTENTIAL_MATCH';

@@ -21,45 +21,8 @@ interface RegistrationRequestRecord {
   reviewed_at?: string;
 }
 
-// In-memory persistent store initialized with sample seed
-let REQUESTS_STORE: RegistrationRequestRecord[] = [
-  {
-    id: 'req-2026-001',
-    request_code: 'REQ-2026-0041',
-    submitted_by_guard_id: 'GRD-101',
-    submitted_by_guard_name: 'Officer Vikram Singh',
-    full_name: 'Alok Verma',
-    phone: '+91 98450 11200',
-    category: 'Visitor',
-    purpose: 'Academic Advisory Board Consultation',
-    expected_duration: 'Full Day',
-    face_photo_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-    vehicle_plate: 'OD-15-X-3321',
-    vehicle_photo_url: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=200&auto=format&fit=crop&q=80',
-    additional_notes: 'Host: Dean Academics Dr. Ananya Sharma. Arrived at Main Gate 01.',
-    status: 'PENDING_APPROVAL',
-    submitted_at: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-  },
-  {
-    id: 'req-2026-002',
-    request_code: 'REQ-2026-0042',
-    submitted_by_guard_id: 'GRD-102',
-    submitted_by_guard_name: 'Officer Manoj Kumar',
-    full_name: 'Prakash Jena',
-    phone: '+91 94371 88921',
-    category: 'Contractor',
-    purpose: 'Solar Grid Inverter Maintenance',
-    expected_duration: '3 Days',
-    face_photo_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-    vehicle_plate: 'OD-02-B-9988',
-    additional_notes: 'Estate Department approved vendor schedule.',
-    status: 'APPROVED',
-    reviewed_by_admin_id: 'ADM-001',
-    review_notes: 'Verified against Estate Directorate work order #EO-4412.',
-    submitted_at: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    reviewed_at: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-  },
-];
+// In-memory store (starts clean with zero demo records)
+let REQUESTS_STORE: RegistrationRequestRecord[] = [];
 
 export async function GET(request: Request) {
   try {

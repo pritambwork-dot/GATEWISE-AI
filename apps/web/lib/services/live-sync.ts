@@ -39,200 +39,11 @@ const STORAGE_KEYS = {
   LAST_SYNC: 'gatewise_last_sync_time',
 };
 
-export const INITIAL_REGISTRATION_REQUESTS: RegistrationRequest[] = [
-  {
-    id: 'req-2026-001',
-    request_code: 'REQ-2026-0041',
-    submitted_by_guard_id: 'GRD-101',
-    submitted_by_guard_name: 'Vikram Singh',
-    full_name: 'Alok Verma',
-    phone: '+91 98450 11200',
-    category: 'Visitor',
-    purpose: 'Advisory Council Review',
-    expected_duration: 'Full Day',
-    face_photo_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-    vehicle_plate: 'OD-15-X-3321',
-    vehicle_photo_url: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=200&auto=format&fit=crop&q=80',
-    additional_notes: 'Visiting Dean Academics Dr. Ananya Sharma. Host requested visitor gate pass.',
-    status: 'PENDING_APPROVAL',
-    submitted_at: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-  },
-  {
-    id: 'req-2026-002',
-    request_code: 'REQ-2026-0042',
-    submitted_by_guard_id: 'GRD-102',
-    submitted_by_guard_name: 'Manoj Kumar',
-    full_name: 'Prakash Jena',
-    phone: '+91 94371 88921',
-    category: 'Contractor',
-    purpose: 'Solar Grid Inverter Maintenance',
-    expected_duration: '3 Days',
-    face_photo_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-    vehicle_plate: 'OD-02-B-9988',
-    additional_notes: 'Estate Department approved vendor schedule.',
-    status: 'APPROVED',
-    reviewed_by_admin_id: 'ADM-001',
-    review_notes: 'Verified against Estate Directorate work order #EO-4412.',
-    submitted_at: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    reviewed_at: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-  },
-];
+export const INITIAL_REGISTRATION_REQUESTS: RegistrationRequest[] = [];
 
-// Grounded default seed records for IIM Sambalpur
-const INITIAL_EVENTS: VerificationEvent[] = [
-  {
-    id: 'evt-iim-001',
-    timestamp: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
-    gate_id: 'gate-01',
-    gate_name: 'Main Gate 01',
-    guard_id: 'GRD-101',
-    guard_name: 'Vikram Singh',
-    person_id: 'FAC-8041',
-    person_name: 'Dr. Ananya Sharma',
-    person_category: 'Faculty',
-    outcome: 'VERIFIED_AUTHORIZED',
-    guard_decision: 'GRANT_ENTRY',
-    similarity_score: 0.984,
-    decision_reason: 'YuNet 5-landmark isolated in 42ms. SFace 128-D cosine match: 0.984.',
-    cryptographic_signature: 'hmac-sha256-iim-9a2c1b48f0',
-    sync_status: 'SYNCED',
-    candidate: {
-      identity_id: 'FAC-8041',
-      person_name: 'Dr. Ananya Sharma',
-      person_id: 'FAC-8041',
-      category: 'Faculty',
-      department: 'Operations & Strategy, IIM Sambalpur',
-      reference_photo_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
-      similarity_score: 0.984,
-    },
-  },
-  {
-    id: 'evt-iim-002',
-    timestamp: new Date(Date.now() - 1000 * 60 * 6).toISOString(),
-    gate_id: 'gate-02',
-    gate_name: 'Academic Core Gate 02',
-    guard_id: 'GRD-102',
-    guard_name: 'Manoj Kumar',
-    person_id: 'STU-2024-089',
-    person_name: 'Rahul Verma',
-    person_category: 'Student',
-    outcome: 'VERIFIED_AUTHORIZED',
-    guard_decision: 'GRANT_ENTRY',
-    similarity_score: 0.962,
-    decision_reason: 'Enrolled MBA 2024-26 scholar. Roster verified on edge cache.',
-    cryptographic_signature: 'hmac-sha256-iim-4c7d8e90a1',
-    sync_status: 'SYNCED',
-    candidate: {
-      identity_id: 'STU-2024-089',
-      person_name: 'Rahul Verma',
-      person_id: 'STU-2024-089',
-      category: 'Student',
-      department: 'MBA 2024-26, IIM Sambalpur',
-      reference_photo_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
-      similarity_score: 0.962,
-    },
-  },
-  {
-    id: 'evt-iim-003',
-    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
-    gate_id: 'gate-01',
-    gate_name: 'Main Gate 01',
-    guard_id: 'GRD-101',
-    guard_name: 'Vikram Singh',
-    person_id: 'VIS-2024-031',
-    person_name: 'Raghavan Iyer',
-    person_category: 'Visitor',
-    outcome: 'VERIFIED_AUTHORIZED',
-    guard_decision: 'GRANT_ENTRY',
-    similarity_score: 0.941,
-    decision_reason: 'Executive Guest — MDP Programme. Host: Dean Academics.',
-    cryptographic_signature: 'hmac-sha256-iim-8f12a34b5c',
-    sync_status: 'SYNCED',
-    candidate: {
-      identity_id: 'VIS-2024-031',
-      person_name: 'Raghavan Iyer',
-      person_id: 'VIS-2024-031',
-      category: 'Visitor',
-      department: 'Executive MDP Guest',
-      reference_photo_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
-      similarity_score: 0.941,
-    },
-  },
-  {
-    id: 'evt-iim-004',
-    timestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
-    gate_id: 'gate-03',
-    gate_name: 'Executive Housing Gate',
-    guard_id: 'GRD-103',
-    guard_name: 'Sunil Pradhan',
-    person_id: 'UNK-9102',
-    person_name: 'Unrecognized Subject',
-    person_category: 'Unknown',
-    outcome: 'IDENTIFIED_UNAUTHORIZED',
-    guard_decision: 'DENY_ENTRY',
-    similarity_score: 0.312,
-    decision_reason: 'Subject not in active campus roster. Cosine similarity 0.312 below threshold (0.72).',
-    cryptographic_signature: 'hmac-sha256-iim-2e3f4a5b6c',
-    sync_status: 'SYNCED',
-  },
-];
+const INITIAL_EVENTS: VerificationEvent[] = [];
 
-const INITIAL_VISITORS: VisitorPass[] = [
-  {
-    id: 'vis-01',
-    pass_code: 'IIM-VP-4821',
-    visitor_name: 'Amitabh Sengupta',
-    phone: '+91 98301 22891',
-    id_type: 'Aadhaar Card',
-    id_number: '•••• •••• 9812',
-    host_name: 'Prof. Mahadeo Jaiswal (Director)',
-    host_department: 'Directorate, IIM Sambalpur',
-    purpose: 'Academic Advisory Board Meeting',
-    valid_date: new Date().toISOString().split('T')[0],
-    valid_until_time: '18:00',
-    status: 'EXPECTED',
-    gate_id: 'gate-01',
-    created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-  },
-  {
-    id: 'vis-02',
-    pass_code: 'IIM-VP-4822',
-    visitor_name: 'Priyanka Nambiar',
-    phone: '+91 94370 11204',
-    id_type: 'PAN Card',
-    id_number: 'ABCDE1234F',
-    host_name: 'Dr. Ananya Sharma',
-    host_department: 'Strategic Management',
-    purpose: 'Executive Research Workshop',
-    valid_date: new Date().toISOString().split('T')[0],
-    valid_until_time: '17:30',
-    status: 'CHECKED_IN',
-    check_in_at: new Date(Date.now() - 1000 * 60 * 40).toISOString(),
-    check_in_time: '10:15 AM',
-    gate_id: 'gate-01',
-    created_at: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-  },
-  {
-    id: 'vis-03',
-    pass_code: 'IIM-VP-4823',
-    visitor_name: 'Kavita Das',
-    phone: '+91 97760 88210',
-    id_type: 'Driving License',
-    id_number: 'OD-15-2019-0091',
-    host_name: 'Campus Infrastructure Dept',
-    host_department: 'Estate & Operations',
-    purpose: 'Fiber Optic Perimeter Audit',
-    valid_date: new Date().toISOString().split('T')[0],
-    valid_until_time: '16:00',
-    status: 'CHECKED_OUT',
-    check_in_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-    check_in_time: '08:00 AM',
-    check_out_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    check_out_time: '10:30 AM',
-    gate_id: 'gate-02',
-    created_at: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
-  },
-];
+const INITIAL_VISITORS: VisitorPass[] = [];
 
 class LiveSyncService {
   private channel: BroadcastChannel | null = null;
@@ -271,6 +82,14 @@ class LiveSyncService {
 
   private initStorage() {
     if (!this.isClient) return;
+    const CLEAN_VERSION = 'v2-no-demo-data';
+    if (localStorage.getItem('gatewise_sync_version') !== CLEAN_VERSION) {
+      localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify([]));
+      localStorage.setItem(STORAGE_KEYS.VISITORS, JSON.stringify([]));
+      localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify([]));
+      localStorage.setItem('gatewise_sync_version', CLEAN_VERSION);
+      return;
+    }
     if (!localStorage.getItem(STORAGE_KEYS.EVENTS)) {
       localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(INITIAL_EVENTS));
     }

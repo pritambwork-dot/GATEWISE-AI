@@ -599,7 +599,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               {/* Vector Badge */}
               <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-[11px] font-mono text-slate-700">
                 <span>{t.sfaceScore}:</span>
-                <span className="text-emerald-700 font-bold">0.984</span>
+                <span className="text-slate-900 font-bold">Ready</span>
               </div>
 
               {/* Notification Bell */}
@@ -611,7 +611,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                   aria-label="Notifications"
                 >
                   <Bell className="w-4 h-4" />
-                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#2F5BFF]" />
                 </button>
 
                 {notifOpen && (
@@ -625,9 +624,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                         View all
                       </Link>
                     </div>
-                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600 space-y-1">
-                      <div className="font-semibold text-slate-900">Perimeter Verification Active</div>
-                      <p className="text-[11px] text-slate-500">IIM Sambalpur 4 gate checkpoints synchronized with HMAC ledger.</p>
+                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-500 text-center">
+                      <div className="font-semibold text-slate-700 mb-0.5">No unread notifications</div>
+                      <p className="text-[11px] text-slate-400">Real-time guard referrals and perimeter alerts will appear here.</p>
                     </div>
                   </div>
                 )}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Car,
   Search,
@@ -26,74 +26,23 @@ interface VehicleRecord {
   status: 'ACTIVE' | 'EXPIRED' | 'PENDING';
 }
 
-const INITIAL_VEHICLES: VehicleRecord[] = [
-  {
-    id: 'veh-001',
-    plate: 'OD-15-AB-1234',
-    type: 'Four Wheeler',
-    makeModel: 'Tata Safari XZA+ (Orcus White)',
-    ownerName: 'Dr. Rahul Sharma',
-    linkedPersonId: 'FAC-8041',
-    department: 'Operations & Strategy',
-    accessGroup: 'Faculty Perimeter',
-    validity: '30 Jun 2028',
-    status: 'ACTIVE',
-  },
-  {
-    id: 'veh-002',
-    plate: 'OD-15-K-5521',
-    type: 'Four Wheeler',
-    makeModel: 'Honda City ZX (Lunar Silver)',
-    ownerName: 'Dr. Ananya Sharma',
-    linkedPersonId: 'FAC-8042',
-    department: 'Dean Academics',
-    accessGroup: 'Directorate & Academic',
-    validity: '31 Jul 2027',
-    status: 'ACTIVE',
-  },
-  {
-    id: 'veh-003',
-    plate: 'OD-15-M-4012',
-    type: 'Two Wheeler',
-    makeModel: 'Yamaha FZ-S V4 (Racing Blue)',
-    ownerName: 'Rahul Verma',
-    linkedPersonId: 'STU-2024-089',
-    department: 'MBA 2024-26',
-    accessGroup: 'Student Resident Zone',
-    validity: '31 May 2026',
-    status: 'ACTIVE',
-  },
-  {
-    id: 'veh-004',
-    plate: 'OD-15-Q-8890',
-    type: 'Four Wheeler',
-    makeModel: 'Hyundai Creta SX (Titan Grey)',
-    ownerName: 'Vikram Patel',
-    linkedPersonId: 'STU-2024-112',
-    department: 'MBA 2024-26',
-    accessGroup: 'Student Resident Zone',
-    validity: '15 Oct 2025 (Expired)',
-    status: 'EXPIRED',
-  },
-  {
-    id: 'veh-005',
-    plate: 'OD-15-Z-9001',
-    type: 'Four Wheeler',
-    makeModel: 'Toyota Innova Crysta (Silver)',
-    ownerName: 'Raghavan Iyer',
-    linkedPersonId: 'VIS-2024-031',
-    department: 'Executive MDP Guest',
-    accessGroup: 'Visitor Main Gate',
-    validity: 'Today 18:00',
-    status: 'ACTIVE',
-  },
-];
+const VEHICLES_STORAGE_KEY = 'gatewise_vehicles_v2';
 
 export default function CampusVehiclesPage() {
-  const [vehicles, setVehicles] = useState<VehicleRecord[]>(INITIAL_VEHICLES);
+  const [vehicles, setVehicles] = useState<VehicleRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+
+  // Load persisted vehicles without seeding demo data
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(VEHICLES_STORAGE_KEY);
+      if (raw) {
+        setVehicles(JSON.parse(raw));
+      }
+    } catch {}
+  }, []);
 
   // Register vehicle modal state
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
@@ -121,7 +70,11 @@ export default function CampusVehiclesPage() {
       status: 'ACTIVE',
     };
 
-    setVehicles([newRec, ...vehicles]);
+    const updated = [newRec, ...vehicles];
+    setVehicles(updated);
+    try {
+      localStorage.setItem(VEHICLES_STORAGE_KEY, JSON.stringify(updated));
+    } catch {}
     setRegisterModalOpen(false);
     setNewPlate('');
     setNewMakeModel('');
@@ -208,8 +161,10 @@ export default function CampusVehiclesPage() {
             <span className="w-2 h-2 rounded-full bg-[#2F5BFF]" />
             <span className="text-xs font-medium text-slate-700">ANPR OCR Accuracy</span>
           </div>
-          <div className="my-3 text-2xl font-bold text-slate-900">99.4%</div>
-          <p className="text-[11px] text-slate-500">Edge plate normalizer active</p>
+          <div className="my-3 text-2xl font-bold text-slate-900">
+            {vehicles.length > 0 ? 'Active' : '—'}
+          </div>
+          <p className="text-[11px] text-slate-500">Edge plate normalizer ready</p>
         </div>
       </div>
 
@@ -261,43 +216,57 @@ export default function CampusVehiclesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((veh) => (
-                <tr key={veh.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-5 py-3.5 font-mono font-bold text-slate-900">
-                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
-                      <Car className="w-3.5 h-3.5 text-[#2F5BFF]" />
-                      <span>{veh.plate}</span>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-16 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <Car className="w-8 h-8 text-slate-300" />
+                      <p className="text-sm font-semibold text-slate-700">No campus vehicles registered yet</p>
+                      <p className="text-xs text-slate-400 max-w-sm">
+                        Vehicles added via the Register vehicle modal or synchronized from the backend registry will appear here.
+                      </p>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 font-medium text-slate-800">
-                    {veh.makeModel}
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-600">
-                    {veh.type}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="font-semibold text-slate-900">{veh.ownerName}</div>
-                    <div className="font-mono text-[10px] text-slate-400">{veh.linkedPersonId}</div>
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-600">
-                    {veh.department}
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 font-mono text-[11px]">
-                    {veh.validity}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                        veh.status === 'ACTIVE'
-                          ? 'bg-[#E6F8F0] text-[#1FB36B] border border-[#1FB36B]/30'
-                          : 'bg-[#FDF2F2] text-[#C93338] border border-[#C93338]/30'
-                      }`}
-                    >
-                      {veh.status}
-                    </span>
-                  </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((veh) => (
+                  <tr key={veh.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-3.5 font-mono font-bold text-slate-900">
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                        <Car className="w-3.5 h-3.5 text-[#2F5BFF]" />
+                        <span>{veh.plate}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5 font-medium text-slate-800">
+                      {veh.makeModel}
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-600">
+                      {veh.type}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="font-semibold text-slate-900">{veh.ownerName}</div>
+                      <div className="font-mono text-[10px] text-slate-400">{veh.linkedPersonId}</div>
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-600">
+                      {veh.department}
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-500 font-mono text-[11px]">
+                      {veh.validity}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                          veh.status === 'ACTIVE'
+                            ? 'bg-[#E6F8F0] text-[#1FB36B] border border-[#1FB36B]/30'
+                            : 'bg-[#FDF2F2] text-[#C93338] border border-[#C93338]/30'
+                        }`}
+                      >
+                        {veh.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
