@@ -25,11 +25,8 @@ export default function PublicLayout({
     { href: '/download', label: 'Downloads' },
   ];
 
-  // Home landing page uses fixed full-viewport stage directly; guard/app keep wrapper
-  if (pathname === '/') {
-    return <>{children}</>;
-  }
-  if (pathname === '/guard' || pathname === '/app') {
+  // If on the home landing page or the standalone guard web terminal, render full experience directly
+  if (pathname === '/' || pathname === '/guard' || pathname === '/app') {
     return (
       <main className="w-full min-h-screen overflow-x-hidden font-sans">
         {children}
