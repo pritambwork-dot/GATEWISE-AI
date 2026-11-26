@@ -42,19 +42,6 @@ export default function PublicHomePage() {
         </filter>
       </svg>
 
-      {/* Global Background Video (fixed, behind everything) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover pointer-events-none opacity-40 filter saturate-150 brightness-75"
-          src="/media/videos/gatewise-launch-film.mp4"
-        />
-        {/* Dark subtle gradient overlay to ensure perfect contrast in Midnight */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070B1A]/90 via-[#070B1A]/75 to-[#070B1A]/95 pointer-events-none" />
-      </div>
 
       {/* Fullscreen expansive guide lines */}
       <div className="hidden 2xl:block pointer-events-none fixed inset-y-0 left-1/2 -translate-x-[calc(50%+50rem)] w-px bg-white/10 z-[5]" />
