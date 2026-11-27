@@ -24,6 +24,14 @@ import {
   Play,
 } from 'lucide-react';
 import { GuardWebApp } from '@/components/guard/GuardWebApp';
+import {
+  DoodleUnderline,
+  DoodleSparkle,
+  DoodleArrowNote,
+  DoodleGateSketch,
+  DoodleClipboardCheck,
+  DoodleZigZagDivider,
+} from '@/components/landing/EditorialDoodles';
 import { CookieConsent } from '@/components/aura/compliance/CookieConsent';
 import { LegalModals } from '@/components/aura/compliance/LegalModals';
 import { liveSync } from '@/lib/services/live-sync';
@@ -598,11 +606,26 @@ export const EditorialGatewiseLanding: React.FC = () => {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                    className="lg:col-span-7 space-y-7"
+                    className="lg:col-span-7 space-y-7 relative"
                   >
-                    <h1 className="font-display font-bold uppercase text-[3.3rem] sm:text-[4.6rem] lg:text-[5.5rem] leading-[0.94] tracking-[-0.025em] text-[#0A0E1A]">
-                      The Gate System That Verifies At Edge Speed.
-                    </h1>
+                    <div className="relative inline-block">
+                      <DoodleSparkle
+                        className="w-7 h-7 text-[#2F5BFF] -top-5 -left-6 sm:-left-8 pointer-events-none"
+                        color="#2F5BFF"
+                      />
+                      <DoodleSparkle
+                        className="w-5 h-5 text-[#0D9488] top-2 right-2 sm:-right-7 pointer-events-none"
+                        color="#0D9488"
+                      />
+                      <h1 className="font-display font-bold uppercase text-[3.3rem] sm:text-[4.6rem] lg:text-[5.5rem] leading-[0.94] tracking-[-0.025em] text-[#0A0E1A]">
+                        The Gate System That{' '}
+                        <span className="relative inline-block text-[#2F5BFF]">
+                          Verifies
+                          <DoodleUnderline className="w-full h-3.5 -bottom-1.5 left-0 text-[#2F5BFF]" />
+                        </span>{' '}
+                        At Edge Speed.
+                      </h1>
+                    </div>
 
                     <p className="text-base sm:text-lg text-[#475569] leading-relaxed max-w-xl font-normal">
                       One centralized biometric &amp; ANPR truth layer uniting the{' '}
@@ -757,8 +780,13 @@ export const EditorialGatewiseLanding: React.FC = () => {
                       </div>
 
                       {/* 3 Clean Key-Value Specs */}
-                      <dl className="grid grid-cols-3 gap-3 pt-1 font-mono text-xs">
-                        <div className="border border-[#DCE1EC] bg-[#FAF9F6] p-3">
+                      <dl className="grid grid-cols-3 gap-3 pt-1 font-mono text-xs relative">
+                        <div className="border border-[#DCE1EC] bg-[#FAF9F6] p-3 relative">
+                          <DoodleArrowNote
+                            label="rear lens!"
+                            direction="left"
+                            className="hidden sm:flex -top-9 left-1 text-[#2F5BFF]"
+                          />
                           <dt className="text-[9px] uppercase tracking-[0.1em] text-[#475569]">Optics</dt>
                           <dd className="font-bold text-[#0A0E1A] mt-1">Rear Cam</dd>
                         </div>
@@ -771,6 +799,12 @@ export const EditorialGatewiseLanding: React.FC = () => {
                           <dd className="font-bold text-[#0D9488] mt-1">Light Only</dd>
                         </div>
                       </dl>
+                      <div className="pt-3 flex items-center justify-between gap-4 border-t border-dashed border-[#DCE1EC]">
+                        <DoodleGateSketch className="w-40 h-16 text-[#0A0E1A]/80 shrink-0" />
+                        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#475569] text-right leading-relaxed">
+                          Hand-wired biometric &amp; LPR gate loop
+                        </span>
+                      </div>
                     </div>
                   </motion.div>
                 </div>
@@ -782,13 +816,25 @@ export const EditorialGatewiseLanding: React.FC = () => {
             {/* ================================================================= */}
             <section id="terminal" className="bg-white border-b border-[#DCE1EC]">
               <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-16 sm:py-24">
-                <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-                  <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF]">
-                    HANDHELD FIELD TERMINAL · /GUARD
+                <div className="text-center max-w-2xl mx-auto mb-12 space-y-3 relative">
+                  <DoodleArrowNote
+                    label="phones only!"
+                    direction="right"
+                    className="hidden md:flex -top-4 -right-24 text-[#2F5BFF]"
+                  />
+                  <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] inline-flex items-center gap-2">
+                    <span>HANDHELD FIELD TERMINAL · /GUARD</span>
                   </div>
-                  <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl lg:text-6xl tracking-tight text-[#0A0E1A]">
+                  <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl lg:text-6xl tracking-tight text-[#0A0E1A] relative inline-block">
                     Guard Mobile Web App
+                    <DoodleSparkle
+                      className="w-5 h-5 -top-3 -right-7 pointer-events-none"
+                      color="#2F5BFF"
+                    />
                   </h2>
+                  <div className="flex justify-center pt-1">
+                    <DoodleZigZagDivider className="w-40 h-3 text-[#2F5BFF]/70" />
+                  </div>
                   <p className="text-sm sm:text-base text-[#475569]">
                     Unchanged intuitive Guard Mobile Web App experience — clean light UI, rear camera
                     only, connected live to the Administrator PostgreSQL database.
@@ -906,7 +952,11 @@ export const EditorialGatewiseLanding: React.FC = () => {
             <section id="architecture" className="bg-[#FAF9F6] border-b border-[#DCE1EC]">
               <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-16 sm:py-24">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-10 mb-12 border-b border-[#DCE1EC]">
-                  <div>
+                  <div className="relative">
+                    <DoodleSparkle
+                      className="w-6 h-6 -top-4 -left-6 pointer-events-none"
+                      color="#0D9488"
+                    />
                     <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] block mb-2">
                       CORE CAPABILITIES
                     </span>
@@ -1036,13 +1086,16 @@ export const EditorialGatewiseLanding: React.FC = () => {
             <section id="protocol" className="bg-white border-b border-[#DCE1EC]">
               <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-16 sm:py-24">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-                  <div>
-                    <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] block mb-2">
-                      ACCESS GOVERNANCE MATRIX
-                    </span>
-                    <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl tracking-tight text-[#0A0E1A]">
-                      Gate Verification Policies
-                    </h2>
+                  <div className="flex items-start gap-4">
+                    <DoodleClipboardCheck className="w-12 h-14 text-[#2F5BFF] shrink-0 hidden sm:block mt-1" />
+                    <div>
+                      <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] block mb-2">
+                        ACCESS GOVERNANCE MATRIX
+                      </span>
+                      <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl tracking-tight text-[#0A0E1A]">
+                        Gate Verification Policies
+                      </h2>
+                    </div>
                   </div>
                   <Link
                     href="/admin/guards"
@@ -1113,7 +1166,11 @@ export const EditorialGatewiseLanding: React.FC = () => {
             {/* ================================================================= */}
             <section id="faq" className="bg-[#FAF9F6] border-b border-[#DCE1EC]">
               <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-16 sm:py-24">
-                <div className="mb-10">
+                <div className="mb-10 relative inline-block">
+                  <DoodleSparkle
+                    className="w-5 h-5 -top-2 -right-7 pointer-events-none"
+                    color="#2F5BFF"
+                  />
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] block mb-2">
                     OPERATIONAL REFERENCE
                   </span>

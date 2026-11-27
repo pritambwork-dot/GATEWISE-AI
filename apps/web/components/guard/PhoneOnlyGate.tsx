@@ -2,50 +2,72 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Smartphone, Monitor, QrCode, ArrowRight, ShieldCheck, Home, Lock } from 'lucide-react';
+import { Smartphone, Monitor, Home, Lock } from 'lucide-react';
 
 interface PhoneOnlyGateProps {
   children: React.ReactNode;
 }
 
+function checkIsMobilePhone(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+
+  // Strict smartphone UA requirement (Android Mobile, iPhone, iPod — excludes desktops, laptops & desktop browsers)
+  const isPhoneUA =
+    /Android.*Mobile|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+    Boolean((navigator as any).userAgentData?.mobile);
+
+  // Explicitly reject desktop OS tokens
+  const isDesktopOS = /Windows NT|Macintosh|X11|CrOS/i.test(ua);
+
+  // Viewport width must match handheld smartphone dimensions
+  const isPhoneViewport = window.innerWidth <= 768;
+
+  // Touch / coarse pointer capability check
+  const hasTouchSupport =
+    navigator.maxTouchPoints > 0 ||
+    window.matchMedia?.('(pointer: coarse)')?.matches ||
+    'ontouchstart' in window;
+
+  return isPhoneUA && !isDesktopOS && isPhoneViewport && hasTouchSupport;
+}
+
 export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
-  const [isDesktop, setIsDesktop] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [bypassed, setBypassed] = useState(false);
+  const [isAllowedPhone, setIsAllowedPhone] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined' && sessionStorage.getItem('gatewise_phone_override') === 'true') {
-      setBypassed(true);
-    }
+    // Clear any stale simulator bypass flag from older sessions
+    try {
+      sessionStorage.removeItem('gatewise_phone_override');
+    } catch {}
 
-    const checkDevice = () => {
-      // STRICT CHECK: Screen width > 768px indicates desktop or laptop computer
-      const isLargeScreen = window.innerWidth > 768;
-      const isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-      // If screen is wider than 768px and not a phone UA, trigger desktop blocking gate
-      setIsDesktop(isLargeScreen && !isMobileUA);
+    const evaluate = () => {
+      setIsAllowedPhone(checkIsMobilePhone());
     };
 
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
+    evaluate();
+    setMounted(true);
+
+    window.addEventListener('resize', evaluate);
+    return () => window.removeEventListener('resize', evaluate);
   }, []);
 
-  if (!mounted || bypassed) return <>{children}</>;
+  // Do not flash Guard UI before mobile device verification completes
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#FAF9F6]" aria-busy="true" />;
+  }
 
-  if (isDesktop) {
+  if (!isAllowedPhone) {
     return (
       <div className="fixed inset-0 z-[9999] bg-[#FAF9F6] text-[#0A0E1A] border-[6px] border-[#2F5BFF] flex flex-col items-center justify-center p-6 text-center select-none overflow-y-auto paper-grid">
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.96 }}
+          initial={{ opacity: 0, y: 18, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 w-full max-w-md p-8 bg-white border border-[#0A0E1A] shadow-[8px_8px_0px_#2F5BFF] flex flex-col items-center space-y-5"
         >
-          {/* Brand Mark with Mobile Badge */}
+          {/* Brand Mark with Mobile Lock Badge */}
           <div className="relative">
             <div className="w-16 h-16 bg-[#2F5BFF] flex items-center justify-center">
               <Smartphone className="w-8 h-8 text-white" />
@@ -60,22 +82,18 @@ export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
               <span>Mobile Smartphones Only · Rear Camera</span>
             </div>
             <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-[#0A0E1A]">
-              Handheld Device Required
+              Mobile Phone Required
             </h1>
             <p className="text-xs text-[#475569] leading-relaxed max-w-sm">
-              GATEWISE Guard is sovereign mobile terminal software engineered strictly for handheld smartphones and portable rear-camera gate terminals at IIM Sambalpur.
+              GATEWISE Guard can only be opened on a mobile smartphone with a rear camera. Desktop
+              browsers, laptops, and tablets are strictly blocked from accessing the field scanner.
             </p>
           </div>
 
-          {/* QR Code / Instructions Box */}
+          {/* Mobile URL / QR Code Panel */}
           <div className="w-full p-4 bg-[#FAF9F6] border border-[#DCE1EC] flex flex-col items-center space-y-3">
             <div className="w-32 h-32 bg-white border border-[#DCE1EC] p-2.5 flex items-center justify-center">
-              {/* Clean SVG QR Code Representation */}
-              <svg
-                viewBox="0 0 100 100"
-                className="w-full h-full text-[#0A0E1A]"
-                fill="currentColor"
-              >
+              <svg viewBox="0 0 100 100" className="w-full h-full text-[#0A0E1A]" fill="currentColor" aria-hidden="true">
                 <path d="M0,0 h30 v30 h-30 z M6,6 v18 h18 v-18 z M10,10 h10 v10 h-10 z" />
                 <path d="M70,0 h30 v30 h-30 z M76,6 v18 h18 v-18 z M80,10 h10 v10 h-10 z" />
                 <path d="M0,70 h30 v30 h-30 z M6,76 v18 h18 v-18 z M10,80 h10 v10 h-10 z" />
@@ -94,18 +112,18 @@ export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
               </svg>
             </div>
             <span className="text-[11px] text-[#475569] font-mono">
-              Scan with your phone camera to open /guard
+              Open <strong className="text-[#0A0E1A]">gatwise.vercel.app/guard</strong> on your phone
             </span>
           </div>
 
-          {/* Action Buttons */}
+          {/* Allowed Desktop Navigation */}
           <div className="w-full space-y-2 pt-1">
             <a
-              href="/admin"
+              href="/admin/login"
               className="w-full py-3 min-h-[46px] bg-[#2F5BFF] hover:bg-[#1E44E0] text-white font-mono uppercase tracking-[0.08em] font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Monitor className="w-4 h-4 text-white" />
-              <span>Open Command Centre (Desktop)</span>
+              <span>Open Admin Command Centre</span>
             </a>
 
             <a
@@ -113,24 +131,13 @@ export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
               className="w-full py-2.5 border border-[#0A0E1A] bg-white hover:bg-[#F2F4F8] transition-all font-mono text-xs uppercase tracking-[0.08em] text-[#0A0E1A] flex items-center justify-center gap-1.5"
             >
               <Home className="w-3.5 h-3.5" />
-              <span>Return to Institutional Home</span>
+              <span>Return to Home</span>
             </a>
-
-            <button
-              type="button"
-              onClick={() => {
-                sessionStorage.setItem('gatewise_phone_override', 'true');
-                setBypassed(true);
-              }}
-              className="text-[10px] text-[#475569] hover:text-[#2F5BFF] transition-colors pt-2 underline cursor-pointer"
-            >
-              Developer Simulator: Bypass Phone Gate
-            </button>
           </div>
 
           <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#475569]">
             <span className="w-1.5 h-1.5 bg-[#15803D]" />
-            <span>IIM Sambalpur Field Terminal Policy Enforced</span>
+            <span>IIM Sambalpur Mobile-Only Guard Access Enforced</span>
           </div>
         </motion.div>
       </div>
