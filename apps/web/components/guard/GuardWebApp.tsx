@@ -788,37 +788,35 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   if (!isAuthenticated) {
     return (
       <div
-        className={`relative flex flex-col justify-between w-full h-full font-sans select-none p-5 sm:p-6 bg-[#FAF9F6] text-[#0A0E1A] border-t-[3px] border-[#2F5BFF] ${
-          embedded ? 'min-h-[600px]' : 'min-h-screen'
+        className={`relative flex flex-col justify-between w-full h-full font-sans select-none p-6 ${
+          embedded
+            ? 'min-h-[640px] bg-[#F6F7FB] text-[#070B1A] rounded-[28px] border border-black/10 shadow-xl'
+            : 'min-h-screen bg-[#F6F7FB] text-[#070B1A]'
         }`}
       >
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#DCE1EC]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-[#2F5BFF] flex items-center justify-center text-white shadow-xs">
-              <div className="relative w-4 h-5 border-2 border-white border-b-0 rounded-t-full flex items-center justify-center">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] -mt-1" />
-              </div>
-            </div>
-            <div className="leading-none">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#2F5BFF] block">
-                GATEWISE AI
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#475569]">
-                LIGHT TERMINAL
-              </span>
+        <div className="flex items-center justify-between pb-4">
+          <div className="w-10 h-10 rounded-2xl bg-[#2F5BFF] flex items-center justify-center text-white shadow-md">
+            <div className="relative w-5 h-6 border-2 border-white border-b-0 rounded-t-full flex items-center justify-center">
+              <span className="w-2 h-2 rounded-full bg-[#12B5A6] -mt-1.5" />
             </div>
           </div>
 
           {/* Language Switcher */}
-          <div className="flex items-center p-0.5 border border-[#DCE1EC] bg-white text-xs font-medium text-[#0A0E1A]">
+          <div
+            className={`flex items-center rounded-lg p-0.5 border text-xs font-medium ${
+              false
+                ? 'bg-white/5 border-white/10 text-white'
+                : 'bg-black/5 border-black/10 text-[#070B1A]'
+            }`}
+          >
             <button
               type="button"
               onClick={() => setLang('en')}
-              className={`px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md transition-all ${
                 lang === 'en'
-                  ? 'bg-[#2F5BFF] text-white font-bold'
-                  : 'text-[#475569] hover:text-[#0A0E1A]'
+                  ? 'bg-[#2F5BFF] text-white font-bold shadow-xs'
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               EN
@@ -826,10 +824,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <button
               type="button"
               onClick={() => setLang('hi')}
-              className={`px-2.5 py-1 font-mono text-[10px] transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md transition-all ${
                 lang === 'hi'
-                  ? 'bg-[#2F5BFF] text-white font-bold'
-                  : 'text-[#475569] hover:text-[#0A0E1A]'
+                  ? 'bg-[#2F5BFF] text-white font-bold shadow-xs'
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               हिंदी
@@ -838,18 +836,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         </div>
 
         {/* Form Body */}
-        <div className="my-auto py-5 space-y-5 bg-white border border-[#DCE1EC] p-5 shadow-xs">
+        <div className="my-auto space-y-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#EEF2FF] border border-[#2F5BFF]/25 font-mono text-[10px] font-bold text-[#2F5BFF] uppercase tracking-[0.1em] mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2F5BFF]/15 border border-[#2F5BFF]/30 text-[10px] font-bold text-[#2F5BFF] uppercase tracking-wider mb-2">
               <Shield className="w-3 h-3 text-[#2F5BFF]" />
               <span>{lang === 'en' ? 'Guard Security Terminal' : 'गार्ड सुरक्षा टर्मिनल'}</span>
             </div>
-            <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-[#0A0E1A]">
+            <h1 className="text-3xl font-extrabold tracking-tight">
               {lang === 'en' ? 'Welcome back' : 'वापस स्वागत है'}
             </h1>
-            <p className="text-xs mt-1 text-[#475569]">
+            <p className={`text-sm mt-1.5 ${false ? 'text-white/60' : 'text-black/50'}`}>
               {lang === 'en'
-                ? 'Sign in to the official IIM Sambalpur rear-camera gate terminal.'
+                ? 'Sign in to the official IIM Sambalpur gate terminal.'
                 : 'आईआईएम संबलपुर आधिकारिक गेट टर्मिनल में साइन इन करें।'}
             </p>
           </div>
@@ -859,7 +857,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-[#C93338]/10 border border-[#C93338]/30 text-xs font-semibold text-[#C93338] flex items-center gap-2"
+              className="p-3.5 rounded-2xl bg-[#C93338]/10 border border-[#C93338]/30 text-xs font-semibold text-[#C93338] flex items-center gap-2"
             >
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{authError}</span>
@@ -868,11 +866,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label htmlFor="guard-account-id" className="block font-mono text-[10px] uppercase tracking-[0.1em] font-bold mb-1.5 text-[#475569]">
+              <label className="block text-xs font-bold mb-1.5 opacity-80">
                 {lang === 'en' ? 'Account ID' : 'खाता आईडी'}
               </label>
               <input
-                id="guard-account-id"
                 type="text"
                 required
                 value={accountId}
@@ -880,20 +877,23 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   setAccountId(e.target.value);
                   setAuthError(null);
                 }}
-                placeholder="123"
-                className="w-full px-3.5 py-2.5 text-sm border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] placeholder-[#94A3B8] focus:border-[#2F5BFF] focus:bg-white outline-none font-mono font-semibold transition-all"
+                placeholder="GRD-101"
+                className={`w-full px-4 py-3 rounded-2xl text-sm border outline-none font-medium transition-all ${
+                  false
+                    ? 'bg-black/40 border-white/10 text-white placeholder-white/30 focus:border-[#2F5BFF]'
+                    : 'bg-white border-black/10 text-[#070B1A] placeholder-black/30 focus:border-[#2F5BFF] shadow-xs'
+                }`}
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="guard-password" className="block font-mono text-[10px] uppercase tracking-[0.1em] font-bold text-[#475569]">
+                <label className="block text-xs font-bold opacity-80">
                   {lang === 'en' ? 'Password' : 'पासवर्ड'}
                 </label>
               </div>
               <div className="relative">
                 <input
-                  id="guard-password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
@@ -901,13 +901,17 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     setPassword(e.target.value);
                     setAuthError(null);
                   }}
-                  placeholder="•••"
-                  className="w-full pl-3.5 pr-16 py-2.5 text-sm border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] placeholder-[#94A3B8] focus:border-[#2F5BFF] focus:bg-white outline-none font-medium transition-all"
+                  placeholder="••••••••"
+                  className={`w-full pl-4 pr-16 py-3 rounded-2xl text-sm border outline-none font-medium transition-all ${
+                    false
+                      ? 'bg-black/40 border-white/10 text-white placeholder-white/30 focus:border-[#2F5BFF]'
+                      : 'bg-white border-black/10 text-[#070B1A] placeholder-black/30 focus:border-[#2F5BFF] shadow-xs'
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 font-mono text-[10px] uppercase font-bold text-[#2F5BFF] hover:underline cursor-pointer"
+                  className="absolute right-4 top-3 text-xs font-semibold text-[#2F5BFF] hover:underline cursor-pointer"
                 >
                   {showPassword
                     ? lang === 'en'
@@ -923,7 +927,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full min-h-[48px] bg-[#2F5BFF] hover:bg-[#1E44E0] active:scale-[0.99] transition-all text-white font-mono text-xs uppercase tracking-[0.12em] font-bold flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
+              className="w-full min-h-[52px] rounded-full bg-[#2F5BFF] hover:bg-[#254cd6] active:scale-[0.98] transition-all text-white font-extrabold text-sm shadow-lg flex items-center justify-center gap-2 cursor-pointer mt-2 disabled:opacity-50"
             >
               {authLoading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -934,12 +938,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
           </form>
 
           {/* Forgot Password */}
-          <div className="pt-1 text-center space-y-2">
+          <div className="pt-2 text-center space-y-2">
             <div>
               <button
                 type="button"
                 onClick={() => setForgotModalOpen(true)}
-                className="text-xs text-[#475569] hover:text-[#2F5BFF] hover:underline cursor-pointer"
+                className={`text-xs ${
+                  false ? 'text-white/60 hover:text-white' : 'text-black/50 hover:text-black'
+                } hover:underline`}
               >
                 {lang === 'en' ? 'Forgot password?' : 'पासवर्ड भूल गए?'}
               </button>
@@ -948,11 +954,11 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         </div>
 
         {/* Footer */}
-        <div className="pt-4 text-center space-y-1">
-          <p className="text-[11px] font-semibold text-[#475569]">
-            {lang === 'en' ? 'Authorised security guards only · Back camera active' : 'केवल अधिकृत सुरक्षा गार्ड'}
+        <div className="pt-6 text-center space-y-1">
+          <p className={`text-xs font-semibold ${false ? 'text-white/50' : 'text-black/40'}`}>
+            {lang === 'en' ? 'Authorised security guards only' : 'केवल अधिकृत सुरक्षा गार्ड'}
           </p>
-          <span className="text-[10px] text-[#2F5BFF] font-mono uppercase tracking-[0.1em]">
+          <span className="text-[10px] text-[#12B5A6] font-mono">
             IIM Sambalpur Campus Security Directorate
           </span>
         </div>
@@ -964,15 +970,17 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 bg-[#0A0E1A]/40 backdrop-blur-xs flex items-end justify-center p-0"
+              className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0"
             >
               <motion.div
                 initial={{ y: 100 }}
                 animate={{ y: 0 }}
                 exit={{ y: 100 }}
-                className="w-full border-t border-[#DCE1EC] bg-white text-[#0A0E1A] p-6 space-y-4"
+                className={`w-full rounded-t-[28px] p-6 space-y-4 ${
+                  false ? 'bg-[#070B1A] text-white border-t border-white/10' : 'bg-white text-[#070B1A]'
+                }`}
               >
-                <div className="flex items-center justify-between pb-2 border-b border-[#DCE1EC]">
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
                   <h3 className="text-lg font-bold">
                     {lang === 'en' ? 'Forgot password' : 'पासवर्ड भूल गए'}
                   </h3>
@@ -982,20 +990,20 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                       setForgotModalOpen(false);
                       setForgotSent(false);
                     }}
-                    className="p-1 hover:bg-[#F2F4F8] cursor-pointer"
+                    className="p-1 rounded-full hover:bg-white/10"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <p className="text-xs text-[#475569] leading-relaxed">
+                <p className="text-xs opacity-70 leading-relaxed">
                   {lang === 'en'
                     ? 'Enter your guard account ID to send a recovery request to the Security Command Centre.'
                     : 'सुरक्षा कमांड सेंटर को पुनर्प्राप्ति अनुरोध भेजने के लिए अपनी गार्ड आईडी दर्ज करें।'}
                 </p>
 
                 {forgotSent ? (
-                  <div className="p-3.5 bg-[#15803D]/10 border border-[#15803D]/30 text-xs font-semibold text-[#15803D]">
+                  <div className="p-3.5 rounded-2xl bg-[#1FB36B]/15 border border-[#1FB36B]/30 text-xs font-semibold text-[#1FB36B]">
                     {lang === 'en'
                       ? 'Request dispatched to Security Directorate.'
                       : 'अनुरोध सुरक्षा निदेशालय को भेज दिया गया है।'}
@@ -1006,13 +1014,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                       type="text"
                       value={forgotAccountId}
                       onChange={(e) => setForgotAccountId(e.target.value)}
-                      placeholder="123"
-                      className="w-full px-3.5 py-2.5 text-xs border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none"
+                      placeholder="GRD-101"
+                      className={`w-full px-4 py-3 rounded-2xl text-xs border outline-none ${
+                        false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                      }`}
                     />
                     <button
                       type="button"
                       onClick={() => setForgotSent(true)}
-                      className="w-full py-3 bg-[#2F5BFF] text-white font-mono text-xs uppercase font-bold cursor-pointer"
+                      className="w-full py-3 rounded-full bg-[#2F5BFF] text-white font-bold text-xs"
                     >
                       {lang === 'en' ? 'Send Recovery Request' : 'पुनर्प्राप्ति अनुरोध भेजें'}
                     </button>
@@ -1027,32 +1037,38 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   }
 
   // =========================================================================
-  // AUTHENTICATED GUARD MOBILE INTERFACE (LIGHT-ONLY EDITORIAL EDITION)
+  // AUTHENTICATED GUARD MOBILE INTERFACE
   // =========================================================================
   return (
     <div
-      className={`relative flex flex-col w-full font-sans select-none overflow-hidden bg-[#FAF9F6] text-[#0A0E1A] border-t-[3px] border-[#2F5BFF] ${
-        embedded ? 'h-full' : 'min-h-screen'
+      className={`relative flex flex-col w-full font-sans select-none overflow-hidden ${
+        embedded
+          ? 'h-full bg-[#F6F7FB] text-[#070B1A] rounded-[28px] border border-black/10 shadow-xl'
+          : 'min-h-screen bg-[#F6F7FB] text-[#070B1A]'
       }`}
     >
       {/* Top Status Bar */}
-      <div className="px-4 sm:px-6 pt-3 pb-2.5 flex items-center justify-between border-b border-[#DCE1EC] bg-white/95 backdrop-blur-md text-[#0A0E1A] sticky top-0 z-30">
+      <div
+        className={`px-4 sm:px-6 pt-3 pb-2.5 flex items-center justify-between border-b ${
+          false
+            ? 'bg-[#070B1A]/90 border-white/10 text-white'
+            : 'bg-white border-black/5 text-[#070B1A]'
+        }`}
+      >
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-[#2F5BFF] flex items-center justify-center text-white shadow-xs">
+          <div className="w-8 h-8 rounded-xl bg-[#2F5BFF] flex items-center justify-center text-white shadow-sm">
             <div className="relative w-4 h-5 border-2 border-white border-b-0 rounded-t-full flex items-center justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] -mt-1" />
             </div>
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-display font-bold text-sm uppercase tracking-tight text-[#0A0E1A]">
-                GATEWISE
-              </span>
-              <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 bg-[#EEF2FF] border border-[#2F5BFF]/30 text-[#2F5BFF] uppercase">
+              <span className="font-extrabold text-xs tracking-tight">GATEWISE</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[#12B5A6] text-white uppercase">
                 Guard
               </span>
             </div>
-            <span className="font-mono text-[10px] text-[#475569]">
+            <span className={`text-[10px] ${false ? 'text-white/60' : 'text-black/50'}`}>
               {activeOfficer.gate} · IIM Sambalpur
             </span>
           </div>
@@ -1060,20 +1076,26 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
         <div className="flex items-center gap-2">
           {/* Live Sync Pill */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#15803D]/10 border border-[#15803D]/30 font-mono text-[9px] font-bold text-[#15803D]">
-            <span className="w-1.5 h-1.5 bg-[#15803D] animate-pulse" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1FB36B]/15 border border-[#1FB36B]/30 text-[10px] font-semibold text-[#1FB36B]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
             <span>LIVE SYNC</span>
           </div>
 
           {/* Language Switcher */}
-          <div className="flex items-center p-0.5 border border-[#DCE1EC] bg-[#FAF9F6] text-[#0A0E1A] text-[10px] font-mono font-medium">
+          <div
+            className={`flex items-center rounded-lg p-0.5 border text-[11px] font-medium ${
+              false
+                ? 'bg-white/5 border-white/10 text-white'
+                : 'bg-black/5 border-black/10 text-[#070B1A]'
+            }`}
+          >
             <button
               type="button"
               onClick={() => setLang('en')}
-              className={`px-2 py-0.5 transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded-md transition-all ${
                 lang === 'en'
-                  ? 'bg-[#2F5BFF] text-white font-bold'
-                  : 'text-[#475569] hover:text-[#0A0E1A]'
+                  ? 'bg-[#2F5BFF] text-white font-bold shadow-xs'
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               EN
@@ -1081,10 +1103,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <button
               type="button"
               onClick={() => setLang('hi')}
-              className={`px-2 py-0.5 transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded-md transition-all ${
                 lang === 'hi'
-                  ? 'bg-[#2F5BFF] text-white font-bold'
-                  : 'text-[#475569] hover:text-[#0A0E1A]'
+                  ? 'bg-[#2F5BFF] text-white font-bold shadow-xs'
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               हिंदी
@@ -1100,10 +1122,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-14 inset-x-4 z-50 py-2 px-3 bg-[#2F5BFF] text-white text-xs font-semibold shadow-md flex items-center justify-between"
+            className="absolute top-14 inset-x-4 z-50 py-2 px-3 rounded-xl bg-[#2F5BFF] text-white text-xs font-semibold shadow-xl flex items-center justify-between"
           >
             <div className="flex items-center gap-2 truncate">
-              <Zap className="w-3.5 h-3.5 text-white shrink-0" />
+              <Zap className="w-3.5 h-3.5 text-[#12B5A6] shrink-0" />
               <span className="truncate">{liveSyncToast}</span>
             </div>
             <button
@@ -1125,106 +1147,106 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         {activeTab === 'verify' && (
           <div className="space-y-4">
             {/* Guard Profile Summary */}
-            <div className="p-4 border border-[#DCE1EC] bg-white shadow-xs flex items-center justify-between">
+            <div
+              className={`p-4 rounded-[20px] border flex items-center justify-between ${
+                false
+                  ? 'bg-gradient-to-r from-white/[0.06] to-white/[0.02] border-white/10'
+                  : 'bg-white border-black/5 shadow-xs'
+              }`}
+            >
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#475569]">
+                <p className={`text-xs ${false ? 'text-white/60' : 'text-black/50'}`}>
                   {lang === 'en' ? 'Duty Station' : 'ड्यूटी स्टेशन'}
                 </p>
-                <h3 className="text-sm font-bold tracking-tight text-[#0A0E1A]">
+                <h3 className="text-sm font-bold tracking-tight">
                   {lang === 'en' ? activeOfficer.name : activeOfficer.nameHi}
                 </h3>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 bg-[#15803D]" />
-                  <span className="font-mono text-[11px] text-[#475569]">
+                  <span className="w-2 h-2 rounded-full bg-[#1FB36B]" />
+                  <span className={`text-[11px] ${false ? 'text-white/70' : 'text-black/60'}`}>
                     {activeOfficer.gate} · {lang === 'en' ? 'On duty' : 'ड्यूटी पर'}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col items-end">
-                <span className="font-mono text-[9px] uppercase font-bold mb-1 text-[#475569]">
+                <span className={`text-[10px] uppercase font-bold mb-1 ${false ? 'text-white/50' : 'text-black/40'}`}>
                   {lang === 'en' ? 'Live Cloud Sync' : 'केंद्रीय सिंक'}
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#15803D]/10 text-[#15803D] font-mono text-[10px] font-bold border border-[#15803D]/30">
-                  <span className="w-1.5 h-1.5 bg-[#15803D] animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 text-[10px] font-bold border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   PostgreSQL Active
                 </span>
               </div>
             </div>
 
-            {/* SCREEN 2: TWO PROMINENT SCANNING OPTIONS (Editorial Light Cards) */}
+            {/* SCREEN 2: TWO PROMINENT SCANNING OPTIONS (Section 3 Prompt) */}
             <div className="grid grid-cols-2 gap-3">
               {/* Option A: Scan Face */}
               <motion.button
-                type="button"
                 whileTap={{ scale: 0.98 }}
                 onClick={startFaceScan}
-                className="p-4 bg-[#2F5BFF] hover:bg-[#1E44E0] text-white flex flex-col items-start justify-between border border-[#2F5BFF] shadow-[4px_4px_0px_#0A0E1A] relative overflow-hidden text-left min-h-[140px] cursor-pointer transition-colors"
+                className="p-4 rounded-[22px] bg-gradient-to-br from-[#2F5BFF] to-[#1e40af] text-white flex flex-col items-start justify-between shadow-lg relative overflow-hidden text-left min-h-[140px] cursor-pointer"
               >
-                <div className="w-full flex items-center justify-between">
-                  <div className="w-9 h-9 bg-white/20 flex items-center justify-center text-white">
-                    <Camera className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="font-mono text-[8px] uppercase font-bold tracking-widest px-1.5 py-0.5 bg-white/20 text-white">
-                    BACK CAM
-                  </span>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none" />
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                  <Camera className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-white/80 block">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-white/70 block">
                     {lang === 'en' ? 'Option A' : 'विकल्प क'}
                   </span>
-                  <h3 className="font-display text-xl font-bold uppercase leading-tight mt-0.5">
+                  <h3 className="text-base font-extrabold leading-tight">
                     {lang === 'en' ? 'Scan Face' : 'चेहरा स्कैन करें'}
                   </h3>
-                  <p className="text-[10px] text-white/85 mt-1">
-                    {lang === 'en' ? 'Rear lens 128-D match' : 'बैक कैमरा पहचान मिलान'}
+                  <p className="text-[10px] text-white/80 mt-1">
+                    {lang === 'en' ? 'Biometric YuNet match' : 'बायोमेट्रिक पहचान मिलान'}
                   </p>
                 </div>
               </motion.button>
 
               {/* Option B: Scan Vehicle */}
               <motion.button
-                type="button"
                 whileTap={{ scale: 0.98 }}
                 onClick={startVehicleScan}
-                className="p-4 bg-white hover:bg-[#F2F4F8] text-[#0A0E1A] flex flex-col items-start justify-between border border-[#0A0E1A] shadow-[4px_4px_0px_#DCE1EC] relative overflow-hidden text-left min-h-[140px] cursor-pointer transition-colors"
+                className="p-4 rounded-[22px] bg-gradient-to-br from-[#12B5A6] to-[#0d8277] text-white flex flex-col items-start justify-between shadow-lg relative overflow-hidden text-left min-h-[140px] cursor-pointer"
               >
-                <div className="w-full flex items-center justify-between">
-                  <div className="w-9 h-9 bg-[#EEF2FF] border border-[#2F5BFF]/20 flex items-center justify-center text-[#2F5BFF]">
-                    <Car className="w-5 h-5 text-[#2F5BFF]" />
-                  </div>
-                  <span className="font-mono text-[8px] uppercase font-bold tracking-widest px-1.5 py-0.5 bg-[#FAF9F6] border border-[#DCE1EC] text-[#475569]">
-                    ANPR OCR
-                  </span>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none" />
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                  <Car className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-[#2F5BFF] block">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-white/70 block">
                     {lang === 'en' ? 'Option B' : 'विकल्प ख'}
                   </span>
-                  <h3 className="font-display text-xl font-bold uppercase leading-tight mt-0.5">
+                  <h3 className="text-base font-extrabold leading-tight">
                     {lang === 'en' ? 'Scan Vehicle' : 'वाहन स्कैन करें'}
                   </h3>
-                  <p className="text-[10px] text-[#475569] mt-1">
-                    {lang === 'en' ? 'Rear ANPR plate check' : 'नंबर प्लेट एएनपीआर'}
+                  <p className="text-[10px] text-white/80 mt-1">
+                    {lang === 'en' ? 'ANPR plate OCR' : 'नंबर प्लेट एएनपीआर'}
                   </p>
                 </div>
               </motion.button>
             </div>
 
             {/* COMBINED SCANNING ACTION (Face + Vehicle in one session) */}
-            <div className="p-4 border border-[#DCE1EC] bg-white shadow-xs space-y-3">
+            <div
+              className={`p-4 rounded-[22px] border space-y-3 ${
+                false ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#2F5BFF]" />
-                  <span className="font-bold text-xs text-[#0A0E1A]">
+                  <span className="font-bold text-xs">
                     {lang === 'en' ? 'Combined Verification Session' : 'संयुक्त सत्यापन सत्र (चेहरा + वाहन)'}
                   </span>
                 </div>
                 <span
-                  className={`font-mono text-[9px] font-bold px-2 py-0.5 border ${
+                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
                     guardPermissions.can_create_person_directly
                       ? 'bg-amber-50 text-amber-800 border-amber-200'
-                      : 'bg-[#EEF2FF] text-[#2F5BFF] border-[#2F5BFF]/30'
+                      : 'bg-blue-50 text-[#2F5BFF] border-blue-200'
                   }`}
                 >
                   {guardPermissions.can_create_person_directly ? 'Mode 2: Direct Create' : 'Mode 1: Approval Req'}
@@ -1234,10 +1256,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               {/* Captured Biometric Frame & Vehicle Plate Input */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <label className="block font-mono text-[9px] uppercase font-bold text-[#475569] mb-1">
+                  <label className="block text-[10px] font-bold opacity-60 mb-1">
                     {lang === 'en' ? 'Face Photo Scan' : 'चेहरा फोटो स्कैन'}
                   </label>
-                  <label className="w-full px-2.5 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] text-xs flex items-center gap-2 cursor-pointer hover:border-[#2F5BFF] transition-colors">
+                  <label
+                    className={`w-full px-2.5 py-2 rounded-xl border text-xs flex items-center gap-2 cursor-pointer ${
+                      false ? 'bg-black/40 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
+                    }`}
+                  >
                     {capturedFacePreview ? (
                       <img src={capturedFacePreview} alt="Face" className="w-5 h-5 rounded-full object-cover shrink-0" />
                     ) : (
@@ -1260,17 +1286,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   </label>
                 </div>
                 <div>
-                  <label htmlFor="guard-plate-input" className="block font-mono text-[9px] uppercase font-bold text-[#475569] mb-1">
+                  <label className="block text-[10px] font-bold opacity-60 mb-1">
                     {lang === 'en' ? 'Plate (blank = pedestrian)' : 'वाहन नंबर'}
                   </label>
                   <input
-                    id="guard-plate-input"
                     type="text"
                     data-testid="guard-plate-input"
                     value={scanPlateInput}
                     onChange={(e) => setScanPlateInput(e.target.value.toUpperCase())}
                     placeholder="OD02AB1234"
-                    className="w-full px-2.5 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] text-xs font-mono uppercase outline-none focus:border-[#2F5BFF] focus:bg-white"
+                    className={`w-full px-2.5 py-2 rounded-xl border text-xs font-mono uppercase outline-none ${
+                      false ? 'bg-black/40 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10 text-[#070B1A]'
+                    }`}
                   />
                 </div>
               </div>
@@ -1278,9 +1305,9 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               <button
                 type="button"
                 onClick={() => executePipelineVerification()}
-                className="w-full min-h-[48px] bg-[#2F5BFF] hover:bg-[#1E44E0] active:scale-[0.99] transition-all text-white font-mono uppercase tracking-[0.1em] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full min-h-[50px] rounded-full bg-[#2F5BFF] hover:bg-[#254cd6] active:scale-[0.98] transition-all text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Zap className="w-4 h-4 text-white" />
+                <Zap className="w-4 h-4 text-[#12B5A6]" />
                 <span>
                   {lang === 'en'
                     ? 'Verify Face + Vehicle Together'
@@ -1293,13 +1320,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <button
               type="button"
               onClick={() => openRegistrationFlow(scanFaceInput || '', scanPlateInput || '')}
-              className={`w-full p-3.5 border border-dashed flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-[0.06em] font-bold transition-all cursor-pointer ${
+              className={`w-full p-3.5 rounded-[18px] border border-dashed flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer ${
                 guardPermissions.can_create_person_directly
-                  ? 'border-amber-500 bg-amber-50 text-amber-800 hover:bg-amber-100'
-                  : 'border-[#2F5BFF]/50 bg-[#EEF2FF]/60 text-[#2F5BFF] hover:bg-[#EEF2FF]'
+                  ? 'border-amber-400/50 bg-amber-500/10 text-amber-700 hover:bg-amber-500/15'
+                  : false
+                  ? 'border-white/20 bg-white/[0.02] text-white/80 hover:bg-white/[0.06]'
+                  : 'border-[#2F5BFF]/30 bg-[#2F5BFF]/5 text-[#2F5BFF] hover:bg-[#2F5BFF]/10'
               }`}
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus className="w-4 h-4 text-[#12B5A6]" />
               <span>
                 {guardPermissions.can_create_person_directly
                   ? lang === 'en'
@@ -1312,38 +1341,40 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             </button>
 
             {/* Today Counters Summary */}
-            <div className="p-4 border border-[#DCE1EC] bg-white shadow-xs">
+            <div
+              className={`p-4 rounded-[20px] border ${
+                false ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
+              }`}
+            >
               <div className="flex items-center justify-between mb-3">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#475569]">
+                <span className={`text-xs font-bold uppercase tracking-wider ${false ? 'text-white/60' : 'text-black/50'}`}>
                   {lang === 'en' ? 'Today at Gate 01' : 'आज गेट 01 पर'}
                 </span>
-                <span className="font-mono text-[10px] text-[#2F5BFF] font-bold uppercase">
-                  IIM Sambalpur
-                </span>
+                <span className="text-[10px] text-[#12B5A6] font-semibold">IIM Sambalpur</span>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2.5 border border-[#DCE1EC] bg-[#FAF9F6]">
-                  <span className="block font-mono text-xl font-extrabold text-[#2F5BFF]">
+                <div className={`p-2.5 rounded-xl border ${false ? 'bg-black/30 border-white/5' : 'bg-[#F6F7FB] border-black/5'}`}>
+                  <span className="block text-xl font-extrabold text-[#2F5BFF]">
                     {todayVerifications}
                   </span>
-                  <span className="text-[10px] leading-tight block mt-0.5 text-[#475569]">
+                  <span className={`text-[10px] leading-tight block mt-0.5 ${false ? 'text-white/60' : 'text-black/50'}`}>
                     {lang === 'en' ? 'Verifications' : 'सत्यापन'}
                   </span>
                 </div>
-                <div className="p-2.5 border border-[#DCE1EC] bg-[#FAF9F6]">
-                  <span className="block font-mono text-xl font-extrabold text-[#D97706]">
+                <div className={`p-2.5 rounded-xl border ${false ? 'bg-black/30 border-white/5' : 'bg-[#F6F7FB] border-black/5'}`}>
+                  <span className="block text-xl font-extrabold text-[#FFB547]">
                     {pendingRequestsCount}
                   </span>
-                  <span className="text-[10px] leading-tight block mt-0.5 text-[#475569]">
+                  <span className={`text-[10px] leading-tight block mt-0.5 ${false ? 'text-white/60' : 'text-black/50'}`}>
                     {lang === 'en' ? 'Pending Req' : 'लंबित अनुरोध'}
                   </span>
                 </div>
-                <div className="p-2.5 border border-[#DCE1EC] bg-[#FAF9F6]">
-                  <span className="block font-mono text-xl font-extrabold text-[#15803D]">
+                <div className={`p-2.5 rounded-xl border ${false ? 'bg-black/30 border-white/5' : 'bg-[#F6F7FB] border-black/5'}`}>
+                  <span className="block text-xl font-extrabold text-[#12B5A6]">
                     {activeVisitors}
                   </span>
-                  <span className="text-[10px] leading-tight block mt-0.5 text-[#475569]">
+                  <span className={`text-[10px] leading-tight block mt-0.5 ${false ? 'text-white/60' : 'text-black/50'}`}>
                     {lang === 'en' ? 'Active Inside' : 'सक्रिय अंदर'}
                   </span>
                 </div>
@@ -1359,10 +1390,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-display text-xl font-bold uppercase tracking-tight text-[#0A0E1A]">
+                <h3 className="text-base font-bold tracking-tight">
                   {lang === 'en' ? 'Registration Requests' : 'पंजीकरण अनुरोध'}
                 </h3>
-                <p className="text-xs text-[#475569]">
+                <p className={`text-xs ${false ? 'text-white/60' : 'text-black/50'}`}>
                   {lang === 'en'
                     ? 'Submitted by guards for administrator approval'
                     : 'व्यवस्थापक अनुमोदन हेतु प्रस्तुत अनुरोध'}
@@ -1370,8 +1401,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </div>
               <button
                 type="button"
-                onClick={() => openRegistrationFlow('', '')}
-                className="px-3 py-1.5 bg-[#2F5BFF] hover:bg-[#1E44E0] text-white font-mono text-[10px] uppercase tracking-[0.08em] font-bold flex items-center gap-1 cursor-pointer"
+                onClick={() => setRegModalOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-[#2F5BFF] text-white text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{lang === 'en' ? 'New' : 'नया'}</span>
@@ -1380,8 +1411,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
             <div className="space-y-3">
               {requests.length === 0 ? (
-                <div className="p-6 text-center border border-[#DCE1EC] bg-white">
-                  <p className="text-xs text-[#475569]">
+                <div className={`p-6 rounded-[20px] text-center border ${false ? 'bg-white/[0.02] border-white/5' : 'bg-white border-black/5'}`}>
+                  <p className="text-xs text-white/50">
                     {lang === 'en' ? 'No pending registration requests.' : 'कोई लंबित अनुरोध नहीं।'}
                   </p>
                 </div>
@@ -1389,31 +1420,33 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 requests.map((req) => (
                   <div
                     key={req.id}
-                    className="p-4 border border-[#DCE1EC] bg-white shadow-xs space-y-2.5"
+                    className={`p-4 rounded-[20px] border space-y-2.5 ${
+                      false ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
+                    }`}
                   >
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm text-[#0A0E1A]">{req.full_name}</span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#EEF2FF] text-[#2F5BFF] border border-[#2F5BFF]/20">
+                          <span className="font-bold text-sm">{req.full_name}</span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#2F5BFF]/10 text-[#2F5BFF] border border-[#2F5BFF]/20">
                             {req.request_code}
                           </span>
                         </div>
-                        <span className="text-[11px] block mt-0.5 text-[#475569]">
+                        <span className={`text-[11px] block mt-0.5 ${false ? 'text-white/60' : 'text-black/50'}`}>
                           {req.category} · {req.purpose}
                         </span>
                       </div>
 
                       {/* Status Badges Matching Section 4 */}
                       <span
-                        className={`px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase shrink-0 border ${
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shrink-0 ${
                           req.status === 'APPROVED'
-                            ? 'bg-[#15803D]/10 text-[#15803D] border-[#15803D]/30'
+                            ? 'bg-[#1FB36B]/15 text-[#1FB36B] border border-[#1FB36B]/30'
                             : req.status === 'REJECTED'
-                            ? 'bg-[#C93338]/10 text-[#C93338] border-[#C93338]/30'
+                            ? 'bg-[#C93338]/15 text-[#C93338] border border-[#C93338]/30'
                             : req.status === 'ADDITIONAL_INFO_REQUIRED'
-                            ? 'bg-[#EEF2FF] text-[#2F5BFF] border-[#2F5BFF]/30'
-                            : 'bg-amber-50 text-amber-800 border-amber-300'
+                            ? 'bg-[#2F5BFF]/15 text-[#2F5BFF] border border-[#2F5BFF]/30'
+                            : 'bg-[#FFB547]/15 text-[#FFB547] border border-[#FFB547]/30'
                         }`}
                       >
                         {req.status === 'APPROVED'
@@ -1434,17 +1467,17 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                       </span>
                     </div>
 
-                    <div className="text-[11px] space-y-1 pt-1.5 border-t border-[#DCE1EC] text-[#475569]">
+                    <div className={`text-[11px] space-y-1 pt-1 border-t ${false ? 'border-white/5 text-white/70' : 'border-black/5 text-black/60'}`}>
                       {req.vehicle_plate && (
                         <div className="flex items-center gap-1.5">
-                          <Car className="w-3.5 h-3.5 text-[#2F5BFF]" />
-                          <span className="font-mono">Vehicle: {req.vehicle_plate}</span>
+                          <Car className="w-3.5 h-3.5 text-[#12B5A6]" />
+                          <span>Vehicle: {req.vehicle_plate}</span>
                         </div>
                       )}
                       <div>• Duration: {req.expected_duration}</div>
                       {req.phone && <div>• Phone: {req.phone}</div>}
                       {req.review_notes && (
-                        <div className="text-[10px] text-amber-700 font-medium">
+                        <div className="text-[10px] text-amber-400 font-medium">
                           Admin note: {req.review_notes}
                         </div>
                       )}
@@ -1463,30 +1496,34 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-display text-xl font-bold uppercase tracking-tight text-[#0A0E1A]">
+                <h3 className="text-base font-bold tracking-tight">
                   {lang === 'en' ? 'Scanning History' : 'स्कैनिंग इतिहास'}
                 </h3>
-                <p className="font-mono text-[11px] text-[#475569]">
+                <p className={`text-xs ${false ? 'text-white/60' : 'text-black/50'}`}>
                   {activeOfficer.gate} · IIM Sambalpur
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setEvents(liveSync.getEvents())}
-                className="p-1.5 border border-[#DCE1EC] bg-white text-[#0A0E1A] text-xs flex items-center gap-1 hover:border-[#2F5BFF] cursor-pointer"
+                className="p-1.5 rounded-lg border text-xs flex items-center gap-1 hover:bg-white/5 cursor-pointer"
               >
-                <RefreshCw className="w-3.5 h-3.5 text-[#2F5BFF]" />
+                <RefreshCw className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-[#475569]" />
+              <Search className={`w-3.5 h-3.5 absolute left-3 top-3 ${false ? 'text-white/40' : 'text-black/40'}`} />
               <input
                 type="text"
                 value={activitySearch}
                 onChange={(e) => setActivitySearch(e.target.value)}
                 placeholder={lang === 'en' ? 'Search activity by name or ID...' : 'नाम या आईडी से खोजें...'}
-                className="w-full pl-9 pr-3 py-2 text-xs border border-[#CBD5E1] bg-white text-[#0A0E1A] placeholder-[#94A3B8] outline-none focus:border-[#2F5BFF]"
+                className={`w-full pl-9 pr-3 py-2 rounded-xl text-xs border outline-none ${
+                  false
+                    ? 'bg-black/40 border-white/10 text-white placeholder-white/40'
+                    : 'bg-white border-black/10 text-[#070B1A] placeholder-black/40 shadow-xs'
+                }`}
               />
             </div>
 
@@ -1496,10 +1533,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   key={filter}
                   type="button"
                   onClick={() => setActivityFilter(filter)}
-                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-[0.08em] font-semibold transition-all shrink-0 cursor-pointer border ${
+                  className={`px-3 py-1.5 rounded-full capitalize font-semibold transition-all shrink-0 ${
                     activityFilter === filter
-                      ? 'bg-[#2F5BFF] text-white border-[#2F5BFF]'
-                      : 'bg-white text-[#475569] border-[#DCE1EC] hover:border-[#0A0E1A]'
+                      ? 'bg-[#2F5BFF] text-white shadow-xs'
+                      : false
+                      ? 'bg-white/5 text-white/70 hover:bg-white/10'
+                      : 'bg-white text-black/60 border border-black/5 hover:bg-black/5'
                   }`}
                 >
                   {filter === 'all'
@@ -1526,29 +1565,33 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <div
                   key={item.id}
                   onClick={() => setSelectedReceiptEvent(item)}
-                  className="p-3 border border-[#DCE1EC] bg-white hover:border-[#2F5BFF] flex items-center justify-between text-xs cursor-pointer transition-all"
+                  className={`p-3 rounded-2xl border flex items-center justify-between text-xs cursor-pointer transition-all ${
+                    false
+                      ? 'bg-black/20 hover:bg-black/40 border-white/5'
+                      : 'bg-white hover:bg-black/5 border-black/5 shadow-xs'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <div className="w-8 h-8 bg-[#EEF2FF] text-[#2F5BFF] font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#2F5BFF]/15 text-[#2F5BFF] font-bold text-xs flex items-center justify-center shrink-0">
                       {(item.person_name || 'U')[0]}
                     </div>
                     <div className="truncate">
-                      <span className="font-semibold block truncate text-[#0A0E1A]">
+                      <span className="font-semibold block truncate">
                         {item.person_name || 'Subject'}
                       </span>
-                      <span className="font-mono text-[10px] text-[#475569]">
+                      <span className={`text-[10px] ${false ? 'text-white/50' : 'text-black/40'}`}>
                         {item.gate_name} · {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   </div>
 
                   <span
-                    className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase shrink-0 border ${
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
                       item.guard_decision === 'GRANT_ENTRY' || item.outcome === 'VERIFIED_AUTHORIZED' || item.outcome === 'CASE_1_VERIFIED'
-                        ? 'bg-[#15803D]/10 text-[#15803D] border-[#15803D]/30'
+                        ? 'bg-[#1FB36B]/15 text-[#1FB36B] border border-[#1FB36B]/30'
                         : item.guard_decision === 'DENY_ENTRY' || item.outcome === 'ACCESS_DENIED'
-                        ? 'bg-[#C93338]/10 text-[#C93338] border-[#C93338]/30'
-                        : 'bg-amber-50 text-amber-800 border-amber-300'
+                        ? 'bg-[#C93338]/15 text-[#C93338] border border-[#C93338]/30'
+                        : 'bg-[#FFB547]/15 text-[#FFB547] border border-[#FFB547]/30'
                     }`}
                   >
                     {item.guard_decision === 'GRANT_ENTRY' || item.outcome === 'VERIFIED_AUTHORIZED' || item.outcome === 'CASE_1_VERIFIED'
@@ -1576,71 +1619,65 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-display text-xl font-bold uppercase tracking-tight text-[#0A0E1A]">
+                <h3 className="text-base font-bold tracking-tight">
                   {lang === 'en' ? 'Visitor Passes' : 'आगंतुक पास'}
                 </h3>
-                <p className="font-mono text-[11px] text-[#475569]">
+                <p className={`text-xs ${false ? 'text-white/60' : 'text-black/50'}`}>
                   {activeOfficer.gate} · IIM Sambalpur
                 </p>
               </div>
             </div>
 
             <div className="space-y-3">
-              {visitors.length === 0 ? (
-                <div className="p-6 text-center border border-[#DCE1EC] bg-white">
-                  <p className="text-xs text-[#475569]">
-                    {lang === 'en' ? 'No active visitor passes.' : 'कोई सक्रिय आगंतुक पास नहीं।'}
-                  </p>
-                </div>
-              ) : (
-                visitors.map((v) => (
-                  <div
-                    key={v.id}
-                    className="p-4 border border-[#DCE1EC] bg-white shadow-xs space-y-3"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm text-[#0A0E1A]">{v.visitor_name}</span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-[#EEF2FF] text-[#2F5BFF] border border-[#2F5BFF]/20">
-                            {v.pass_code}
-                          </span>
-                        </div>
-                        <p className="text-xs mt-0.5 text-[#475569]">
-                          {lang === 'en' ? 'Host' : 'मेजबान'}: {v.host_name}
-                        </p>
+              {visitors.map((v) => (
+                <div
+                  key={v.id}
+                  className={`p-4 rounded-[20px] border space-y-3 ${
+                    false ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">{v.visitor_name}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#2F5BFF]/10 text-[#2F5BFF] border border-[#2F5BFF]/20">
+                          {v.pass_code}
+                        </span>
                       </div>
+                      <p className={`text-xs mt-0.5 ${false ? 'text-white/60' : 'text-black/50'}`}>
+                        {lang === 'en' ? 'Host' : 'मेजबान'}: {v.host_name}
+                      </p>
+                    </div>
 
-                      <span
-                        className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase border ${
-                          v.status === 'CHECKED_IN'
-                            ? 'bg-[#15803D]/10 text-[#15803D] border-[#15803D]/30'
-                            : v.status === 'EXPECTED'
-                            ? 'bg-[#EEF2FF] text-[#2F5BFF] border-[#2F5BFF]/30'
-                            : 'bg-[#F2F4F8] text-[#475569] border-[#DCE1EC]'
-                        }`}
-                      >
-                        {v.status === 'CHECKED_IN'
-                          ? lang === 'en'
-                            ? 'Inside'
-                            : 'अंदर'
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        v.status === 'CHECKED_IN'
+                          ? 'bg-[#12B5A6]/15 text-[#12B5A6] border border-[#12B5A6]/30'
                           : v.status === 'EXPECTED'
-                          ? lang === 'en'
-                            ? 'Expected'
-                            : 'अपेक्षित'
-                          : lang === 'en'
-                          ? 'Checked Out'
-                          : 'बाहर'}
-                      </span>
-                    </div>
-
-                    <div className="text-[11px] space-y-0.5 pt-1.5 border-t border-[#DCE1EC] text-[#475569]">
-                      <div>• {lang === 'en' ? 'Purpose' : 'उद्देश्य'}: {v.purpose}</div>
-                      <div>• {lang === 'en' ? 'Valid' : 'वैधता'}: {v.valid_date} ({v.valid_until_time})</div>
-                    </div>
+                          ? 'bg-[#2F5BFF]/15 text-[#2F5BFF] border border-[#2F5BFF]/30'
+                          : 'bg-black/10 text-black/50'
+                      }`}
+                    >
+                      {v.status === 'CHECKED_IN'
+                        ? lang === 'en'
+                          ? 'Inside'
+                          : 'अंदर'
+                        : v.status === 'EXPECTED'
+                        ? lang === 'en'
+                          ? 'Expected'
+                          : 'अपेक्षित'
+                        : lang === 'en'
+                        ? 'Checked Out'
+                        : 'बाहर'}
+                    </span>
                   </div>
-                ))
-              )}
+
+                  <div className={`text-[11px] space-y-0.5 pt-1 border-t ${false ? 'border-white/5 text-white/70' : 'border-black/5 text-black/60'}`}>
+                    <div>• {lang === 'en' ? 'Purpose' : 'उद्देश्य'}: {v.purpose}</div>
+                    <div>• {lang === 'en' ? 'Valid' : 'वैधता'}: {v.valid_date} ({v.valid_until_time})</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -1650,40 +1687,48 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         {/* ========================================================= */}
         {activeTab === 'profile' && (
           <div className="space-y-4">
-            <div className="p-5 border border-[#DCE1EC] bg-white shadow-xs flex flex-col items-center text-center space-y-2">
-              <div className="w-14 h-14 bg-[#2F5BFF] text-white text-xl font-bold flex items-center justify-center">
+            <div
+              className={`p-5 rounded-[20px] border flex flex-col items-center text-center space-y-2 ${
+                false ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
+              }`}
+            >
+              <div className="w-14 h-14 rounded-full bg-[#2F5BFF] text-white text-xl font-bold flex items-center justify-center shadow-md">
                 G
               </div>
               <div>
-                <h3 className="font-display text-xl font-bold uppercase text-[#0A0E1A]">
+                <h3 className="text-base font-bold">
                   {lang === 'en' ? activeOfficer.name : activeOfficer.nameHi}
                 </h3>
-                <span className="font-mono text-xs text-[#475569]">
+                <span className={`text-xs ${false ? 'text-white/60' : 'text-black/50'}`}>
                   Badge ID: {activeOfficer.id} · Active On Duty
                 </span>
               </div>
             </div>
 
-            <div className="p-4 border border-[#DCE1EC] bg-white shadow-xs space-y-2.5 text-xs">
-              <div className="flex justify-between py-1.5 border-b border-[#DCE1EC]">
-                <span className="text-[#475569]">Institution</span>
-                <span className="font-semibold text-[#0A0E1A]">IIM Sambalpur</span>
+            <div
+              className={`p-4 rounded-[20px] border space-y-2.5 text-xs ${
+                false ? 'bg-white/[0.04] border-white/10' : 'bg-white border-black/5 shadow-xs'
+              }`}
+            >
+              <div className="flex justify-between py-1 border-b border-white/5">
+                <span className={false ? 'text-white/60' : 'text-black/50'}>Institution</span>
+                <span className="font-semibold">IIM Sambalpur</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#DCE1EC]">
-                <span className="text-[#475569]">Assigned Gate</span>
-                <span className="font-semibold text-[#0A0E1A]">{activeOfficer.gate}</span>
+              <div className="flex justify-between py-1 border-b border-white/5">
+                <span className={false ? 'text-white/60' : 'text-black/50'}>Assigned Gate</span>
+                <span className="font-semibold">{activeOfficer.gate}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#DCE1EC]">
-                <span className="text-[#475569]">Assigned Shift</span>
-                <span className="font-semibold text-[#0A0E1A]">{activeOfficer.shift}</span>
+              <div className="flex justify-between py-1 border-b border-white/5">
+                <span className={false ? 'text-white/60' : 'text-black/50'}>Assigned Shift</span>
+                <span className="font-semibold">{activeOfficer.shift}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#DCE1EC]">
-                <span className="text-[#475569]">Role Authorization</span>
-                <span className="font-mono font-semibold text-[#2F5BFF]">Guard Terminal Only</span>
+              <div className="flex justify-between py-1 border-b border-white/5">
+                <span className={false ? 'text-white/60' : 'text-black/50'}>Role Authorization</span>
+                <span className="font-semibold text-[#12B5A6]">Security Guard (Operational Terminal Only)</span>
               </div>
-              <div className="flex justify-between py-1.5">
-                <span className="text-[#475569]">RBAC Isolation</span>
-                <span className="font-mono font-semibold text-[#15803D]">Isolated from Admin Registry</span>
+              <div className="flex justify-between py-1">
+                <span className={false ? 'text-white/60' : 'text-black/50'}>RBAC Isolation</span>
+                <span className="font-semibold text-[#1FB36B]">Strictly Isolated from Admin Registry</span>
               </div>
             </div>
 
@@ -1691,7 +1736,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <button
               type="button"
               onClick={() => setSignOutModalOpen(true)}
-              className="w-full py-3.5 bg-[#C93338]/10 hover:bg-[#C93338]/15 border border-[#C93338]/30 text-[#C93338] font-mono text-xs uppercase tracking-[0.08em] font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="w-full py-3.5 rounded-2xl bg-[#C93338]/10 hover:bg-[#C93338]/20 border border-[#C93338]/30 text-[#C93338] font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
             >
               <LogOut className="w-4 h-4" />
               <span>{lang === 'en' ? 'Sign Out Guard Terminal' : 'गार्ड टर्मिनल साइन आउट करें'}</span>
@@ -1701,70 +1746,76 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </div>
 
       {/* ========================================================= */}
-      {/* BOTTOM NAVIGATION BAR (Light Theme Editorial Nav)         */}
+      {/* BOTTOM NAVIGATION BAR (Strict Guard Role Access)          */}
       {/* ========================================================= */}
-      <div className="px-2 py-2 border-t border-[#DCE1EC] bg-white text-[#0A0E1A] flex items-center justify-around text-xs">
+      <div
+        className={`px-2 py-2 border-t flex items-center justify-around text-xs ${
+          false
+            ? 'bg-[#070B1A]/95 border-white/10 text-white'
+            : 'bg-white border-black/5 text-[#070B1A] shadow-md'
+        }`}
+      >
         <button
           type="button"
           onClick={() => setActiveTab('verify')}
-          className={`flex flex-col items-center gap-1 py-1 px-2.5 transition-all cursor-pointer ${
-            activeTab === 'verify' ? 'text-[#2F5BFF] font-bold' : 'text-[#475569] hover:text-[#0A0E1A]'
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'verify' ? 'text-[#2F5BFF] font-bold' : false ? 'text-white/50' : 'text-black/40'
           }`}
         >
           <Camera className="w-5 h-5" />
-          <span className="font-mono text-[9px] uppercase tracking-wider">{lang === 'en' ? 'Scan' : 'स्कैन'}</span>
+          <span className="text-[10px]">{lang === 'en' ? 'Scan' : 'स्कैन'}</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('requests')}
-          className={`flex flex-col items-center gap-1 py-1 px-2.5 transition-all cursor-pointer relative ${
-            activeTab === 'requests' ? 'text-[#2F5BFF] font-bold' : 'text-[#475569] hover:text-[#0A0E1A]'
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all cursor-pointer relative ${
+            activeTab === 'requests' ? 'text-[#2F5BFF] font-bold' : false ? 'text-white/50' : 'text-black/40'
           }`}
         >
           <UserPlus className="w-5 h-5" />
           {pendingRequestsCount > 0 && (
-            <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-[#D97706]" />
+            <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-[#FFB547]" />
           )}
-          <span className="font-mono text-[9px] uppercase tracking-wider">{lang === 'en' ? 'Requests' : 'अनुरोध'}</span>
+          <span className="text-[10px]">{lang === 'en' ? 'Requests' : 'अनुरोध'}</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('activity')}
-          className={`flex flex-col items-center gap-1 py-1 px-2.5 transition-all cursor-pointer ${
-            activeTab === 'activity' ? 'text-[#2F5BFF] font-bold' : 'text-[#475569] hover:text-[#0A0E1A]'
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'activity' ? 'text-[#2F5BFF] font-bold' : false ? 'text-white/50' : 'text-black/40'
           }`}
         >
           <Clock className="w-5 h-5" />
-          <span className="font-mono text-[9px] uppercase tracking-wider">{lang === 'en' ? 'History' : 'इतिहास'}</span>
+          <span className="text-[10px]">{lang === 'en' ? 'History' : 'इतिहास'}</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('visitors')}
-          className={`flex flex-col items-center gap-1 py-1 px-2.5 transition-all cursor-pointer ${
-            activeTab === 'visitors' ? 'text-[#2F5BFF] font-bold' : 'text-[#475569] hover:text-[#0A0E1A]'
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'visitors' ? 'text-[#12B5A6] font-bold' : false ? 'text-white/50' : 'text-black/40'
           }`}
         >
           <Users className="w-5 h-5" />
-          <span className="font-mono text-[9px] uppercase tracking-wider">{lang === 'en' ? 'Passes' : 'पास'}</span>
+          <span className="text-[10px]">{lang === 'en' ? 'Passes' : 'पास'}</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('profile')}
-          className={`flex flex-col items-center gap-1 py-1 px-2.5 transition-all cursor-pointer ${
-            activeTab === 'profile' ? 'text-[#2F5BFF] font-bold' : 'text-[#475569] hover:text-[#0A0E1A]'
+          className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'profile' ? 'text-[#2F5BFF] font-bold' : false ? 'text-white/50' : 'text-black/40'
           }`}
         >
           <User className="w-5 h-5" />
-          <span className="font-mono text-[9px] uppercase tracking-wider">{lang === 'en' ? 'Guard' : 'गार्ड'}</span>
+          <span className="text-[10px]">{lang === 'en' ? 'Guard' : 'गार्ड'}</span>
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* CAMERA VIEWFINDER (Option A: Face Scan — Light HUD)       */}
+      {/* CAMERA VIEWFINDER (Option A: Face Scan)                   */}
       {/* ========================================================= */}
       <AnimatePresence>
         {verificationStage === 'viewfinder_face' && (
@@ -1772,26 +1823,26 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed sm:absolute inset-0 z-50 bg-[#FAF9F6] text-[#0A0E1A] flex flex-col justify-between p-4 overflow-y-auto"
+            className="fixed sm:absolute inset-0 z-50 bg-[#070B1A] flex flex-col justify-between p-4 overflow-y-auto"
           >
-            <div className="flex items-center justify-between text-xs pt-1 gap-2">
+            <div className="flex items-center justify-between text-white text-xs pt-2 gap-2">
               <button
                 type="button"
                 onClick={() => setVerificationStage('idle')}
-                className="px-3 py-1.5 border border-[#DCE1EC] bg-white hover:border-[#0A0E1A] font-mono text-[10px] uppercase font-bold cursor-pointer shrink-0"
+                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer shrink-0"
               >
                 {lang === 'en' ? 'Cancel' : 'रद्द करें'}
               </button>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#15803D]/10 border border-[#15803D]/30 text-[#15803D] font-mono text-[10px] font-bold">
-                <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#15803D] animate-pulse' : 'bg-amber-500'}`} />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#12B5A6]/20 border border-[#12B5A6]/40 text-[#12B5A6] font-mono text-[10px]">
+                <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#12B5A6] animate-pulse' : 'bg-amber-400'}`} />
                 <span>{cameraActive ? 'REAR CAMERA ACTIVE' : 'REAR CAMERA STANDBY'}</span>
               </div>
-              <span className="px-2.5 py-1 bg-white border border-[#DCE1EC] text-[#475569] font-mono text-[10px] font-bold shrink-0">
+              <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 font-mono text-[10px] shrink-0">
                 BACK CAM ONLY
               </span>
             </div>
 
-            <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 border-2 border-[#0A0E1A] overflow-hidden bg-[#111827]">
+            <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 rounded-3xl overflow-hidden bg-black/50 border border-white/10">
               <video
                 ref={attachVideoRef}
                 autoPlay
@@ -1803,7 +1854,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               />
 
               {/* Oval Face Guide */}
-              <div className="relative z-10 w-48 h-64 sm:w-56 sm:h-72 border-2 border-[#12B5A6] rounded-[50%] flex items-center justify-center shadow-[0_0_24px_rgba(18,181,166,0.35)] animate-pulse pointer-events-none">
+              <div className="relative z-10 w-48 h-64 sm:w-56 sm:h-72 border-2 border-[#12B5A6] rounded-[50%] flex items-center justify-center shadow-[0_0_30px_rgba(18,181,166,0.3)] animate-pulse pointer-events-none">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute top-20 left-16" />
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute top-20 right-16" />
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute top-32" />
@@ -1812,11 +1863,11 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </div>
 
               {cameraError ? (
-                <div className="relative z-10 mt-4 mx-4 px-3 py-2 bg-white/95 border border-[#C93338] text-[#C93338] text-[11px] font-semibold text-center max-w-xs">
+                <div className="relative z-10 mt-4 mx-4 px-3 py-2 rounded-2xl bg-rose-950/90 border border-rose-400/40 text-rose-100 text-[11px] font-medium text-center max-w-xs">
                   {cameraError}
                 </div>
               ) : (
-                <p className="relative z-10 text-xs text-[#0A0E1A] font-medium text-center mt-4 bg-white/90 px-3 py-1.5 border border-[#DCE1EC]">
+                <p className="relative z-10 text-xs text-white/90 font-medium text-center mt-4 bg-black/60 px-3 py-1.5 rounded-full">
                   {cameraActive
                     ? lang === 'en'
                       ? 'Centre face in the oval & tap shutter to verify.'
@@ -1828,21 +1879,21 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               )}
             </div>
 
-            <div className="flex flex-col items-center pb-2 space-y-2.5">
+            <div className="flex flex-col items-center pb-3 space-y-2.5">
               <button
                 type="button"
                 data-testid="guard-face-shutter"
                 onClick={() => executePipelineVerification({ fromViewfinder: 'face' })}
-                className="w-16 h-16 rounded-full border-4 border-[#2F5BFF]/30 bg-[#2F5BFF] flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
+                className="w-16 h-16 rounded-full border-4 border-white/30 bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
               >
-                <div className="w-11 h-11 rounded-full border-2 border-white bg-white" />
+                <div className="w-12 h-12 rounded-full border-2 border-[#2F5BFF] bg-white" />
               </button>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#475569]">
+              <span className="text-[10px] text-white/70">
                 {lang === 'en' ? 'Tap Shutter to Capture & Compare Biometrics' : 'कैप्चर करने के लिए दबाएँ'}
               </span>
 
-              <label className="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-[#F2F4F8] border border-[#0A0E1A] text-[#0A0E1A] font-mono text-[10px] uppercase tracking-[0.08em] font-bold cursor-pointer">
-                <Upload className="w-3.5 h-3.5 text-[#2F5BFF]" />
+              <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-[11px] font-semibold cursor-pointer">
+                <Upload className="w-3.5 h-3.5 text-[#12B5A6]" />
                 <span>
                   {lang === 'en' ? 'Native Back Camera / Photo' : 'बैक कैमरा / फोटो अपलोड'}
                 </span>
@@ -1861,7 +1912,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* CAMERA VIEWFINDER (Option B: Vehicle ANPR — Light HUD)    */}
+      {/* CAMERA VIEWFINDER (Option B: Vehicle ANPR Scan)           */}
       {/* ========================================================= */}
       <AnimatePresence>
         {verificationStage === 'viewfinder_vehicle' && (
@@ -1869,26 +1920,26 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed sm:absolute inset-0 z-50 bg-[#FAF9F6] text-[#0A0E1A] flex flex-col justify-between p-4 overflow-y-auto"
+            className="fixed sm:absolute inset-0 z-50 bg-[#070B1A] flex flex-col justify-between p-4 overflow-y-auto"
           >
-            <div className="flex items-center justify-between text-xs pt-1 gap-2">
+            <div className="flex items-center justify-between text-white text-xs pt-2 gap-2">
               <button
                 type="button"
                 onClick={() => setVerificationStage('idle')}
-                className="px-3 py-1.5 border border-[#DCE1EC] bg-white hover:border-[#0A0E1A] font-mono text-[10px] uppercase font-bold cursor-pointer shrink-0"
+                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer shrink-0"
               >
                 {lang === 'en' ? 'Cancel' : 'रद्द करें'}
               </button>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#EEF2FF] border border-[#2F5BFF]/30 text-[#2F5BFF] font-mono text-[10px] font-bold">
-                <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#2F5BFF] animate-pulse' : 'bg-amber-500'}`} />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2F5BFF]/20 border border-[#2F5BFF]/40 text-[#2F5BFF] font-mono text-[10px]">
+                <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#2F5BFF] animate-pulse' : 'bg-amber-400'}`} />
                 <span>REAR ANPR {cameraActive ? 'LIVE' : 'STANDBY'}</span>
               </div>
-              <span className="px-2.5 py-1 bg-white border border-[#DCE1EC] text-[#475569] font-mono text-[10px] font-bold shrink-0">
+              <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 font-mono text-[10px] shrink-0">
                 BACK CAM ONLY
               </span>
             </div>
 
-            <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 border-2 border-[#0A0E1A] overflow-hidden bg-[#111827]">
+            <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 rounded-3xl overflow-hidden bg-black/50 border border-white/10">
               <video
                 ref={attachVideoRef}
                 autoPlay
@@ -1900,8 +1951,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               />
 
               {/* Number Plate Rectangular Guide + Manual Correction Input */}
-              <div className="relative z-10 w-72 p-3 border-2 border-[#2F5BFF] flex flex-col items-center justify-center bg-white/95 backdrop-blur-xs space-y-2">
-                <div className="text-[#475569] font-mono text-[10px] font-bold">
+              <div className="relative z-10 w-72 p-3 border-2 border-[#2F5BFF] rounded-2xl flex flex-col items-center justify-center shadow-[0_0_30px_rgba(47,91,255,0.4)] bg-black/60 backdrop-blur-xs space-y-2">
+                <div className="text-white/70 font-mono text-[10px]">
                   VEHICLE REGISTRATION PLATE
                 </div>
                 <input
@@ -1909,16 +1960,16 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   value={scanPlateInput}
                   onChange={(e) => setScanPlateInput(e.target.value.toUpperCase())}
                   placeholder="OD02AB1234"
-                  className="w-full px-3 py-1.5 bg-[#FAF9F6] border border-[#CBD5E1] font-mono text-sm tracking-widest text-[#0A0E1A] font-bold text-center uppercase outline-none focus:border-[#2F5BFF]"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white/10 border border-white/25 font-mono text-sm tracking-widest text-[#12B5A6] font-bold text-center uppercase outline-none"
                 />
               </div>
 
               {cameraError ? (
-                <div className="relative z-10 mt-4 mx-4 px-3 py-2 bg-white/95 border border-[#C93338] text-[#C93338] text-[11px] font-semibold text-center max-w-xs">
+                <div className="relative z-10 mt-4 mx-4 px-3 py-2 rounded-2xl bg-rose-950/90 border border-rose-400/40 text-rose-100 text-[11px] font-medium text-center max-w-xs">
                   {cameraError}
                 </div>
               ) : (
-                <p className="relative z-10 text-xs text-[#0A0E1A] font-medium text-center mt-4 bg-white/90 px-3 py-1.5 border border-[#DCE1EC]">
+                <p className="relative z-10 text-xs text-white/90 font-medium text-center mt-4 bg-black/60 px-3 py-1.5 rounded-full">
                   {lang === 'en'
                     ? 'Enter or confirm license plate above & tap verify.'
                     : 'ऊपर वाहन नंबर की पुष्टि करें और सत्यापित करें।'}
@@ -1926,15 +1977,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               )}
             </div>
 
-            <div className="flex flex-col items-center pb-2 space-y-2.5">
+            <div className="flex flex-col items-center pb-3 space-y-2.5">
               <button
                 type="button"
                 onClick={() => executePipelineVerification({ fromViewfinder: 'vehicle' })}
-                className="w-16 h-16 rounded-full border-4 border-[#2F5BFF]/30 bg-[#2F5BFF] flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
+                className="w-16 h-16 rounded-full border-4 border-white/30 bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
               >
-                <div className="w-11 h-11 rounded-full border-2 border-white bg-white" />
+                <div className="w-12 h-12 rounded-full border-2 border-[#12B5A6] bg-white" />
               </button>
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#475569]">
+              <span className="text-[10px] text-white/70">
                 {lang === 'en' ? 'Tap to Verify Vehicle Plate' : 'नंबर प्लेट सत्यापित करें'}
               </span>
             </div>
@@ -1943,7 +1994,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* VERIFYING STAGE PIPELINE (LIGHT THEME)                    */}
+      {/* VERIFYING STAGE PIPELINE                                  */}
       {/* ========================================================= */}
       <AnimatePresence>
         {verificationStage === 'verifying' && (
@@ -1951,23 +2002,20 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#FAF9F6] text-[#0A0E1A] flex flex-col justify-between p-6"
+            className="absolute inset-0 z-50 bg-[#070B1A] text-white flex flex-col justify-between p-6"
           >
             <div className="pt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] font-bold text-[#2F5BFF] block text-center mb-1">
-                PROCESSING PIPELINE
-              </span>
-              <h2 className="font-display text-3xl uppercase font-bold tracking-tight text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-center">
                 {lang === 'en' ? 'Verifying Credentials' : 'क्रेडेंशियल्स सत्यापित किए जा रहे हैं'}
               </h2>
-              <p className="text-xs text-[#475569] text-center mt-1">
+              <p className="text-xs text-white/60 text-center mt-1">
                 {lang === 'en'
                   ? 'Comparing biometric representation against centralized administrator database.'
                   : 'केंद्रीकृत व्यवस्थापक डेटाबेस से बायोमेट्रिक तुलना जारी है।'}
               </p>
             </div>
 
-            <div className="space-y-3 max-w-xs mx-auto w-full bg-white border border-[#DCE1EC] p-5">
+            <div className="space-y-4 max-w-xs mx-auto w-full">
               {[
                 { title: 'Image quality & lighting validation', titleHi: 'छवि गुणवत्ता व प्रकाश सत्यापन', step: 1 },
                 { title: 'Face detection & 128-D embedding', titleHi: 'चेहरा पहचान (YuNet & SFace 128-D)', step: 2 },
@@ -1982,10 +2030,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${
                         isPassed
-                          ? 'bg-[#15803D] text-white'
+                          ? 'bg-[#1FB36B] text-white'
                           : isCurrent
                           ? 'border-2 border-[#2F5BFF] border-t-transparent animate-spin'
-                          : 'border border-[#CBD5E1] text-[#94A3B8]'
+                          : 'border border-white/20 text-white/40'
                       }`}
                     >
                       {isPassed ? <Check className="w-3.5 h-3.5" /> : null}
@@ -1993,10 +2041,10 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     <span
                       className={`text-xs ${
                         isPassed
-                          ? 'text-[#0A0E1A] font-semibold'
+                          ? 'text-white font-semibold'
                           : isCurrent
                           ? 'text-[#2F5BFF] font-medium'
-                          : 'text-[#94A3B8]'
+                          : 'text-white/40'
                       }`}
                     >
                       {lang === 'en' ? item.title : item.titleHi}
@@ -2007,8 +2055,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             </div>
 
             <div className="pb-6 text-center">
-              <span className="text-[10px] text-[#475569] font-mono">
-                CENTRALIZED DB VERIFICATION · IIM SAMBALPUR
+              <span className="text-[10px] text-white/40 font-mono">
+                CENTRALIZED DB VERIFICATION • IIM SAMBALPUR
               </span>
             </div>
           </motion.div>
@@ -2016,7 +2064,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* SCREEN 3: VERIFICATION RESULTS (LIGHT EDITION)            */}
+      {/* SCREEN 3: VERIFICATION RESULTS (Section 3 Cases 1, 2, 3)  */}
       {/* ========================================================= */}
       <AnimatePresence>
         {verificationStage === 'outcome' && currentResult && (
@@ -2024,42 +2072,42 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#FAF9F6] text-[#0A0E1A] flex flex-col justify-between p-6 overflow-y-auto"
+            className="absolute inset-0 z-50 bg-[#070B1A] text-white flex flex-col justify-between p-6 overflow-y-auto"
           >
             {/* Outcome Icon & Title */}
             <div className="flex flex-col items-center text-center pt-2 space-y-3">
               {currentResult.case_outcome === 'CASE_1_VERIFIED' && (
-                <div className="w-20 h-20 rounded-full bg-[#15803D] flex items-center justify-center text-white shadow-lg">
+                <div className="w-20 h-20 rounded-full bg-[#1FB36B] flex items-center justify-center text-white shadow-[0_0_35px_rgba(31,179,107,0.4)]">
                   <Check className="w-10 h-10 stroke-[3]" />
                 </div>
               )}
               {(currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' || currentResult.case_outcome === 'MANUAL_REVIEW_REQUIRED') && (
-                <div className="w-20 h-20 rounded-full bg-[#D97706] flex items-center justify-center text-white shadow-lg">
+                <div className="w-20 h-20 rounded-full bg-[#FFB547] flex items-center justify-center text-black shadow-[0_0_35px_rgba(255,181,71,0.4)]">
                   <AlertTriangle className="w-10 h-10 stroke-[2.5]" />
                 </div>
               )}
               {(currentResult.case_outcome === 'CASE_3_NOT_VERIFIED' || currentResult.case_outcome === 'ACCESS_DENIED' || currentResult.case_outcome === 'ACCESS_EXPIRED') && (
-                <div className="w-20 h-20 rounded-full bg-[#C93338] flex items-center justify-center text-white shadow-lg">
+                <div className="w-20 h-20 rounded-full bg-[#C93338] flex items-center justify-center text-white shadow-[0_0_35px_rgba(201,51,56,0.4)]">
                   <AlertCircle className="w-10 h-10 stroke-[3]" />
                 </div>
               )}
 
               <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-[#475569] block">
+                <span className="text-[10px] font-mono tracking-widest uppercase opacity-70 block">
                   STATUS
                 </span>
                 <h2
-                  className={`font-display text-3xl uppercase font-extrabold tracking-tight ${
+                  className={`text-2xl font-extrabold tracking-tight ${
                     currentResult.case_outcome === 'CASE_1_VERIFIED'
-                      ? 'text-[#15803D]'
+                      ? 'text-[#1FB36B]'
                       : currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' || currentResult.case_outcome === 'MANUAL_REVIEW_REQUIRED'
-                      ? 'text-[#D97706]'
+                      ? 'text-[#FFB547]'
                       : 'text-[#C93338]'
                   }`}
                 >
                   {currentResult.status_title}
                 </h2>
-                <p className="text-xs text-[#475569] mt-1 max-w-xs leading-relaxed">
+                <p className="text-xs text-white/70 mt-1 max-w-xs leading-relaxed">
                   {currentResult.case_outcome === 'CASE_1_VERIFIED'
                     ? lang === 'en'
                       ? 'Person and vehicle successfully verified against institutional records.'
@@ -2073,17 +2121,17 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </div>
             </div>
 
-            {/* Structured Result Card */}
-            <div className="my-3 p-4 bg-white border border-[#DCE1EC] shadow-xs space-y-2.5 text-xs">
+            {/* Structured Result Card matching Section 3 specifications */}
+            <div className="my-3 p-4 rounded-[22px] bg-white/[0.04] border border-white/10 space-y-2.5 text-xs">
               {currentResult.person && (
                 <>
-                  <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                    <span className="text-[#475569]">Person:</span>
-                    <span className="font-bold text-[#0A0E1A]">{currentResult.person.name}</span>
+                  <div className="flex justify-between py-1 border-b border-white/5">
+                    <span className="text-white/60">Person:</span>
+                    <span className="font-bold">{currentResult.person.name}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                    <span className="text-[#475569]">Face:</span>
-                    <span className={currentResult.person.face_matched ? 'text-[#15803D] font-bold' : 'text-[#C93338] font-bold'}>
+                  <div className="flex justify-between py-1 border-b border-white/5">
+                    <span className="text-white/60">Face:</span>
+                    <span className={currentResult.person.face_matched ? 'text-[#1FB36B] font-bold' : 'text-[#C93338] font-bold'}>
                       {currentResult.person.face_matched ? 'Match found' : 'No match'}
                       {currentResult.person.confidence_score ? ` (${(currentResult.person.confidence_score > 1 ? currentResult.person.confidence_score : currentResult.person.confidence_score * 100).toFixed(1)}%)` : ''}
                     </span>
@@ -2092,17 +2140,17 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               )}
               {currentResult.vehicle?.license_plate && (
                 <>
-                  <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                    <span className="text-[#475569]">Vehicle Plate:</span>
-                    <span className="font-mono font-bold text-[#0A0E1A]">{currentResult.vehicle.license_plate}</span>
+                  <div className="flex justify-between py-1 border-b border-white/5">
+                    <span className="text-white/60">Vehicle:</span>
+                    <span className="font-mono font-bold">{currentResult.vehicle.license_plate}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                    <span className="text-[#475569]">Vehicle Status:</span>
+                  <div className="flex justify-between py-1 border-b border-white/5">
+                    <span className="text-white/60">Vehicle:</span>
                     <span
                       className={
                         currentResult.vehicle.vehicle_matched && currentResult.vehicle.is_associated_with_person
-                          ? 'text-[#15803D] font-bold'
-                          : 'text-[#D97706] font-bold'
+                          ? 'text-[#1FB36B] font-bold'
+                          : 'text-[#FFB547] font-bold'
                       }
                     >
                       {currentResult.vehicle.vehicle_matched && currentResult.vehicle.is_associated_with_person
@@ -2114,14 +2162,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   </div>
                 </>
               )}
-              <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                <span className="text-[#475569]">Access:</span>
+              <div className="flex justify-between py-1 border-b border-white/5">
+                <span className="text-white/60">Access:</span>
                 <span
                   className={
                     currentResult.access_decision === 'AUTHORIZED'
-                      ? 'text-[#15803D] font-bold'
+                      ? 'text-[#1FB36B] font-bold'
                       : currentResult.access_decision === 'PARTIALLY_AUTHORIZED' || currentResult.access_decision === 'MANUAL_REVIEW_REQUIRED'
-                      ? 'text-[#D97706] font-bold'
+                      ? 'text-[#FFB547] font-bold'
                       : 'text-[#C93338] font-bold'
                   }
                 >
@@ -2129,8 +2177,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 </span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-[#475569]">Timestamp:</span>
-                <span className="font-mono text-[10px] text-[#475569]">
+                <span className="text-white/60">Timestamp:</span>
+                <span className="font-mono text-[10px] text-white/50">
                   {new Date(currentResult.timestamp).toLocaleTimeString()}
                 </span>
               </div>
@@ -2138,28 +2186,28 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
             {/* ACTIONS ACCORDING TO CASE SPECIFICATIONS */}
             <div className="space-y-2 pb-2">
-              {/* CASE 1 ACTIONS */}
+              {/* CASE 1 ACTIONS: Record Entry & Cancel */}
               {currentResult.case_outcome === 'CASE_1_VERIFIED' && (
                 <>
                   <button
                     type="button"
                     onClick={() => handleConfirmDecision('GRANT_ENTRY')}
-                    className="w-full min-h-[50px] bg-[#15803D] hover:bg-[#166534] active:scale-[0.99] transition-all text-white font-mono uppercase tracking-[0.1em] font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full min-h-[52px] rounded-full bg-[#1FB36B] hover:bg-[#199457] active:scale-[0.98] transition-all text-white font-extrabold text-sm shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Check className="w-4 h-4" />
+                    <Check className="w-5 h-5" />
                     <span>{lang === 'en' ? 'Record Entry' : 'प्रवेश दर्ज करें'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setVerificationStage('idle')}
-                    className="w-full py-2.5 text-xs font-semibold text-[#475569] hover:text-[#0A0E1A] cursor-pointer"
+                    className="w-full py-2.5 rounded-full text-xs text-white/60 hover:text-white cursor-pointer"
                   >
                     {lang === 'en' ? 'Cancel' : 'रद्द करें'}
                   </button>
                 </>
               )}
 
-              {/* CASE 2 ACTIONS */}
+              {/* CASE 2 ACTIONS: Request Vehicle Registration & Deny Entry */}
               {currentResult.case_outcome === 'CASE_2_PARTIALLY_VERIFIED' && (
                 <>
                   <button
@@ -2172,28 +2220,28 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                         'Vehicle addition for registered person'
                       );
                     }}
-                    className="w-full min-h-[48px] bg-[#D97706] text-white font-mono uppercase text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full min-h-[50px] rounded-full bg-[#FFB547] text-black font-extrabold text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Car className="w-4 h-4 text-white" />
+                    <Car className="w-4 h-4 text-black" />
                     <span>{lang === 'en' ? 'Request Vehicle Registration' : 'वाहन पंजीकरण का अनुरोध करें'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleConfirmDecision('DENY_ENTRY')}
-                    className="w-full py-3 bg-[#C93338]/10 border border-[#C93338]/30 text-[#C93338] font-bold text-xs cursor-pointer hover:bg-[#C93338]/20"
+                    className="w-full py-3 rounded-full bg-[#C93338]/20 border border-[#C93338]/40 text-[#C93338] font-bold text-xs cursor-pointer hover:bg-[#C93338]/30"
                   >
                     {lang === 'en' ? 'Deny Entry / Escalate' : 'प्रवेश अस्वीकार करें / आगे भेजें'}
                   </button>
                 </>
               )}
 
-              {/* MANUAL REVIEW */}
+              {/* MANUAL REVIEW (POOR LIGHTING / MULTIPLE FACES) */}
               {currentResult.case_outcome === 'MANUAL_REVIEW_REQUIRED' && (
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setVerificationStage('idle')}
-                    className="py-3 bg-[#D97706] text-white font-bold text-xs flex items-center justify-center gap-1 cursor-pointer"
+                    className="py-3 rounded-full bg-[#FFB547] text-black font-extrabold text-xs flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>{lang === 'en' ? 'Retry Scan' : 'पुनः प्रयास'}</span>
@@ -2201,7 +2249,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   <button
                     type="button"
                     onClick={() => handleConfirmDecision('DENY_ENTRY')}
-                    className="py-3 bg-[#C93338]/10 border border-[#C93338]/30 text-[#C93338] font-bold text-xs cursor-pointer"
+                    className="py-3 rounded-full bg-[#C93338]/20 border border-[#C93338]/40 text-[#C93338] font-bold text-xs cursor-pointer"
                   >
                     <span>{lang === 'en' ? 'Escalate / Deny' : 'अस्वीकृत'}</span>
                   </button>
@@ -2225,7 +2273,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                           currentResult.vehicle?.license_plate || ''
                         );
                       }}
-                      className="w-full min-h-[48px] bg-[#2F5BFF] text-white font-mono uppercase text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full min-h-[50px] rounded-full bg-[#2F5BFF] text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <UserPlus className="w-4 h-4" />
                       <span>
@@ -2243,7 +2291,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     <button
                       type="button"
                       onClick={() => setVerificationStage('idle')}
-                      className="py-2.5 bg-white border border-[#DCE1EC] hover:border-[#0A0E1A] text-xs font-semibold text-[#0A0E1A] flex items-center justify-center gap-1 cursor-pointer"
+                      className="py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold text-white flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       <span>{lang === 'en' ? 'Retry Scan' : 'पुनः प्रयास'}</span>
@@ -2251,7 +2299,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     <button
                       type="button"
                       onClick={() => handleConfirmDecision('DENY_ENTRY')}
-                      className="py-2.5 bg-[#C93338]/10 border border-[#C93338]/30 text-[#C93338] font-semibold text-xs flex items-center justify-center cursor-pointer hover:bg-[#C93338]/20"
+                      className="py-2.5 rounded-full bg-[#C93338]/20 border border-[#C93338]/40 text-[#C93338] font-semibold text-xs flex items-center justify-center cursor-pointer hover:bg-[#C93338]/30"
                     >
                       <span>{lang === 'en' ? 'Deny Entry' : 'प्रवेश अस्वीकृत'}</span>
                     </button>
@@ -2264,7 +2312,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* MODAL: NEW PERSON REGISTRATION REQUEST (LIGHT EDITION)    */}
+      {/* MODAL: NEW PERSON REGISTRATION REQUEST (Section 4 Prompt) */}
       {/* ========================================================= */}
       <AnimatePresence>
         {regModalOpen && (
@@ -2272,17 +2320,19 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#0A0E1A]/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+            className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
           >
             <motion.div
               initial={{ y: 100 }}
               animate={{ y: 0 }}
               exit={{ y: 100 }}
-              className="w-full max-w-sm border border-[#DCE1EC] bg-white text-[#0A0E1A] p-5 space-y-3.5 max-h-[90vh] overflow-y-auto shadow-xl"
+              className={`w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] p-5 space-y-3.5 max-h-[90vh] overflow-y-auto ${
+                false ? 'bg-[#070B1A] text-white border border-white/10' : 'bg-white text-[#070B1A]'
+              }`}
             >
-              <div className="flex items-center justify-between pb-2 border-b border-[#DCE1EC]">
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <UserPlus className={`w-5 h-5 ${guardPermissions.can_create_person_directly ? 'text-amber-600' : 'text-[#2F5BFF]'}`} />
+                  <UserPlus className={`w-5 h-5 ${guardPermissions.can_create_person_directly ? 'text-amber-500' : 'text-[#2F5BFF]'}`} />
                   <div>
                     <h3 className="font-bold text-sm">
                       {guardPermissions.can_create_person_directly
@@ -2293,7 +2343,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                         ? 'Request New Person Registration'
                         : 'नया व्यक्ति पंजीकरण अनुरोध'}
                     </h3>
-                    <p className="text-[10px] text-[#475569]">
+                    <p className="text-[10px] opacity-60">
                       {guardPermissions.can_create_person_directly
                         ? `Mode 2 Authorized (${guardPermissions.direct_record_policy}) · Tagged GUARD_CREATED`
                         : lang === 'en'
@@ -2305,7 +2355,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <button
                   type="button"
                   onClick={() => setRegModalOpen(false)}
-                  className="p-1 hover:bg-[#F2F4F8] cursor-pointer"
+                  className="p-1 rounded-full hover:bg-white/10 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -2313,7 +2363,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
               <form onSubmit={handleNewPersonSubmit} className="space-y-2.5 text-xs">
                 <div>
-                  <label className="block font-semibold mb-1 text-[#475569]">
+                  <label className="block font-semibold mb-1 opacity-80">
                     {lang === 'en' ? 'Full Name' : 'पूरा नाम'} *
                   </label>
                   <input
@@ -2322,13 +2372,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     value={regFullName}
                     onChange={(e) => setRegFullName(e.target.value)}
                     placeholder="e.g. Alok Verma"
-                    className="w-full px-3 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none focus:border-[#2F5BFF]"
+                    className={`w-full px-3 py-2 rounded-xl border outline-none ${
+                      false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                    }`}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block font-semibold mb-1 text-[#475569]">
+                    <label className="block font-semibold mb-1 opacity-80">
                       {lang === 'en' ? 'Mobile Number' : 'मोबाइल नंबर'}
                     </label>
                     <input
@@ -2336,17 +2388,21 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                       value={regPhone}
                       onChange={(e) => setRegPhone(e.target.value)}
                       placeholder="+91 98000 00000"
-                      className="w-full px-3 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none focus:border-[#2F5BFF]"
+                      className={`w-full px-3 py-2 rounded-xl border outline-none ${
+                        false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold mb-1 text-[#475569]">
+                    <label className="block font-semibold mb-1 opacity-80">
                       {lang === 'en' ? 'Person Category' : 'श्रेणी'}
                     </label>
                     <select
                       value={regCategory}
                       onChange={(e: any) => setRegCategory(e.target.value)}
-                      className="w-full px-2 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none"
+                      className={`w-full px-2 py-2 rounded-xl border outline-none ${
+                        false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                      }`}
                     >
                       <option value="Visitor">Visitor</option>
                       <option value="Contractor">Contractor</option>
@@ -2359,7 +2415,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block font-semibold mb-1 text-[#475569]">
+                    <label className="block font-semibold mb-1 opacity-80">
                       {lang === 'en' ? 'Vehicle Reg Plate' : 'वाहन नंबर'}
                     </label>
                     <input
@@ -2367,17 +2423,21 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                       value={regVehiclePlate}
                       onChange={(e) => setRegVehiclePlate(e.target.value)}
                       placeholder="OD-15-X-3321"
-                      className="w-full px-3 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none font-mono uppercase focus:border-[#2F5BFF]"
+                      className={`w-full px-3 py-2 rounded-xl border outline-none font-mono uppercase ${
+                        false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold mb-1 text-[#475569]">
+                    <label className="block font-semibold mb-1 opacity-80">
                       {lang === 'en' ? 'Expected Duration' : 'अनुमानित अवधि'}
                     </label>
                     <select
                       value={regDuration}
                       onChange={(e) => setRegDuration(e.target.value)}
-                      className="w-full px-2 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none"
+                      className={`w-full px-2 py-2 rounded-xl border outline-none ${
+                        false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                      }`}
                     >
                       <option value="2 Hours">2 Hours</option>
                       <option value="Full Day">Full Day</option>
@@ -2388,7 +2448,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 </div>
 
                 <div>
-                  <label className="block font-semibold mb-1 text-[#475569]">
+                  <label className="block font-semibold mb-1 opacity-80">
                     {lang === 'en' ? 'Purpose of Visit' : 'आने का उद्देश्य'} *
                   </label>
                   <input
@@ -2397,12 +2457,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     value={regPurpose}
                     onChange={(e) => setRegPurpose(e.target.value)}
                     placeholder="e.g. Advisory Council Review Meeting"
-                    className="w-full px-3 py-2 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none focus:border-[#2F5BFF]"
+                    className={`w-full px-3 py-2 rounded-xl border outline-none ${
+                      false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold mb-1 text-[#475569]">
+                  <label className="block font-semibold mb-1 opacity-80">
                     {lang === 'en' ? 'Additional Notes' : 'अतिरिक्त टिप्पणी'}
                   </label>
                   <textarea
@@ -2410,7 +2472,9 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                     value={regNotes}
                     onChange={(e) => setRegNotes(e.target.value)}
                     placeholder="Host details, gate number, or special requests..."
-                    className="w-full px-3 py-1.5 border border-[#CBD5E1] bg-[#FAF9F6] text-[#0A0E1A] outline-none resize-none focus:border-[#2F5BFF]"
+                    className={`w-full px-3 py-1.5 rounded-xl border outline-none resize-none ${
+                      false ? 'bg-black/50 border-white/10 text-white' : 'bg-[#F4F5F8] border-black/10'
+                    }`}
                   />
                 </div>
 
@@ -2418,7 +2482,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   <button
                     type="submit"
                     disabled={regSubmitting}
-                    className="w-full py-3 bg-[#2F5BFF] hover:bg-[#1E44E0] text-white font-mono uppercase tracking-[0.08em] font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-full bg-[#2F5BFF] hover:bg-[#254cd6] text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
                     {regSubmitting ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -2442,7 +2506,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* SIGN OUT CONFIRMATION BOTTOM SHEET (LIGHT EDITION)        */}
+      {/* SIGN OUT CONFIRMATION BOTTOM SHEET                        */}
       {/* ========================================================= */}
       <AnimatePresence>
         {signOutModalOpen && (
@@ -2450,18 +2514,20 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#0A0E1A]/40 backdrop-blur-xs flex items-end justify-center p-0"
+            className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0"
           >
             <motion.div
               initial={{ y: 100 }}
               animate={{ y: 0 }}
               exit={{ y: 100 }}
-              className="w-full border-t border-[#DCE1EC] bg-white text-[#0A0E1A] p-6 space-y-4 text-center"
+              className={`w-full rounded-t-[28px] p-6 space-y-4 text-center ${
+                false ? 'bg-[#070B1A] text-white border-t border-white/10' : 'bg-white text-[#070B1A]'
+              }`}
             >
               <h3 className="text-xl font-bold">
                 {lang === 'en' ? 'Sign out Guard Terminal?' : 'गार्ड टर्मिनल साइन आउट करें?'}
               </h3>
-              <p className="text-xs text-[#475569] max-w-xs mx-auto leading-relaxed">
+              <p className="text-xs opacity-70 max-w-xs mx-auto leading-relaxed">
                 {lang === 'en'
                   ? 'Your session on this mobile gate terminal will end. Sign in credentials will be required to re-open.'
                   : 'इस गेट टर्मिनल पर आपका सत्र समाप्त हो जाएगा। पुनः खोलने के लिए क्रेडेंशियल आवश्यक होंगे।'}
@@ -2471,14 +2537,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="w-full min-h-[48px] bg-[#C93338] hover:bg-[#b02a2f] transition-all text-white font-mono uppercase tracking-[0.08em] font-bold text-xs cursor-pointer"
+                  className="w-full min-h-[50px] rounded-full bg-[#C93338] hover:bg-[#b02a2f] active:scale-[0.98] transition-all text-white font-bold text-sm shadow-md cursor-pointer"
                 >
                   {lang === 'en' ? 'Confirm Sign Out' : 'साइन आउट की पुष्टि करें'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setSignOutModalOpen(false)}
-                  className="w-full py-2.5 text-xs font-semibold text-[#475569] hover:text-[#0A0E1A] cursor-pointer"
+                  className="w-full py-2.5 rounded-full text-xs font-semibold opacity-70 hover:opacity-100 cursor-pointer"
                 >
                   {lang === 'en' ? 'Cancel' : 'रद्द करें'}
                 </button>
@@ -2489,7 +2555,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       </AnimatePresence>
 
       {/* ========================================================= */}
-      {/* MODAL: VERIFICATION RECEIPT DETAILS (LIGHT EDITION)       */}
+      {/* MODAL: VERIFICATION RECEIPT DETAILS                       */}
       {/* ========================================================= */}
       <AnimatePresence>
         {selectedReceiptEvent && (
@@ -2497,15 +2563,17 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#0A0E1A]/40 backdrop-blur-xs flex items-center justify-center p-4"
+            className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.95 }}
-              className="w-full max-w-sm border border-[#DCE1EC] bg-white text-[#0A0E1A] p-5 space-y-4 shadow-xl"
+              className={`w-full max-w-sm rounded-[24px] p-5 space-y-4 ${
+                false ? 'bg-[#070B1A] text-white border border-white/10' : 'bg-white text-[#070B1A]'
+              }`}
             >
-              <div className="flex items-center justify-between pb-2 border-b border-[#DCE1EC]">
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-[#2F5BFF]" />
                   <h3 className="font-bold text-sm">
@@ -2515,36 +2583,36 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <button
                   type="button"
                   onClick={() => setSelectedReceiptEvent(null)}
-                  className="p-1 hover:bg-[#F2F4F8] cursor-pointer"
+                  className="p-1 rounded-full hover:bg-white/10 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                  <span className="text-[#475569]">Event ID</span>
-                  <span className="font-mono text-[#0A0E1A]">{selectedReceiptEvent.id}</span>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="opacity-60">Event ID</span>
+                  <span className="font-mono">{selectedReceiptEvent.id}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                  <span className="text-[#475569]">Person</span>
-                  <span className="font-bold text-[#0A0E1A]">{selectedReceiptEvent.person_name}</span>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="opacity-60">Person</span>
+                  <span className="font-bold">{selectedReceiptEvent.person_name}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                  <span className="text-[#475569]">Gate Station</span>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="opacity-60">Gate Station</span>
                   <span>{selectedReceiptEvent.gate_name}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                  <span className="text-[#475569]">Officer</span>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="opacity-60">Officer</span>
                   <span>{selectedReceiptEvent.guard_name}</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-[#DCE1EC]">
-                  <span className="text-[#475569]">Decision</span>
-                  <span className="font-bold text-[#15803D]">{selectedReceiptEvent.guard_decision}</span>
+                <div className="flex justify-between py-1 border-b border-white/5">
+                  <span className="opacity-60">Decision</span>
+                  <span className="font-bold text-[#1FB36B]">{selectedReceiptEvent.guard_decision}</span>
                 </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-[#475569]">Ledger Hash</span>
-                  <span className="font-mono text-[10px] truncate max-w-[150px] text-[#475569]">
+                  <span className="opacity-60">Ledger Hash</span>
+                  <span className="font-mono text-[10px] truncate max-w-[150px]">
                     {selectedReceiptEvent.cryptographic_signature}
                   </span>
                 </div>
@@ -2554,7 +2622,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <button
                   type="button"
                   onClick={() => setSelectedReceiptEvent(null)}
-                  className="w-full py-2.5 bg-[#FAF9F6] border border-[#DCE1EC] hover:border-[#0A0E1A] font-semibold text-xs cursor-pointer"
+                  className="w-full py-2.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold text-xs cursor-pointer"
                 >
                   {lang === 'en' ? 'Close' : 'बंद करें'}
                 </button>
