@@ -39,6 +39,7 @@ import {
   SurfacePreviewArtwork,
 } from '@/components/landing/EditorialVisuals';
 import { MathVisionSection } from '@/components/landing/MathVisionSection';
+import { GatewiseLogo } from '@/components/brand/GatewiseLogo';
 import { CookieConsent } from '@/components/aura/compliance/CookieConsent';
 import { LegalModals } from '@/components/aura/compliance/LegalModals';
 import { liveSync } from '@/lib/services/live-sync';
@@ -481,18 +482,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
 
                 {/* Centered Editorial Crest */}
                 <Link href="/" className="flex items-center gap-2.5 group">
-                  <span className="w-8 h-8 bg-[#2F5BFF] flex items-center justify-center text-white shrink-0 transition-transform group-hover:scale-105">
-                    <svg viewBox="0 0 32 32" className="w-5 h-5" fill="none" aria-hidden="true">
-                      <path
-                        d="M9 24V15C9 11.134 12.134 8 16 8C19.866 8 23 11.134 23 15V24"
-                        stroke="white"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                      />
-                      <path d="M6 24H26" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                      <circle cx="16" cy="15" r="2.5" fill="#12B5A6" />
-                    </svg>
-                  </span>
+                  <GatewiseLogo size="md" className="transition-transform group-hover:scale-105" />
                   <div className="flex flex-col leading-none">
                     <span className="font-display text-lg font-bold tracking-tight uppercase text-[#0A0E1A]">
                       Gatewise AI
@@ -584,9 +574,9 @@ export const EditorialGatewiseLanding: React.FC = () => {
                   <div className="inline-flex items-center gap-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#0A0E1A]">
                     <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
                       {motionPlaying && (
-                        <span className="animate-ping absolute inline-flex h-full w-full bg-[#15803D] opacity-60" />
+                        <span className="animate-ping absolute inline-flex h-full w-full bg-[#2F5BFF] opacity-60" />
                       )}
-                      <span className="relative inline-flex h-2.5 w-2.5 bg-[#15803D]" />
+                      <span className="relative inline-flex h-2.5 w-2.5 bg-[#2F5BFF]" />
                     </span>
                     <span>LIVE CLUSTER · CAMPUS PERIMETER · SUPABASE POSTGRESQL</span>
                   </div>
