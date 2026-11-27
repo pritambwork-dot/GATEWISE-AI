@@ -62,17 +62,17 @@ const COMMAND_TABS = [
 
 const CAPABILITIES = [
   {
-    index: '#01 BIOMETRICS',
-    title: '128-D Cosine Vector Matching',
+    index: '#01 BIOMETRICS · RESNET-34',
+    title: 'SSD MobileNetV1 + ResNet-34 128-D',
     description:
-      'Every photograph passes resolution, contrast, and variance gates before extracting an L2-normalized 128-dimensional spatial descriptor in milliseconds.',
+      'Detects faces via SSD MobileNetV1, aligns 68 neural facial landmarks, and extracts L2-normalized ResNet-34 128-dimensional descriptors in browser.',
     visual: 'biometrics',
   },
   {
-    index: '#02 ANPR ENGINE',
-    title: 'Multi-Vehicle Plate Association',
+    index: '#02 ANPR · TESSERACT LSTM',
+    title: 'Neural ANPR & Multi-Vehicle Link',
     description:
-      'Automatically normalizes registration strings and verifies one or multiple authorized vehicles linked directly to a subject record.',
+      'Contrast-stretches rear camera plate frames and runs LSTM deep neural OCR to automatically read and normalize authorized vehicle registration strings.',
     visual: 'anpr',
   },
   {
@@ -146,18 +146,18 @@ const MATRIX_ROWS = [
 const PIPELINE_STAGES = [
   {
     step: '01',
-    title: 'Phone Rear-Camera Capture & Quality Gate',
+    title: 'Phone Rear-Cam + SSD MobileNetV1 Detection',
     detail:
-      'Captures visitor face or ANPR frame via environment-facing rear lens only, validating pixel dimensions and sharpness before upload.',
-    badge: 'REAR OPTICS',
-    metric: '1280×720px · Q >= 35',
+      'Captures visitor face or ANPR frame via rear lens only, locates faces with SSD MobileNetV1 and checks pixel sharpness before encoding.',
+    badge: 'SSD MOBILENETV1',
+    metric: 'LANDMARK 68 · Q>=45',
   },
   {
     step: '02',
-    title: '128-D Cosine Matching & ANPR Lookup',
+    title: 'ResNet-34 128-D Matching & LSTM ANPR OCR',
     detail:
-      'Server compares extracted descriptor vector against active face_biometrics rows and normalizes license plates across multi-vehicle mappings.',
-    badge: 'VECTOR DB',
+      'Computes aligned ResNet-34 128-D embeddings against face_biometrics and reads license plates automatically using Tesseract LSTM neural OCR.',
+    badge: 'RESNET-34 + LSTM',
     metric: 'COSINE >= 0.78',
   },
   {

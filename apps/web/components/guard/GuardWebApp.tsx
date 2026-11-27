@@ -34,7 +34,12 @@ import {
 } from 'lucide-react';
 import { liveSync } from '@/lib/services/live-sync';
 import { api } from '@/lib/services/api';
-import { extractFaceDescriptorFromFile, extractFaceDescriptorFromDataUrl } from '@/lib/biometrics';
+import {
+  extractFaceDescriptorFromFile,
+  extractFaceDescriptorFromDataUrl,
+  preloadFaceVisionModels,
+} from '@/lib/biometrics';
+import { captureAndReadPlateFromVideo } from '@/lib/anpr';
 import {
   VerificationEvent,
   VisitorPass,
@@ -223,6 +228,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
   const [verificationStage, setVerificationStage] = useState<VerificationStage>('idle');
   const [verifyingStep, setVerifyingStep] = useState<number>(0);
+  const [scanningPlate, setScanningPlate] = useState<boolean>(false);
   const [currentResult, setCurrentResult] = useState<VerificationResult | null>(null);
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -584,7 +590,34 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
   const startFaceScan = () => {
     setCameraError(null);
+    if (!embedded) {
+      preloadFaceVisionModels().catch(() => {});
+    }
     setVerificationStage('viewfinder_face');
+  };
+
+  const handleAutoReadPlateFromCamera = async (): Promise<string | undefined> => {
+    const videoEl = videoRef.current;
+    if (!videoEl || !cameraActive) return scanPlateInput.trim() || undefined;
+    setScanningPlate(true);
+    try {
+      const res = await captureAndReadPlateFromVideo(videoEl);
+      if (res.ok && res.plate) {
+        setScanPlateInput(res.plate);
+        setLiveSyncToast(
+          lang === 'en'
+            ? `ANPR OCR detected plate ${res.plate} (${res.confidence ?? 0}% conf).`
+            : `ANPR ने प्लेट ${res.plate} पढ़ी।`,
+        );
+        return res.plate;
+      }
+      if (res.error && !scanPlateInput.trim()) {
+        setCameraError(res.error);
+      }
+      return scanPlateInput.trim() || undefined;
+    } finally {
+      setScanningPlate(false);
+    }
   };
 
   const startVehicleScan = () => {
@@ -608,10 +641,16 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         return;
       }
       captured = { dataUrl: liveCap.dataUrl, embedding: liveCap.embedding };
-    } else if (options?.fromViewfinder === 'vehicle') {
-      // Capture vehicle plate image frame if camera active; preserve face scan if already taken
+    }
+
+    let plateFromAnpr: string | undefined;
+    if (options?.fromViewfinder === 'vehicle') {
+      // If guard already scanned a face, preserve it; auto-read license plate via Tesseract LSTM if input is empty
       if (capturedFacePreview && capturedFaceEmbedding) {
         captured = { dataUrl: capturedFacePreview, embedding: capturedFaceEmbedding };
+      }
+      if (!scanPlateInput.trim() && cameraActive && videoRef.current) {
+        plateFromAnpr = await handleAutoReadPlateFromCamera();
       }
     } else if (capturedFacePreview && capturedFaceEmbedding) {
       captured = { dataUrl: capturedFacePreview, embedding: capturedFaceEmbedding };
@@ -622,7 +661,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
     try {
       setVerifyingStep(2);
-      const plateToVerify = scanPlateInput.trim() || undefined;
+      const plateToVerify = (plateFromAnpr || scanPlateInput).trim() || undefined;
       setVerifyingStep(3);
 
       const result = await liveSync.verifyIdentityAndVehicle({
@@ -1962,6 +2001,20 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                   placeholder="OD02AB1234"
                   className="w-full px-3 py-1.5 rounded-lg bg-white/10 border border-white/25 font-mono text-sm tracking-widest text-[#12B5A6] font-bold text-center uppercase outline-none"
                 />
+                {cameraActive && (
+                  <button
+                    type="button"
+                    disabled={scanningPlate}
+                    onClick={() => handleAutoReadPlateFromCamera()}
+                    className="w-full py-1.5 rounded-lg bg-[#2F5BFF] hover:bg-[#1E44E0] disabled:opacity-60 text-white text-[11px] font-bold tracking-wide cursor-pointer transition-colors"
+                  >
+                    {scanningPlate
+                      ? 'Reading Plate (LSTM OCR)...'
+                      : lang === 'en'
+                      ? 'Auto-Read Plate (ANPR OCR)'
+                      : 'प्लेट ऑटो-रीड (ANPR)'}
+                  </button>
+                )}
               </div>
 
               {cameraError ? (
@@ -2018,8 +2071,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             <div className="space-y-4 max-w-xs mx-auto w-full">
               {[
                 { title: 'Image quality & lighting validation', titleHi: 'छवि गुणवत्ता व प्रकाश सत्यापन', step: 1 },
-                { title: 'Face detection & 128-D embedding', titleHi: 'चेहरा पहचान (YuNet & SFace 128-D)', step: 2 },
-                { title: 'Vehicle ANPR plate normalization', titleHi: 'वाहन नंबर प्लेट सामान्यीकरण', step: 3 },
+                { title: 'SSD MobileNetV1 + ResNet-34 128-D match', titleHi: 'चेहरा पहचान (SSD MobileNetV1 + ResNet-34)', step: 2 },
+                { title: 'Tesseract LSTM ANPR normalization', titleHi: 'वाहन नंबर प्लेट ANPR OCR', step: 3 },
                 { title: 'Centralized institutional authorization', titleHi: 'केंद्रीकृत संस्थागत प्राधिकरण जांच', step: 4 },
               ].map((item) => {
                 const isPassed = verifyingStep >= item.step;

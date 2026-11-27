@@ -129,17 +129,17 @@ export const HeroPerimeterVisualizer: React.FC<{ animateVisuals: boolean }> = ({
               <text x="166" y="148" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold tracking-wider">OD 02 AB 1234</text>
 
               {/* Corner Spec Badges */}
-              <rect x="16" y="18" width="76" height="24" fill="#FFFFFF" stroke="#DCE1EC" />
-              <text x="54" y="33" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold">128-D VECTOR</text>
+              <rect x="16" y="18" width="84" height="24" fill="#FFFFFF" stroke="#DCE1EC" />
+              <text x="58" y="33" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold">RESNET-34 128D</text>
 
-              <rect x="228" y="18" width="76" height="24" fill="#FFFFFF" stroke="#DCE1EC" />
-              <text x="266" y="33" textAnchor="middle" className="fill-[#2F5BFF] font-mono text-[8px] font-bold">ANPR OCR</text>
+              <rect x="220" y="18" width="84" height="24" fill="#FFFFFF" stroke="#DCE1EC" />
+              <text x="262" y="33" textAnchor="middle" className="fill-[#2F5BFF] font-mono text-[8px] font-bold">LSTM ANPR OCR</text>
 
-              <rect x="16" y="166" width="76" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
-              <text x="54" y="180" textAnchor="middle" className="fill-[#0D9488] font-mono text-[8px] font-bold">REAR LENS</text>
+              <rect x="16" y="166" width="84" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
+              <text x="58" y="180" textAnchor="middle" className="fill-[#0D9488] font-mono text-[8px] font-bold">SSD MOBILENET</text>
 
-              <rect x="228" y="166" width="76" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
-              <text x="266" y="180" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold">RBAC: ACTIVE</text>
+              <rect x="220" y="166" width="84" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
+              <text x="262" y="180" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold">68-PT LANDMARK</text>
 
               {/* Connecting Dashed Telemetry Lines */}
               <path d="M92 30 L134 64 M228 30 L186 64" stroke="#CBD5E1" strokeWidth="1" strokeDasharray="3 3" />
@@ -169,7 +169,7 @@ export const HeroPerimeterVisualizer: React.FC<{ animateVisuals: boolean }> = ({
               <rect x="132" y="64" width="56" height="22" fill="#FFFFFF" stroke="#2F5BFF" strokeWidth="1" />
               <text x="160" y="78" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[7px] font-bold">PEOPLE &amp; LPR</text>
               <rect x="132" y="92" width="56" height="22" fill="#FFFFFF" stroke="#0D9488" strokeWidth="1" />
-              <text x="160" y="106" textAnchor="middle" className="fill-[#0D9488] font-mono text-[7px] font-bold">128-D MATCH</text>
+              <text x="160" y="106" textAnchor="middle" className="fill-[#0D9488] font-mono text-[7px] font-bold">RESNET34 128D</text>
               <rect x="132" y="120" width="56" height="22" fill="#FFFFFF" stroke="#0A0E1A" strokeWidth="1" />
               <text x="160" y="134" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[7px] font-bold">RLS BUCKET</text>
 
