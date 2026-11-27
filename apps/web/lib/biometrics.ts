@@ -164,9 +164,30 @@ export async function extractFaceDescriptorFromDataUrl(
   }
 
   const normalized = vector.map((v) => Number((v * invNorm).toFixed(6)));
+
+  // Downscale oversized smartphone camera photos (> 720px or > 600KB) so serverless upload stays fast & under 4.5MB
+  let finalDataUrl = dataUrl;
+  if (width > 720 || height > 720 || dataUrl.length > 600_000) {
+    try {
+      const scale = Math.min(720 / width, 720 / height, 1);
+      const outW = Math.max(48, Math.round(width * scale));
+      const outH = Math.max(48, Math.round(height * scale));
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = outW;
+      outCanvas.height = outH;
+      const outCtx = outCanvas.getContext('2d');
+      if (outCtx) {
+        outCtx.drawImage(img, 0, 0, outW, outH);
+        finalDataUrl = outCanvas.toDataURL('image/jpeg', 0.85);
+      }
+    } catch {
+      finalDataUrl = dataUrl;
+    }
+  }
+
   return {
     ok: true,
-    dataUrl,
+    dataUrl: finalDataUrl,
     embedding: normalized,
     qualityScore: Math.max(45, rawQuality),
     width,

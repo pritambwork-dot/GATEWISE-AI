@@ -30,6 +30,7 @@ import {
   Lock,
   ChevronDown,
   RotateCcw,
+  Upload,
 } from 'lucide-react';
 import { liveSync } from '@/lib/services/live-sync';
 import { api } from '@/lib/services/api';
@@ -223,7 +224,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   const [verifyingStep, setVerifyingStep] = useState<number>(0);
   const [currentResult, setCurrentResult] = useState<VerificationResult | null>(null);
   const [cameraActive, setCameraActive] = useState<boolean>(false);
+  const [cameraFacing, setCameraFacing] = useState<'environment' | 'user'>('user');
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const attachVideoRef = React.useCallback((el: HTMLVideoElement | null) => {
+    videoRef.current = el;
+    if (el && streamRef.current && el.srcObject !== streamRef.current) {
+      el.srcObject = streamRef.current;
+      el.play().catch(() => {});
+    }
+  }, []);
 
   // -------------------------------------------------------------------------
   // NEW PERSON REGISTRATION REQUEST FORM STATE
@@ -317,30 +329,101 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     }
   }, [liveSyncToast]);
 
-  // Handle Camera Stream
+  // Handle Live Camera Stream with unconditional video element mount + constraint fallback
   useEffect(() => {
-    if ((verificationStage === 'viewfinder_face' || verificationStage === 'viewfinder_vehicle') && navigator.mediaDevices?.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } })
-        .then((stream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play();
-            setCameraActive(true);
-          }
-        })
-        .catch(() => {
-          setCameraActive(false);
-        });
-    } else {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach((track) => track.stop());
+    const isViewfinder =
+      verificationStage === 'viewfinder_face' || verificationStage === 'viewfinder_vehicle';
+
+    const stopActiveStream = () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+      if (videoRef.current) {
         videoRef.current.srcObject = null;
       }
       setCameraActive(false);
+    };
+
+    if (!isViewfinder) {
+      stopActiveStream();
+      setCameraError(null);
+      return;
     }
-  }, [verificationStage]);
+
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+      setCameraActive(false);
+      setCameraError(
+        'Browser live camera requires HTTPS & camera permissions. Tap "Native Camera / Photo" below.',
+      );
+      return;
+    }
+
+    let cancelled = false;
+    setCameraError(null);
+
+    const openCamera = async () => {
+      stopActiveStream();
+      try {
+        let stream: MediaStream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: { ideal: cameraFacing },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+            audio: false,
+          });
+        } catch {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+        }
+
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          try {
+            await videoRef.current.play();
+          } catch {
+            // autoPlay + playsInline will begin playback once metadata arrives
+          }
+        }
+        setCameraActive(true);
+      } catch (err: any) {
+        if (cancelled) return;
+        setCameraActive(false);
+        const errName = err?.name || '';
+        if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
+          setCameraError(
+            'Camera access blocked. Allow camera permission in browser settings or use "Native Camera / Photo" below.',
+          );
+        } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError') {
+          setCameraError(
+            'No live camera hardware found. Use "Native Camera / Photo" below to snap or upload.',
+          );
+        } else {
+          setCameraError(
+            `Camera unavailable (${err?.message || 'hardware error'}). Use "Native Camera / Photo" below.`,
+          );
+        }
+      }
+    };
+
+    openCamera();
+
+    return () => {
+      cancelled = true;
+      stopActiveStream();
+    };
+  }, [verificationStage, cameraFacing]);
 
   // -------------------------------------------------------------------------
   // AUTHENTICATION LOGIC (Centralized Guard Roster + Immediate Revocation)
@@ -393,8 +476,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   // -------------------------------------------------------------------------
   // VERIFICATION ENGINE EXECUTION (Queries Centralized Cloud Backend)
   // -------------------------------------------------------------------------
-  const handleGuardFaceFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGuardFaceFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    autoVerify = false,
+  ) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
     const ext = await extractFaceDescriptorFromFile(file);
     if (!ext.ok || !ext.dataUrl) {
@@ -407,6 +494,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     setCapturedFacePreview(ext.dataUrl);
     setCapturedFaceEmbedding(ext.embedding);
     setCapturedFaceQuality(ext.qualityScore ?? 85);
+    if (autoVerify) {
+      await executePipelineVerification({
+        overrideCapture: { dataUrl: ext.dataUrl, embedding: ext.embedding },
+      });
+      return;
+    }
     setLiveSyncToast(
       lang === 'en'
         ? `Face image ready (Quality ${ext.qualityScore}/100) — tap Verify to check central DB.`
@@ -414,44 +507,89 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
     );
   };
 
-  const captureFromGuardVideo = async (): Promise<{ dataUrl?: string; embedding?: number[] }> => {
-    if (capturedFacePreview && capturedFaceEmbedding) {
-      return { dataUrl: capturedFacePreview, embedding: capturedFaceEmbedding };
+  const captureFromLiveVideo = async (): Promise<{
+    ok: boolean;
+    dataUrl?: string;
+    embedding?: number[];
+    error?: string;
+  }> => {
+    const videoEl = videoRef.current;
+    if (!videoEl || !cameraActive || videoEl.videoWidth === 0 || videoEl.readyState < 2) {
+      return {
+        ok: false,
+        error:
+          lang === 'en'
+            ? 'Live camera frame is not ready yet. Allow camera access or tap "Native Camera / Photo".'
+            : 'कैमरा फ्रेम तैयार नहीं है। अनुमति दें या "कैमरा / फोटो" दबाएँ।',
+      };
     }
-    if (videoRef.current && cameraActive) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth || 480;
-      canvas.height = videoRef.current.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-        const ext = await extractFaceDescriptorFromDataUrl(dataUrl);
-        if (ext.ok) {
-          setCapturedFacePreview(dataUrl);
-          setCapturedFaceEmbedding(ext.embedding);
-          setCapturedFaceQuality(ext.qualityScore ?? 85);
-          return { dataUrl, embedding: ext.embedding };
-        }
-      }
+    const maxDim = 720;
+    const vw = videoEl.videoWidth;
+    const vh = videoEl.videoHeight;
+    const scale = Math.min(maxDim / vw, maxDim / vh, 1);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(48, Math.round(vw * scale));
+    canvas.height = Math.max(48, Math.round(vh * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return { ok: false, error: 'Unable to initialize camera frame canvas.' };
     }
-    return {};
+    ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const ext = await extractFaceDescriptorFromDataUrl(dataUrl);
+    if (!ext.ok) {
+      return {
+        ok: false,
+        error: ext.error || 'Captured frame was blurry or too dark. Hold steady and retry.',
+      };
+    }
+    setCapturedFacePreview(ext.dataUrl || dataUrl);
+    setCapturedFaceEmbedding(ext.embedding);
+    setCapturedFaceQuality(ext.qualityScore ?? 85);
+    return { ok: true, dataUrl: ext.dataUrl || dataUrl, embedding: ext.embedding };
   };
 
   const startFaceScan = () => {
+    setCameraFacing('user');
+    setCameraError(null);
     setVerificationStage('viewfinder_face');
   };
 
   const startVehicleScan = () => {
+    setCameraFacing('environment');
+    setCameraError(null);
     setVerificationStage('viewfinder_vehicle');
   };
 
-  const executePipelineVerification = async () => {
+  const executePipelineVerification = async (options?: {
+    fromViewfinder?: 'face' | 'vehicle';
+    overrideCapture?: { dataUrl?: string; embedding?: number[] };
+  }) => {
+    let captured: { dataUrl?: string; embedding?: number[] } = {};
+
+    if (options?.overrideCapture) {
+      captured = options.overrideCapture;
+    } else if (options?.fromViewfinder === 'face') {
+      const liveCap = await captureFromLiveVideo();
+      if (!liveCap.ok) {
+        setCameraError(liveCap.error || 'Failed to capture live face frame.');
+        setLiveSyncToast(liveCap.error || 'Failed to capture live face frame.');
+        return;
+      }
+      captured = { dataUrl: liveCap.dataUrl, embedding: liveCap.embedding };
+    } else if (options?.fromViewfinder === 'vehicle') {
+      // Capture vehicle plate image frame if camera active; preserve face scan if already taken
+      if (capturedFacePreview && capturedFaceEmbedding) {
+        captured = { dataUrl: capturedFacePreview, embedding: capturedFaceEmbedding };
+      }
+    } else if (capturedFacePreview && capturedFaceEmbedding) {
+      captured = { dataUrl: capturedFacePreview, embedding: capturedFaceEmbedding };
+    }
+
     setVerificationStage('verifying');
     setVerifyingStep(1);
 
     try {
-      const captured = await captureFromGuardVideo();
       setVerifyingStep(2);
       const plateToVerify = scanPlateInput.trim() || undefined;
       setVerifyingStep(3);
@@ -1135,7 +1273,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
               <button
                 type="button"
-                onClick={executePipelineVerification}
+                onClick={() => executePipelineVerification()}
                 className="w-full min-h-[50px] rounded-full bg-[#2F5BFF] hover:bg-[#254cd6] active:scale-[0.98] transition-all text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Zap className="w-4 h-4 text-[#12B5A6]" />
@@ -1654,34 +1792,44 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#070B1A] flex flex-col justify-between p-4"
+            className="fixed sm:absolute inset-0 z-50 bg-[#070B1A] flex flex-col justify-between p-4 overflow-y-auto"
           >
-            <div className="flex items-center justify-between text-white text-xs pt-2">
+            <div className="flex items-center justify-between text-white text-xs pt-2 gap-2">
               <button
                 type="button"
                 onClick={() => setVerificationStage('idle')}
-                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer"
+                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer shrink-0"
               >
                 {lang === 'en' ? 'Cancel' : 'रद्द करें'}
               </button>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#12B5A6]/20 border border-[#12B5A6]/40 text-[#12B5A6] font-mono text-[10px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] animate-pulse" />
-                <span>YUNET FACE DETECTOR ACTIVE</span>
+                <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#12B5A6] animate-pulse' : 'bg-amber-400'}`} />
+                <span>{cameraActive ? 'LIVE FACE CAMERA' : 'CAMERA STANDBY'}</span>
               </div>
+              <button
+                type="button"
+                onClick={() => setCameraFacing((prev) => (prev === 'user' ? 'environment' : 'user'))}
+                className="px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer flex items-center gap-1 shrink-0"
+                title={lang === 'en' ? 'Switch Camera' : 'कैमरा बदलें'}
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span className="text-[10px]">{cameraFacing === 'user' ? 'Front' : 'Rear'}</span>
+              </button>
             </div>
 
-            <div className="relative flex-1 flex flex-col items-center justify-center my-4">
-              {cameraActive && (
-                <video
-                  ref={videoRef}
-                  playsInline
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover rounded-3xl opacity-80"
-                />
-              )}
+            <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 rounded-3xl overflow-hidden bg-black/50 border border-white/10">
+              <video
+                ref={attachVideoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
+                  cameraActive ? 'opacity-95' : 'opacity-0'
+                } ${cameraFacing === 'user' ? '-scale-x-100' : ''}`}
+              />
 
               {/* Oval Face Guide */}
-              <div className="relative z-10 w-48 h-64 sm:w-56 sm:h-72 border-2 border-[#12B5A6] rounded-[50%] flex items-center justify-center shadow-[0_0_30px_rgba(18,181,166,0.3)] animate-pulse">
+              <div className="relative z-10 w-48 h-64 sm:w-56 sm:h-72 border-2 border-[#12B5A6] rounded-[50%] flex items-center justify-center shadow-[0_0_30px_rgba(18,181,166,0.3)] animate-pulse pointer-events-none">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute top-20 left-16" />
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute top-20 right-16" />
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute top-32" />
@@ -1689,24 +1837,50 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <div className="w-1.5 h-1.5 rounded-full bg-[#12B5A6] absolute bottom-24 right-18" />
               </div>
 
-              <p className="relative z-10 text-xs text-white/90 font-medium text-center mt-4 bg-black/60 px-3 py-1.5 rounded-full">
-                {lang === 'en'
-                  ? 'Centre subject face in the oval. Checking lighting & quality.'
-                  : 'अंडाकार फ्रेम में चेहरा केंद्रित करें। प्रकाश की जांच हो रही है।'}
-              </p>
+              {cameraError ? (
+                <div className="relative z-10 mt-4 mx-4 px-3 py-2 rounded-2xl bg-rose-950/90 border border-rose-400/40 text-rose-100 text-[11px] font-medium text-center max-w-xs">
+                  {cameraError}
+                </div>
+              ) : (
+                <p className="relative z-10 text-xs text-white/90 font-medium text-center mt-4 bg-black/60 px-3 py-1.5 rounded-full">
+                  {cameraActive
+                    ? lang === 'en'
+                      ? 'Centre face in the oval & tap shutter to verify.'
+                      : 'चेहरा फ्रेम में रखें और सत्यापन हेतु बटन दबाएँ।'
+                    : lang === 'en'
+                    ? 'Starting camera stream...'
+                    : 'कैमरा शुरू हो रहा है...'}
+                </p>
+              )}
             </div>
 
-            <div className="flex flex-col items-center pb-4 space-y-3">
+            <div className="flex flex-col items-center pb-3 space-y-2.5">
               <button
                 type="button"
-                onClick={executePipelineVerification}
+                data-testid="guard-face-shutter"
+                onClick={() => executePipelineVerification({ fromViewfinder: 'face' })}
                 className="w-16 h-16 rounded-full border-4 border-white/30 bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-full border-2 border-[#2F5BFF] bg-white" />
               </button>
               <span className="text-[10px] text-white/70">
-                {lang === 'en' ? 'Tap to Capture & Compare Biometrics' : 'कैप्चर करने के लिए दबाएँ'}
+                {lang === 'en' ? 'Tap Shutter to Capture & Compare Biometrics' : 'कैप्चर करने के लिए दबाएँ'}
               </span>
+
+              <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-[11px] font-semibold cursor-pointer">
+                <Upload className="w-3.5 h-3.5 text-[#12B5A6]" />
+                <span>
+                  {lang === 'en' ? 'Native Camera / Upload Photo' : 'डिवाइस कैमरा / फोटो अपलोड'}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture={cameraFacing}
+                  data-testid="viewfinder-face-native-upload"
+                  onChange={(e) => handleGuardFaceFileUpload(e, true)}
+                  className="hidden"
+                />
+              </label>
             </div>
           </motion.div>
         )}
@@ -1721,59 +1895,78 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#070B1A] flex flex-col justify-between p-4"
+            className="fixed sm:absolute inset-0 z-50 bg-[#070B1A] flex flex-col justify-between p-4 overflow-y-auto"
           >
-            <div className="flex items-center justify-between text-white text-xs pt-2">
+            <div className="flex items-center justify-between text-white text-xs pt-2 gap-2">
               <button
                 type="button"
                 onClick={() => setVerificationStage('idle')}
-                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer"
+                className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer shrink-0"
               >
                 {lang === 'en' ? 'Cancel' : 'रद्द करें'}
               </button>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2F5BFF]/20 border border-[#2F5BFF]/40 text-[#2F5BFF] font-mono text-[10px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2F5BFF] animate-pulse" />
-                <span>ANPR OCR RECOGNITION ACTIVE</span>
+                <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#2F5BFF] animate-pulse' : 'bg-amber-400'}`} />
+                <span>ANPR OCR {cameraActive ? 'LIVE' : 'STANDBY'}</span>
               </div>
-            </div>
-
-            <div className="relative flex-1 flex flex-col items-center justify-center my-4">
-              {cameraActive && (
-                <video
-                  ref={videoRef}
-                  playsInline
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover rounded-3xl opacity-80"
-                />
-              )}
-
-              {/* Number Plate Rectangular Guide */}
-              <div className="relative z-10 w-72 h-28 border-2 border-[#2F5BFF] rounded-2xl flex flex-col items-center justify-center shadow-[0_0_30px_rgba(47,91,255,0.4)] bg-black/30 backdrop-blur-xs">
-                <div className="text-white/60 font-mono text-[11px] mb-1">
-                  ALIGN VEHICLE REGISTRATION NUMBER
-                </div>
-                <div className="px-3 py-1 rounded-lg bg-white/10 border border-white/20 font-mono text-sm tracking-widest text-[#12B5A6] font-bold">
-                  {currentScenario.vehiclePlate}
-                </div>
-              </div>
-
-              <p className="relative z-10 text-xs text-white/90 font-medium text-center mt-4 bg-black/60 px-3 py-1.5 rounded-full">
-                {lang === 'en'
-                  ? 'Hold steady over license plate. Auto-normalizing registration.'
-                  : 'नंबर प्लेट के ऊपर सीधा रखें। स्वतः पहचान जारी है।'}
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center pb-4 space-y-3">
               <button
                 type="button"
-                onClick={executePipelineVerification}
+                onClick={() => setCameraFacing((prev) => (prev === 'environment' ? 'user' : 'environment'))}
+                className="px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer flex items-center gap-1 shrink-0"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span className="text-[10px]">{cameraFacing === 'user' ? 'Front' : 'Rear'}</span>
+              </button>
+            </div>
+
+            <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 rounded-3xl overflow-hidden bg-black/50 border border-white/10">
+              <video
+                ref={attachVideoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
+                  cameraActive ? 'opacity-90' : 'opacity-0'
+                }`}
+              />
+
+              {/* Number Plate Rectangular Guide + Manual Correction Input */}
+              <div className="relative z-10 w-72 p-3 border-2 border-[#2F5BFF] rounded-2xl flex flex-col items-center justify-center shadow-[0_0_30px_rgba(47,91,255,0.4)] bg-black/60 backdrop-blur-xs space-y-2">
+                <div className="text-white/70 font-mono text-[10px]">
+                  VEHICLE REGISTRATION PLATE
+                </div>
+                <input
+                  type="text"
+                  value={scanPlateInput}
+                  onChange={(e) => setScanPlateInput(e.target.value.toUpperCase())}
+                  placeholder="OD02AB1234"
+                  className="w-full px-3 py-1.5 rounded-lg bg-white/10 border border-white/25 font-mono text-sm tracking-widest text-[#12B5A6] font-bold text-center uppercase outline-none"
+                />
+              </div>
+
+              {cameraError ? (
+                <div className="relative z-10 mt-4 mx-4 px-3 py-2 rounded-2xl bg-rose-950/90 border border-rose-400/40 text-rose-100 text-[11px] font-medium text-center max-w-xs">
+                  {cameraError}
+                </div>
+              ) : (
+                <p className="relative z-10 text-xs text-white/90 font-medium text-center mt-4 bg-black/60 px-3 py-1.5 rounded-full">
+                  {lang === 'en'
+                    ? 'Enter or confirm license plate above & tap verify.'
+                    : 'ऊपर वाहन नंबर की पुष्टि करें और सत्यापित करें।'}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center pb-3 space-y-2.5">
+              <button
+                type="button"
+                onClick={() => executePipelineVerification({ fromViewfinder: 'vehicle' })}
                 className="w-16 h-16 rounded-full border-4 border-white/30 bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(255,255,255,0.4)] cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-full border-2 border-[#12B5A6] bg-white" />
               </button>
               <span className="text-[10px] text-white/70">
-                {lang === 'en' ? 'Tap to Read & Verify Vehicle Plate' : 'नंबर प्लेट सत्यापित करें'}
+                {lang === 'en' ? 'Tap to Verify Vehicle Plate' : 'नंबर प्लेट सत्यापित करें'}
               </span>
             </div>
           </motion.div>
