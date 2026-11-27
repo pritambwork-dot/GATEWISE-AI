@@ -172,12 +172,13 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   // -------------------------------------------------------------------------
   // AUTHENTICATION STATE (Strict Isolation)
   // -------------------------------------------------------------------------
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('gatewise_guard_auth') === 'true';
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('gatewise_guard_auth') === 'true') {
+      setIsAuthenticated(true);
     }
-    return false;
-  });
+  }, []);
 
   const [accountId, setAccountId] = useState('');
   const [password, setPassword] = useState('');
@@ -252,9 +253,14 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   // -------------------------------------------------------------------------
   // LIVE TELEMETRY & DATA LISTS
   // -------------------------------------------------------------------------
-  const [events, setEvents] = useState<VerificationEvent[]>(() => liveSync.getEvents());
+  const [events, setEvents] = useState<VerificationEvent[]>([]);
   const [visitors, setVisitors] = useState<VisitorPass[]>([]);
-  const [requests, setRequests] = useState<RegistrationRequest[]>(() => liveSync.getRegistrationRequests());
+  const [requests, setRequests] = useState<RegistrationRequest[]>([]);
+
+  useEffect(() => {
+    setEvents(liveSync.getEvents());
+    setRequests(liveSync.getRegistrationRequests());
+  }, []);
   const [liveSyncToast, setLiveSyncToast] = useState<string | null>(null);
   const [signOutModalOpen, setSignOutModalOpen] = useState(false);
   const [selectedReceiptEvent, setSelectedReceiptEvent] = useState<VerificationEvent | null>(null);
@@ -478,7 +484,18 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   };
 
   const handleSignOut = () => {
-    api.logout().catch(() => {});
+    const guardToken =
+      typeof window !== 'undefined' ? sessionStorage.getItem('gatewise_guard_token') : null;
+    if (guardToken) {
+      fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${guardToken}`,
+        },
+        body: JSON.stringify({}),
+      }).catch(() => {});
+    }
     setIsAuthenticated(false);
     sessionStorage.removeItem('gatewise_guard_auth');
     sessionStorage.removeItem('gatewise_guard_token');
