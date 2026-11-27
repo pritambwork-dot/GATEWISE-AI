@@ -69,24 +69,24 @@ export const CookieConsent: React.FC = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 30, scale: 0.95 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="liquid-glass pointer-events-auto rounded-2xl sm:rounded-3xl border border-white/20 bg-[#0e1014]/95 backdrop-blur-2xl p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.85)] text-white"
+          className="pointer-events-auto border border-[#0A0E1A] bg-white p-5 sm:p-6 shadow-[6px_6px_0px_#2F5BFF] text-[#0A0E1A]"
         >
           {!isPreferencesOpen ? (
             /* Main Banner */
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#12B5A6]/20 to-[#2F5BFF]/20 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Cookie className="w-5 h-5 text-[#12B5A6]" />
+                <div className="w-10 h-10 bg-[#EEF2FF] border border-[#2F5BFF]/30 flex items-center justify-center shrink-0 mt-0.5">
+                  <Cookie className="w-5 h-5 text-[#2F5BFF]" />
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white tracking-tight">Institutional Privacy &amp; Cookies</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-[#1FB36B] border border-white/10">
+                    <span className="text-sm font-bold text-[#0A0E1A] tracking-tight">Institutional Privacy &amp; Cookies</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 bg-[#15803D]/10 text-[#15803D] border border-[#15803D]/30 font-bold">
                       DPDP ACT 2023
                     </span>
                   </div>
-                  <p className="text-xs text-white/70 leading-relaxed max-w-xl">
-                    GATEWISE AI employs strictly essential security tokens for edge terminal integrity and cryptographic CSRF mitigation. No biometric images or personal tracking identifiers are ever placed in cookies.
+                  <p className="text-xs text-[#475569] leading-relaxed max-w-xl">
+                    GATEWISE AI employs strictly essential security tokens for edge terminal integrity and cryptographic CSRF mitigation. No biometric images or tracking cookies are placed.
                   </p>
                 </div>
               </div>
@@ -95,7 +95,7 @@ export const CookieConsent: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsPreferencesOpen(true)}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer min-h-[38px]"
+                  className="px-3.5 py-2 text-xs font-semibold text-[#475569] hover:text-[#0A0E1A] hover:bg-[#FAF9F6] border border-[#DCE1EC] transition-all flex items-center gap-1.5 cursor-pointer min-h-[38px]"
                 >
                   <Settings2 className="w-3.5 h-3.5" />
                   <span>Customize</span>
@@ -103,14 +103,14 @@ export const CookieConsent: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleEssentialOnly}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/15 transition-all cursor-pointer min-h-[38px]"
+                  className="px-3.5 py-2 text-xs font-semibold text-[#0A0E1A] bg-[#FAF9F6] hover:bg-[#F2F4F8] border border-[#0A0E1A] transition-all cursor-pointer min-h-[38px]"
                 >
                   Essential Only
                 </button>
                 <button
                   type="button"
                   onClick={handleAcceptAll}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-black bg-white hover:bg-white/90 shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all flex items-center gap-1.5 cursor-pointer min-h-[38px]"
+                  className="px-4 py-2 text-xs font-bold text-white bg-[#2F5BFF] hover:bg-[#1E44E0] transition-all flex items-center gap-1.5 cursor-pointer min-h-[38px]"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>Accept All</span>
@@ -120,15 +120,15 @@ export const CookieConsent: React.FC = () => {
           ) : (
             /* Granular Preferences View */
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center justify-between pb-3 border-b border-[#DCE1EC]">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-[#12B5A6]" />
-                  <span className="text-sm font-bold text-white">Granular Cookie Governance</span>
+                  <Shield className="w-4 h-4 text-[#2F5BFF]" />
+                  <span className="text-sm font-bold text-[#0A0E1A]">Granular Cookie Governance</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsPreferencesOpen(false)}
-                  className="w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer"
+                  className="w-7 h-7 hover:bg-[#FAF9F6] flex items-center justify-center text-[#475569] hover:text-[#0A0E1A] transition-colors cursor-pointer"
                   aria-label="Close preferences"
                 >
                   <X className="w-4 h-4" />
@@ -137,48 +137,48 @@ export const CookieConsent: React.FC = () => {
 
               <div className="space-y-3">
                 {/* Essential */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between p-3 bg-[#FAF9F6] border border-[#DCE1EC]">
                   <div className="space-y-0.5 max-w-md">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-white">Strictly Necessary &amp; Security</span>
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#1FB36B]/20 text-[#1FB36B]">ALWAYS ON</span>
+                      <span className="text-xs font-bold text-[#0A0E1A]">Strictly Necessary &amp; Security</span>
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 bg-[#15803D]/10 text-[#15803D] font-bold">ALWAYS ON</span>
                     </div>
-                    <p className="text-[11px] text-white/60">
-                      Required for sovereign gate authentication tokens, encrypted WebSockets, and CSRF defense. Cannot be disabled.
+                    <p className="text-[11px] text-[#475569]">
+                      Required for sovereign gate authentication tokens, encrypted WebSockets, and CSRF defense.
                     </p>
                   </div>
-                  <input type="checkbox" checked disabled className="w-4 h-4 accent-white rounded cursor-not-allowed opacity-75" />
+                  <input type="checkbox" checked disabled className="w-4 h-4 accent-[#2F5BFF] cursor-not-allowed opacity-75" />
                 </div>
 
                 {/* Performance */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between p-3 bg-[#FAF9F6] border border-[#DCE1EC]">
                   <div className="space-y-0.5 max-w-md">
-                    <span className="text-xs font-bold text-white">Telemetry &amp; Edge Latency Metrics</span>
-                    <p className="text-[11px] text-white/60">
-                      Anonymous pipeline timing (sub-300ms verification benchmarks) to maintain institutional gate responsiveness.
+                    <span className="text-xs font-bold text-[#0A0E1A]">Telemetry &amp; Edge Latency Metrics</span>
+                    <p className="text-[11px] text-[#475569]">
+                      Anonymous pipeline timing to maintain institutional gate responsiveness.
                     </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={analyticsAllowed}
                     onChange={(e) => setAnalyticsAllowed(e.target.checked)}
-                    className="w-4 h-4 accent-[#2F5BFF] rounded cursor-pointer"
+                    className="w-4 h-4 accent-[#2F5BFF] cursor-pointer"
                   />
                 </div>
 
                 {/* Preferences */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between p-3 bg-[#FAF9F6] border border-[#DCE1EC]">
                   <div className="space-y-0.5 max-w-md">
-                    <span className="text-xs font-bold text-white">Command Desk UI Preferences</span>
-                    <p className="text-[11px] text-white/60">
-                      Stores terminal layout mode, audio playback mute state, and operator language selections locally.
+                    <span className="text-xs font-bold text-[#0A0E1A]">Command Desk UI Preferences</span>
+                    <p className="text-[11px] text-[#475569]">
+                      Stores terminal layout mode and operator language selections locally.
                     </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={prefsAllowed}
                     onChange={(e) => setPrefsAllowed(e.target.checked)}
-                    className="w-4 h-4 accent-[#2F5BFF] rounded cursor-pointer"
+                    className="w-4 h-4 accent-[#2F5BFF] cursor-pointer"
                   />
                 </div>
               </div>
@@ -187,14 +187,14 @@ export const CookieConsent: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleEssentialOnly}
-                  className="px-3.5 py-2 rounded-xl text-xs font-medium text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer min-h-[36px]"
+                  className="px-3.5 py-2 text-xs font-medium text-[#0A0E1A] bg-[#FAF9F6] hover:bg-[#F2F4F8] border border-[#DCE1EC] transition-all cursor-pointer min-h-[36px]"
                 >
                   Reject Optional
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveCustom}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-black bg-white hover:bg-white/90 transition-all cursor-pointer min-h-[36px]"
+                  className="px-4 py-2 text-xs font-bold text-white bg-[#2F5BFF] hover:bg-[#1E44E0] transition-all cursor-pointer min-h-[36px]"
                 >
                   Save Selected Preferences
                 </button>

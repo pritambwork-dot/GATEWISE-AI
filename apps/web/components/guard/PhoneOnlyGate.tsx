@@ -38,45 +38,42 @@ export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
 
   if (isDesktop) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-[#070B1A] text-white flex flex-col items-center justify-center p-6 text-center select-none overflow-y-auto">
-        {/* Subtle background glow */}
-        <div className="absolute top-1/4 w-96 h-96 bg-[#2F5BFF]/15 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="fixed inset-0 z-[9999] bg-[#FAF9F6] text-[#0A0E1A] border-[6px] border-[#2F5BFF] flex flex-col items-center justify-center p-6 text-center select-none overflow-y-auto paper-grid">
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 w-full max-w-md p-8 rounded-[36px] bg-white/[0.04] border border-white/10 backdrop-blur-2xl shadow-2xl flex flex-col items-center space-y-5"
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 w-full max-w-md p-8 bg-white border border-[#0A0E1A] shadow-[8px_8px_0px_#2F5BFF] flex flex-col items-center space-y-5"
         >
           {/* Brand Mark with Mobile Badge */}
           <div className="relative">
-            <div className="w-16 h-16 rounded-3xl bg-[#2F5BFF] flex items-center justify-center shadow-[0_0_30px_rgba(47,91,255,0.4)]">
+            <div className="w-16 h-16 bg-[#2F5BFF] flex items-center justify-center">
               <Smartphone className="w-8 h-8 text-white" />
             </div>
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#12B5A6] flex items-center justify-center text-white text-[10px] font-bold shadow-md">
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#0A0E1A] flex items-center justify-center text-white text-[10px] font-bold">
               <Lock className="w-3.5 h-3.5 text-white" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2F5BFF]/15 border border-[#2F5BFF]/30 text-[10px] font-bold text-[#2F5BFF] uppercase tracking-wider">
-              <span>Mobile Smartphones Only</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#EEF2FF] border border-[#2F5BFF]/30 font-mono text-[10px] font-bold text-[#2F5BFF] uppercase tracking-wider">
+              <span>Mobile Smartphones Only · Rear Camera</span>
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-white">
+            <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-[#0A0E1A]">
               Handheld Device Required
             </h1>
-            <p className="text-xs text-white/70 leading-relaxed max-w-sm">
-              GATEWISE Guard is sovereign mobile terminal software engineered strictly for handheld smartphones and portable gate terminals operated by campus security personnel at IIM Sambalpur.
+            <p className="text-xs text-[#475569] leading-relaxed max-w-sm">
+              GATEWISE Guard is sovereign mobile terminal software engineered strictly for handheld smartphones and portable rear-camera gate terminals at IIM Sambalpur.
             </p>
           </div>
 
           {/* QR Code / Instructions Box */}
-          <div className="w-full p-4 rounded-2xl bg-black/40 border border-white/10 flex flex-col items-center space-y-3">
-            <div className="w-32 h-32 rounded-xl bg-white p-2.5 flex items-center justify-center shadow-md">
+          <div className="w-full p-4 bg-[#FAF9F6] border border-[#DCE1EC] flex flex-col items-center space-y-3">
+            <div className="w-32 h-32 bg-white border border-[#DCE1EC] p-2.5 flex items-center justify-center">
               {/* Clean SVG QR Code Representation */}
               <svg
                 viewBox="0 0 100 100"
-                className="w-full h-full text-black"
+                className="w-full h-full text-[#0A0E1A]"
                 fill="currentColor"
               >
                 <path d="M0,0 h30 v30 h-30 z M6,6 v18 h18 v-18 z M10,10 h10 v10 h-10 z" />
@@ -96,46 +93,43 @@ export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
                 <rect x="70" y="70" width="20" height="20" />
               </svg>
             </div>
-            <span className="text-[11px] text-white/60 font-mono">
+            <span className="text-[11px] text-[#475569] font-mono">
               Scan with your phone camera to open /guard
             </span>
           </div>
 
           {/* Action Buttons */}
           <div className="w-full space-y-2 pt-1">
-            {/* Desktop Command Centre CTA */}
             <a
               href="/admin"
-              className="w-full py-3 min-h-[48px] rounded-full bg-white text-black font-bold text-xs hover:bg-white/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+              className="w-full py-3 min-h-[46px] bg-[#2F5BFF] hover:bg-[#1E44E0] text-white font-mono uppercase tracking-[0.08em] font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Monitor className="w-4 h-4 text-black" />
-              <span>Open Command Centre (Computers &amp; Laptops)</span>
+              <Monitor className="w-4 h-4 text-white" />
+              <span>Open Command Centre (Desktop)</span>
             </a>
 
-            {/* Return to Home */}
             <a
               href="/"
-              className="w-full py-2.5 rounded-full border border-white/10 hover:bg-white/5 active:scale-[0.98] transition-all text-xs text-white/70 hover:text-white flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 border border-[#0A0E1A] bg-white hover:bg-[#F2F4F8] transition-all font-mono text-xs uppercase tracking-[0.08em] text-[#0A0E1A] flex items-center justify-center gap-1.5"
             >
               <Home className="w-3.5 h-3.5" />
               <span>Return to Institutional Home</span>
             </a>
 
-            {/* Developer Testing Override */}
             <button
               type="button"
               onClick={() => {
                 sessionStorage.setItem('gatewise_phone_override', 'true');
                 setBypassed(true);
               }}
-              className="text-[10px] text-white/40 hover:text-white/80 transition-colors pt-2 underline cursor-pointer"
+              className="text-[10px] text-[#475569] hover:text-[#2F5BFF] transition-colors pt-2 underline cursor-pointer"
             >
               Developer Simulator: Bypass Phone Gate
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/40">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#12B5A6]" />
+          <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#475569]">
+            <span className="w-1.5 h-1.5 bg-[#15803D]" />
             <span>IIM Sambalpur Field Terminal Policy Enforced</span>
           </div>
         </motion.div>

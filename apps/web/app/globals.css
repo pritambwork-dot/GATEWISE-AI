@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,30 +6,31 @@
 
 @layer base {
   :root {
-    --background: #070B1A;
-    --foreground: #FFFFFF;
-    
-    /* Brand Design System Tokens */
+    color-scheme: light;
+    --background: #FAF9F6;
+    --foreground: #0A0E1A;
+
+    /* Brand Design System Tokens (Strict Light Editorial + Cobalt) */
     --brand-cobalt: #2F5BFF;
-    --brand-teal: #12B5A6;
-    --brand-amber: #FFB547;
-    --brand-midnight: #070B1A;
-    --brand-permitted: #1FB36B;
+    --brand-teal: #0D9488;
+    --brand-amber: #D97706;
+    --brand-midnight: #0A0E1A;
+    --brand-permitted: #15803D;
     --brand-denied: #C93338;
-    --brand-selected: #E6ECFF;
-    
-    /* Stageshow Tokens */
-    --ss-canvas: #070B1A;
-    --ss-surface: #0E162B;
-    --ss-chrome: #141F3B;
-    --ss-well: #0B1224;
-    
+    --brand-selected: #EEF2FF;
+
+    /* Editorial Light Surface Tokens */
+    --ss-canvas: #FAF9F6;
+    --ss-surface: #FFFFFF;
+    --ss-chrome: #F2F4F8;
+    --ss-well: #E9EDF5;
+
     --brand-primary: #2F5BFF;
     --brand-deep: #10266B;
     --brand-mint: #12B5A6;
-    --brand-border: rgba(255, 255, 255, 0.12);
-    --status-verified: #1FB36B;
-    --status-alert: #FFB547;
+    --brand-border: #DCE1EC;
+    --status-verified: #15803D;
+    --status-alert: #D97706;
   }
 
   body {
@@ -38,6 +39,11 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  :where(a:any-link, button, input, select, textarea, summary):focus-visible {
+    outline: 3px solid #2F5BFF;
+    outline-offset: 2px;
   }
 }
 
@@ -136,6 +142,25 @@
 }
 
 .animate-shiny {
-  animation: shiny 6s linear infinite;
+  background-size: 200% auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-shiny {
+    animation: shiny 6s linear infinite;
+  }
+}
+
+/* Subtle paper dot grain overlay (strictly light theme) */
+.paper-halftone {
+  background-image: radial-gradient(rgba(47, 91, 255, 0.14) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.paper-grid {
+  background-image:
+    linear-gradient(to right, rgba(10, 14, 26, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 14, 26, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 

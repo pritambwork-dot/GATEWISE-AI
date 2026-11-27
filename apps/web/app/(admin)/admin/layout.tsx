@@ -336,22 +336,22 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   if (isGuardSession) {
     return (
       <DesktopOnlyGate>
-        <div className="min-h-screen bg-[#070B1A] text-white flex flex-col items-center justify-center p-6 text-center select-none">
-          <div className="w-16 h-16 rounded-3xl bg-[#C93338]/20 border border-[#C93338]/40 flex items-center justify-center text-[#C93338] mb-4">
+        <div className="min-h-screen bg-[#FAF9F6] text-[#0A0E1A] border-[6px] border-[#2F5BFF] flex flex-col items-center justify-center p-6 text-center select-none paper-grid">
+          <div className="w-16 h-16 bg-[#C93338]/10 border border-[#C93338]/30 flex items-center justify-center text-[#C93338] mb-4">
             <Shield className="w-8 h-8" />
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C93338]/15 border border-[#C93338]/30 text-[10px] font-bold text-[#C93338] uppercase tracking-wider mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#C93338]/10 border border-[#C93338]/30 font-mono text-[10px] font-bold text-[#C93338] uppercase tracking-wider mb-2">
             <span>Role-Based Access Control</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Access Restricted: Administrative Clearance Required</h1>
-          <p className="text-xs text-white/70 max-w-md mt-2 leading-relaxed">
+          <h1 className="font-display text-3xl uppercase font-bold tracking-tight text-[#0A0E1A]">Access Restricted: Administrative Clearance Required</h1>
+          <p className="text-xs text-[#475569] max-w-md mt-2 leading-relaxed">
             Security guards are strictly restricted to the mobile scanning terminal. Administrative dashboards, people registries, and system configurations require authorized institutional administrator credentials.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/guard" className="px-5 py-2.5 rounded-full bg-[#2F5BFF] text-white text-xs font-bold shadow-md hover:bg-[#254cd6] transition-all">
+            <Link href="/guard" className="px-5 py-2.5 bg-[#2F5BFF] text-white font-mono uppercase tracking-[0.08em] text-xs font-bold hover:bg-[#1E44E0] transition-all">
               Return to Guard Terminal
             </Link>
-            <Link href="/admin/login" className="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition-all">
+            <Link href="/admin/login" className="px-4 py-2.5 border border-[#0A0E1A] bg-white hover:bg-[#F2F4F8] text-[#0A0E1A] font-mono uppercase tracking-[0.08em] text-xs font-semibold transition-all">
               Sign In as Administrator
             </Link>
           </div>

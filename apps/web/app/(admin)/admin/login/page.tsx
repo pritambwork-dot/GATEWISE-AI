@@ -147,11 +147,17 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 font-sans select-none antialiased">
-      {/* LEFT COLUMN: Deep Midnight Brand Canvas (#070B1A) */}
-      <div className="relative bg-[#070B1A] text-white p-8 sm:p-14 lg:p-20 flex flex-col justify-between overflow-hidden">
-        {/* Subtle radial ambient glow */}
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#2F5BFF]/15 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-[350px] h-[350px] bg-[#12B5A6]/10 blur-[100px] rounded-full pointer-events-none" />
+      {/* LEFT COLUMN: Editorial Cobalt Brand Canvas (#2F5BFF) */}
+      <div className="relative bg-[#2F5BFF] text-white p-8 sm:p-14 lg:p-20 flex flex-col justify-between overflow-hidden">
+        {/* Subtle crisp architectural grid overlay */}
+        <div
+          className="absolute inset-0 opacity-15 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px)',
+            backgroundSize: '42px 42px',
+          }}
+        />
 
         {/* Top Header: LogoMark + GATEWISE AI */}
         <Link
