@@ -498,7 +498,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
                       Gatewise AI
                     </span>
                     <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#475569]">
-                      IIM Sambalpur
+                      Campus Security
                     </span>
                   </div>
                 </Link>
@@ -588,7 +588,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
                       )}
                       <span className="relative inline-flex h-2.5 w-2.5 bg-[#15803D]" />
                     </span>
-                    <span>LIVE CLUSTER · IIM SAMBALPUR PERIMETER · SUPABASE POSTGRESQL</span>
+                    <span>LIVE CLUSTER · CAMPUS PERIMETER · SUPABASE POSTGRESQL</span>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -1196,7 +1196,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
             <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
               <div className="text-center md:text-left">
                 <p className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#0A0E1A]">
-                  IIM Sambalpur Institutional Security Cluster
+                  GATEWISE Institutional Security Cluster
                 </p>
                 <p className="text-xs text-[#475569] mt-1">
                   Verified on Light-Only Editorial Interface · Rear-Camera Guard App · Supabase PostgreSQL
@@ -1329,7 +1329,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
               </div>
 
               <div className="pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.1em] text-white/80">
-                <span>© {new Date().getFullYear()} GATEWISE AI · IIM SAMBALPUR DEPLOYMENT</span>
+                <span>© {new Date().getFullYear()} GATEWISE AI · CAMPUS SECURITY PLATFORM</span>
                 <span>NO DEMO DATA · HMAC-SHA256 AUDITED · LIGHT EDITION</span>
               </div>
             </div>
