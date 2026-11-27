@@ -224,7 +224,6 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   const [verifyingStep, setVerifyingStep] = useState<number>(0);
   const [currentResult, setCurrentResult] = useState<VerificationResult | null>(null);
   const [cameraActive, setCameraActive] = useState<boolean>(false);
-  const [cameraFacing, setCameraFacing] = useState<'environment' | 'user'>('user');
   const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -369,17 +368,34 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         try {
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
-              facingMode: { ideal: cameraFacing },
+              facingMode: { exact: 'environment' },
               width: { ideal: 1280 },
               height: { ideal: 720 },
             },
             audio: false,
           });
         } catch {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: false,
-          });
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: { exact: 'environment' } },
+              audio: false,
+            });
+          } catch {
+            // Secondary preference for rear camera by device label or ideal environment constraint
+            const devices = await navigator.mediaDevices.enumerateDevices().catch(() => []);
+            const rearCam = devices.find(
+              (d) =>
+                d.kind === 'videoinput' &&
+                /back|rear|environment|world/i.test(d.label || '') &&
+                !/front|user|selfie/i.test(d.label || ''),
+            );
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: rearCam
+                ? { deviceId: { exact: rearCam.deviceId } }
+                : { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+              audio: false,
+            });
+          }
         }
 
         if (cancelled) {
@@ -403,15 +419,15 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
         const errName = err?.name || '';
         if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
           setCameraError(
-            'Camera access blocked. Allow camera permission in browser settings or use "Native Camera / Photo" below.',
+            'Camera access blocked. Allow back camera permission in browser settings or use "Native Camera / Photo" below.',
           );
-        } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError') {
+        } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError' || errName === 'OverconstrainedError') {
           setCameraError(
-            'No live camera hardware found. Use "Native Camera / Photo" below to snap or upload.',
+            'Phone rear camera unavailable in this browser. Tap "Native Camera / Photo" below to capture.',
           );
         } else {
           setCameraError(
-            `Camera unavailable (${err?.message || 'hardware error'}). Use "Native Camera / Photo" below.`,
+            `Rear camera unavailable (${err?.message || 'hardware error'}). Use "Native Camera / Photo" below.`,
           );
         }
       }
@@ -423,7 +439,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
       cancelled = true;
       stopActiveStream();
     };
-  }, [verificationStage, cameraFacing]);
+  }, [verificationStage]);
 
   // -------------------------------------------------------------------------
   // AUTHENTICATION LOGIC (Centralized Guard Roster + Immediate Revocation)
@@ -550,13 +566,11 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
   };
 
   const startFaceScan = () => {
-    setCameraFacing('user');
     setCameraError(null);
     setVerificationStage('viewfinder_face');
   };
 
   const startVehicleScan = () => {
-    setCameraFacing('environment');
     setCameraError(null);
     setVerificationStage('viewfinder_vehicle');
   };
@@ -1804,17 +1818,11 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </button>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#12B5A6]/20 border border-[#12B5A6]/40 text-[#12B5A6] font-mono text-[10px]">
                 <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#12B5A6] animate-pulse' : 'bg-amber-400'}`} />
-                <span>{cameraActive ? 'LIVE FACE CAMERA' : 'CAMERA STANDBY'}</span>
+                <span>{cameraActive ? 'REAR CAMERA ACTIVE' : 'REAR CAMERA STANDBY'}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => setCameraFacing((prev) => (prev === 'user' ? 'environment' : 'user'))}
-                className="px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer flex items-center gap-1 shrink-0"
-                title={lang === 'en' ? 'Switch Camera' : 'कैमरा बदलें'}
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span className="text-[10px]">{cameraFacing === 'user' ? 'Front' : 'Rear'}</span>
-              </button>
+              <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 font-mono text-[10px] shrink-0">
+                BACK CAM ONLY
+              </span>
             </div>
 
             <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 rounded-3xl overflow-hidden bg-black/50 border border-white/10">
@@ -1825,7 +1833,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 muted
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
                   cameraActive ? 'opacity-95' : 'opacity-0'
-                } ${cameraFacing === 'user' ? '-scale-x-100' : ''}`}
+                }`}
               />
 
               {/* Oval Face Guide */}
@@ -1848,8 +1856,8 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                       ? 'Centre face in the oval & tap shutter to verify.'
                       : 'चेहरा फ्रेम में रखें और सत्यापन हेतु बटन दबाएँ।'
                     : lang === 'en'
-                    ? 'Starting camera stream...'
-                    : 'कैमरा शुरू हो रहा है...'}
+                    ? 'Starting rear camera stream...'
+                    : 'बैक कैमरा शुरू हो रहा है...'}
                 </p>
               )}
             </div>
@@ -1870,12 +1878,12 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-[11px] font-semibold cursor-pointer">
                 <Upload className="w-3.5 h-3.5 text-[#12B5A6]" />
                 <span>
-                  {lang === 'en' ? 'Native Camera / Upload Photo' : 'डिवाइस कैमरा / फोटो अपलोड'}
+                  {lang === 'en' ? 'Native Back Camera / Photo' : 'बैक कैमरा / फोटो अपलोड'}
                 </span>
                 <input
                   type="file"
                   accept="image/*"
-                  capture={cameraFacing}
+                  capture="environment"
                   data-testid="viewfinder-face-native-upload"
                   onChange={(e) => handleGuardFaceFileUpload(e, true)}
                   className="hidden"
@@ -1907,16 +1915,11 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
               </button>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2F5BFF]/20 border border-[#2F5BFF]/40 text-[#2F5BFF] font-mono text-[10px]">
                 <span className={`w-1.5 h-1.5 rounded-full ${cameraActive ? 'bg-[#2F5BFF] animate-pulse' : 'bg-amber-400'}`} />
-                <span>ANPR OCR {cameraActive ? 'LIVE' : 'STANDBY'}</span>
+                <span>REAR ANPR {cameraActive ? 'LIVE' : 'STANDBY'}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => setCameraFacing((prev) => (prev === 'environment' ? 'user' : 'environment'))}
-                className="px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 font-semibold cursor-pointer flex items-center gap-1 shrink-0"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span className="text-[10px]">{cameraFacing === 'user' ? 'Front' : 'Rear'}</span>
-              </button>
+              <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/70 font-mono text-[10px] shrink-0">
+                BACK CAM ONLY
+              </span>
             </div>
 
             <div className="relative flex-1 min-h-[280px] flex flex-col items-center justify-center my-3 rounded-3xl overflow-hidden bg-black/50 border border-white/10">
