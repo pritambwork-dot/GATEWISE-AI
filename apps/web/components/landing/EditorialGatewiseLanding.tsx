@@ -610,18 +610,18 @@ export const EditorialGatewiseLanding: React.FC = () => {
                   >
                     <div className="relative inline-block">
                       <DoodleSparkle
-                        className="w-7 h-7 text-[#2F5BFF] -top-5 -left-6 sm:-left-8 pointer-events-none"
+                        className="hidden sm:block absolute w-7 h-7 text-[#2F5BFF] -top-7 -left-8 pointer-events-none"
                         color="#2F5BFF"
                       />
                       <DoodleSparkle
-                        className="w-5 h-5 text-[#0D9488] top-2 right-2 sm:-right-7 pointer-events-none"
+                        className="hidden sm:block absolute w-5 h-5 text-[#0D9488] top-1 -right-7 pointer-events-none"
                         color="#0D9488"
                       />
                       <h1 className="font-display font-bold uppercase text-[3.3rem] sm:text-[4.6rem] lg:text-[5.5rem] leading-[0.94] tracking-[-0.025em] text-[#0A0E1A]">
                         The Gate System That{' '}
-                        <span className="relative inline-block text-[#2F5BFF]">
+                        <span className="relative inline-block text-[#2F5BFF] pb-1">
                           Verifies
-                          <DoodleUnderline className="w-full h-3.5 -bottom-1.5 left-0 text-[#2F5BFF]" />
+                          <DoodleUnderline className="absolute left-0 -bottom-1 w-full h-3.5 text-[#2F5BFF] pointer-events-none" />
                         </span>{' '}
                         At Edge Speed.
                       </h1>
@@ -780,12 +780,12 @@ export const EditorialGatewiseLanding: React.FC = () => {
                       </div>
 
                       {/* 3 Clean Key-Value Specs */}
-                      <dl className="grid grid-cols-3 gap-3 pt-1 font-mono text-xs relative">
+                      <dl className="grid grid-cols-3 gap-3 pt-7 font-mono text-xs relative">
                         <div className="border border-[#DCE1EC] bg-[#FAF9F6] p-3 relative">
                           <DoodleArrowNote
                             label="rear lens!"
                             direction="left"
-                            className="hidden sm:flex -top-9 left-1 text-[#2F5BFF]"
+                            className="hidden sm:inline-flex absolute -top-7 left-0 text-[#2F5BFF] pointer-events-none"
                           />
                           <dt className="text-[9px] uppercase tracking-[0.1em] text-[#475569]">Optics</dt>
                           <dd className="font-bold text-[#0A0E1A] mt-1">Rear Cam</dd>
@@ -816,11 +816,11 @@ export const EditorialGatewiseLanding: React.FC = () => {
             {/* ================================================================= */}
             <section id="terminal" className="bg-white border-b border-[#DCE1EC]">
               <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-16 sm:py-24">
-                <div className="text-center max-w-2xl mx-auto mb-12 space-y-3 relative">
+                <div className="text-center max-w-2xl mx-auto mb-12 space-y-3 relative pt-4">
                   <DoodleArrowNote
                     label="phones only!"
                     direction="right"
-                    className="hidden md:flex -top-4 -right-24 text-[#2F5BFF]"
+                    className="hidden md:inline-flex absolute -top-3 right-12 text-[#2F5BFF] pointer-events-none"
                   />
                   <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] inline-flex items-center gap-2">
                     <span>HANDHELD FIELD TERMINAL · /GUARD</span>
@@ -828,7 +828,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
                   <h2 className="font-display font-bold uppercase text-4xl sm:text-5xl lg:text-6xl tracking-tight text-[#0A0E1A] relative inline-block">
                     Guard Mobile Web App
                     <DoodleSparkle
-                      className="w-5 h-5 -top-3 -right-7 pointer-events-none"
+                      className="hidden sm:block absolute w-5 h-5 -top-3 -right-7 pointer-events-none"
                       color="#2F5BFF"
                     />
                   </h2>
@@ -954,7 +954,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-10 mb-12 border-b border-[#DCE1EC]">
                   <div className="relative">
                     <DoodleSparkle
-                      className="w-6 h-6 -top-4 -left-6 pointer-events-none"
+                      className="hidden sm:block absolute w-6 h-6 -top-5 -left-7 pointer-events-none"
                       color="#0D9488"
                     />
                     <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] block mb-2">
@@ -1168,7 +1168,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
               <div className="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-0 py-16 sm:py-24">
                 <div className="mb-10 relative inline-block">
                   <DoodleSparkle
-                    className="w-5 h-5 -top-2 -right-7 pointer-events-none"
+                    className="hidden sm:block absolute w-5 h-5 -top-2 -right-7 pointer-events-none"
                     color="#2F5BFF"
                   />
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2F5BFF] block mb-2">
