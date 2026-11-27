@@ -38,6 +38,7 @@ import {
   SystemPanoramaDiagram,
   SurfacePreviewArtwork,
 } from '@/components/landing/EditorialVisuals';
+import { MathVisionSection } from '@/components/landing/MathVisionSection';
 import { CookieConsent } from '@/components/aura/compliance/CookieConsent';
 import { LegalModals } from '@/components/aura/compliance/LegalModals';
 import { liveSync } from '@/lib/services/live-sync';
@@ -950,6 +951,11 @@ export const EditorialGatewiseLanding: React.FC = () => {
                 </div>
               </div>
             </section>
+
+            {/* ================================================================= */}
+            {/* MATHEMATICAL FOUNDATIONS: SOFTMAX, HAAR CASCADE, COSINE & OCR    */}
+            {/* ================================================================= */}
+            <MathVisionSection animateVisuals={motionPlaying} />
 
             {/* ================================================================= */}
             {/* SECTION 4: 3-COLUMN SURFACE CARDS WITH HOVER DEPTH                */}
