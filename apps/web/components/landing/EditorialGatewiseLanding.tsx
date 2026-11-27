@@ -32,6 +32,12 @@ import {
   DoodleClipboardCheck,
   DoodleZigZagDivider,
 } from '@/components/landing/EditorialDoodles';
+import {
+  HeroPerimeterVisualizer,
+  PipelineStageVisual,
+  SystemPanoramaDiagram,
+  SurfacePreviewArtwork,
+} from '@/components/landing/EditorialVisuals';
 import { CookieConsent } from '@/components/aura/compliance/CookieConsent';
 import { LegalModals } from '@/components/aura/compliance/LegalModals';
 import { liveSync } from '@/lib/services/live-sync';
@@ -710,74 +716,8 @@ export const EditorialGatewiseLanding: React.FC = () => {
                         <span className="text-[#475569]">NODE N-01 · GATE-01</span>
                       </div>
 
-                      {/* Animated Geometric Perimeter Laser & Sonar Visual */}
-                      <div className="relative h-60 border border-[#DCE1EC] bg-[#FAF9F6] paper-halftone flex flex-col items-center justify-center p-4 overflow-hidden">
-                        {/* Horizontal Biometric Laser Sweep */}
-                        {motionPlaying && (
-                          <motion.div
-                            aria-hidden="true"
-                            className="absolute inset-x-6 h-[2px] bg-gradient-to-r from-transparent via-[#2F5BFF] to-transparent z-10 pointer-events-none"
-                            animate={{ y: [-90, 90, -90] }}
-                            transition={{ duration: 4, ease: 'easeInOut', repeat: Infinity }}
-                          />
-                        )}
-
-                        <svg viewBox="0 0 280 180" className="w-full h-full" fill="none" aria-hidden="true">
-                          {/* Blueprint crosshair */}
-                          <line x1="140" y1="10" x2="140" y2="170" stroke="#DCE1EC" strokeWidth="1" />
-                          <line x1="20" y1="90" x2="260" y2="90" stroke="#DCE1EC" strokeWidth="1" />
-
-                          {/* Animated Perimeter Arch */}
-                          <motion.path
-                            d="M90 142 V84 C90 56.386 112.386 34 140 34 C167.614 34 190 56.386 190 84 V142"
-                            stroke="#2F5BFF"
-                            strokeWidth="2.5"
-                            initial={{ pathLength: 0.4 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 1.4, ease: 'easeOut' }}
-                          />
-                          <path d="M72 142 H208" stroke="#0A0E1A" strokeWidth="2" />
-
-                          {/* Rotating Optical Scanner Reticle */}
-                          <motion.circle
-                            cx="140"
-                            cy="84"
-                            r="30"
-                            stroke="#0A0E1A"
-                            strokeWidth="1.2"
-                            strokeDasharray="4 4"
-                            animate={motionPlaying ? { rotate: 360 } : {}}
-                            transition={{ duration: 16, ease: 'linear', repeat: Infinity }}
-                            style={{ originX: '140px', originY: '84px' }}
-                          />
-
-                          {/* Expanding Radar Ring */}
-                          {motionPlaying && (
-                            <motion.circle
-                              cx="140"
-                              cy="84"
-                              r="18"
-                              stroke="#0D9488"
-                              strokeWidth="1.2"
-                              animate={{ scale: [0.8, 1.85], opacity: [0.8, 0] }}
-                              transition={{ duration: 2.2, repeat: Infinity }}
-                              style={{ originX: '140px', originY: '84px' }}
-                            />
-                          )}
-
-                          <circle cx="140" cy="84" r="6" fill="#0D9488" />
-
-                          {/* Annotation Callouts */}
-                          <rect x="18" y="24" width="66" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
-                          <text x="51" y="38" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold">SFACE 128D</text>
-                          <rect x="196" y="24" width="66" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
-                          <text x="229" y="38" textAnchor="middle" className="fill-[#2F5BFF] font-mono text-[8px] font-bold">ANPR SYNC</text>
-                          <rect x="18" y="132" width="66" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
-                          <text x="51" y="146" textAnchor="middle" className="fill-[#0D9488] font-mono text-[8px] font-bold">REAR CAM</text>
-                          <rect x="196" y="132" width="66" height="22" fill="#FFFFFF" stroke="#DCE1EC" />
-                          <text x="229" y="146" textAnchor="middle" className="fill-[#0A0E1A] font-mono text-[8px] font-bold">RBAC LOCK</text>
-                        </svg>
-                      </div>
+                      {/* Animated Interactive Perimeter Scan & Sync Graph Visual */}
+                      <HeroPerimeterVisualizer animateVisuals={motionPlaying} />
 
                       {/* 3 Clean Key-Value Specs */}
                       <dl className="grid grid-cols-3 gap-3 pt-7 font-mono text-xs relative">
@@ -886,6 +826,11 @@ export const EditorialGatewiseLanding: React.FC = () => {
                         </button>
                       </div>
 
+                      <PipelineStageVisual
+                        activeStageIdx={activeStageIdx}
+                        animateVisuals={motionPlaying}
+                      />
+
                       <div className="space-y-3">
                         {PIPELINE_STAGES.map((stage, idx) => {
                           const isActive = activeStageIdx === idx;
@@ -945,6 +890,11 @@ export const EditorialGatewiseLanding: React.FC = () => {
                 </div>
               </div>
             </section>
+
+            {/* ================================================================= */}
+            {/* VISUAL SYNC BLUEPRINT BAND                                        */}
+            {/* ================================================================= */}
+            <SystemPanoramaDiagram animateVisuals={motionPlaying} />
 
             {/* ================================================================= */}
             {/* SECTION 3: 6-TILE ANIMATED EDITORIAL CAPABILITIES GRID (#01 - #06) */}
@@ -1020,32 +970,37 @@ export const EditorialGatewiseLanding: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-                  {[
-                    {
-                      eyebrow: 'SMARTPHONES · REAR CAM ONLY',
-                      name: 'Guard App',
-                      cta: 'Open /guard Terminal',
-                      href: '/guard',
-                      icon: <Camera className="w-4 h-4 text-[#2F5BFF]" aria-hidden="true" />,
-                      sub: 'Mobile gate verification & request submission',
-                    },
-                    {
-                      eyebrow: 'ADMINISTRATOR PORTAL',
-                      name: 'Admin Desk',
-                      cta: 'Launch Command Centre',
-                      href: '/admin/login',
-                      icon: <ShieldCheck className="w-4 h-4 text-[#2F5BFF]" aria-hidden="true" />,
-                      sub: 'People DB, Vehicles, Guards & Live Gate Feed',
-                    },
-                    {
-                      eyebrow: 'CLOUD POSTGRESQL + RLS',
-                      name: 'Edge API',
-                      cta: 'Inspect Architecture',
-                      href: '/how-it-works',
-                      icon: <Database className="w-4 h-4 text-[#2F5BFF]" aria-hidden="true" />,
-                      sub: 'Private signed storage, HMAC tokens & audit logs',
-                    },
-                  ].map((surface, i) => (
+                  {(
+                    [
+                      {
+                        kind: 'guard' as const,
+                        eyebrow: 'SMARTPHONES · REAR CAM ONLY',
+                        name: 'Guard App',
+                        cta: 'Open /guard Terminal',
+                        href: '/guard',
+                        icon: <Camera className="w-4 h-4 text-[#2F5BFF]" aria-hidden="true" />,
+                        sub: 'Mobile gate verification & request submission',
+                      },
+                      {
+                        kind: 'admin' as const,
+                        eyebrow: 'ADMINISTRATOR PORTAL',
+                        name: 'Admin Desk',
+                        cta: 'Launch Command Centre',
+                        href: '/admin/login',
+                        icon: <ShieldCheck className="w-4 h-4 text-[#2F5BFF]" aria-hidden="true" />,
+                        sub: 'People DB, Vehicles, Guards & Live Gate Feed',
+                      },
+                      {
+                        kind: 'api' as const,
+                        eyebrow: 'CLOUD POSTGRESQL + RLS',
+                        name: 'Edge API',
+                        cta: 'Inspect Architecture',
+                        href: '/how-it-works',
+                        icon: <Database className="w-4 h-4 text-[#2F5BFF]" aria-hidden="true" />,
+                        sub: 'Private signed storage, HMAC tokens & audit logs',
+                      },
+                    ]
+                  ).map((surface, i) => (
                     <motion.div
                       key={surface.name}
                       initial={{ opacity: 0, y: 16 }}
@@ -1053,16 +1008,18 @@ export const EditorialGatewiseLanding: React.FC = () => {
                       viewport={{ once: true, amount: 0.2 }}
                       whileHover={{ y: -4 }}
                       transition={{ duration: 0.35, delay: i * 0.08 }}
-                      className="relative min-h-[300px] bg-white border border-[#DCE1EC] hover:border-[#2F5BFF] hover:shadow-[6px_6px_0px_#2F5BFF] paper-halftone p-8 flex flex-col items-center justify-between text-center transition-shadow"
+                      className="relative bg-white border border-[#DCE1EC] hover:border-[#2F5BFF] hover:shadow-[6px_6px_0px_#2F5BFF] paper-halftone p-6 flex flex-col items-center justify-between text-center space-y-5 transition-shadow"
                     >
-                      <div className="space-y-2 mt-4">
+                      <SurfacePreviewArtwork kind={surface.kind} animateVisuals={motionPlaying} />
+
+                      <div className="space-y-2">
                         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#475569] block">
                           {surface.eyebrow}
                         </span>
-                        <h3 className="font-display font-bold text-4xl uppercase tracking-tight text-[#0A0E1A]">
+                        <h3 className="font-display font-bold text-3xl uppercase tracking-tight text-[#0A0E1A]">
                           {surface.name}
                         </h3>
-                        <p className="text-xs text-[#475569] max-w-[220px] mx-auto pt-1">
+                        <p className="text-xs text-[#475569] max-w-[230px] mx-auto pt-0.5">
                           {surface.sub}
                         </p>
                       </div>

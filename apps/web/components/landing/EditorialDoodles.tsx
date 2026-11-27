@@ -167,3 +167,76 @@ export const DoodleZigZagDivider: React.FC<{ className?: string }> = ({
     />
   </svg>
 );
+
+export const DoodleCameraScan: React.FC<{ className?: string; animate?: boolean }> = ({
+  className = 'w-20 h-20',
+  animate = true,
+}) => (
+  <svg viewBox="0 0 80 80" fill="none" className={className} aria-hidden="true">
+    <rect x="20" y="10" width="40" height="60" rx="7" stroke="#0A0E1A" strokeWidth="2.2" fill="#FFFFFF" />
+    <path d="M35 16H45" stroke="#0A0E1A" strokeWidth="2" strokeLinecap="round" />
+    <rect x="25" y="22" width="30" height="36" rx="2" stroke="#2F5BFF" strokeWidth="1.6" strokeDasharray="3 3" />
+    <circle cx="40" cy="39" r="9" stroke="#0D9488" strokeWidth="1.8" />
+    <circle cx="37" cy="37" r="1.3" fill="#0A0E1A" />
+    <circle cx="43" cy="37" r="1.3" fill="#0A0E1A" />
+    <path d="M36 42C38 44 42 44 44 42" stroke="#0A0E1A" strokeWidth="1.5" strokeLinecap="round" />
+    <motion.line
+      x1="27"
+      y1="32"
+      x2="53"
+      y2="32"
+      stroke="#2F5BFF"
+      strokeWidth="1.8"
+      animate={animate ? { y1: [26, 52, 26], y2: [26, 52, 26] } : {}}
+      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+    />
+    <circle cx="40" cy="64" r="2.2" fill="#2F5BFF" />
+    <path d="M10 34C13 30 13 44 10 40M70 34C67 30 67 44 70 40" stroke="#2F5BFF" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+export const DoodleSyncLoop: React.FC<{ className?: string; animate?: boolean }> = ({
+  className = 'w-28 h-12',
+  animate = true,
+}) => (
+  <svg viewBox="0 0 120 48" fill="none" className={className} aria-hidden="true">
+    <motion.path
+      d="M16 18C32 4 88 4 104 18"
+      stroke="#2F5BFF"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeDasharray="4 4"
+      animate={animate ? { strokeDashoffset: [0, -16] } : {}}
+      transition={{ duration: 2.2, repeat: Infinity, ease: 'linear' }}
+    />
+    <path d="M98 18H105V11" stroke="#2F5BFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <motion.path
+      d="M104 30C88 44 32 44 16 30"
+      stroke="#0D9488"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeDasharray="4 4"
+      animate={animate ? { strokeDashoffset: [0, -16] } : {}}
+      transition={{ duration: 2.2, repeat: Infinity, ease: 'linear' }}
+    />
+    <path d="M22 30H15V37" stroke="#0D9488" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="60" cy="24" r="6" fill="#EEF2FF" stroke="#2F5BFF" strokeWidth="1.8" />
+    <circle cx="60" cy="24" r="2" fill="#0D9488" />
+  </svg>
+);
+
+export const DoodleShieldCheck: React.FC<{ className?: string }> = ({
+  className = 'w-14 h-14',
+}) => (
+  <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
+    <path
+      d="M32 8L52 16V31C52 44 43 52 32 56C21 52 12 44 12 31V16L32 8Z"
+      fill="#FFFFFF"
+      stroke="#0A0E1A"
+      strokeWidth="2.2"
+      strokeLinejoin="round"
+    />
+    <path d="M23 32L29.5 38.5L42 25" stroke="#2F5BFF" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="52" cy="12" r="2" fill="#0D9488" />
+  </svg>
+);
