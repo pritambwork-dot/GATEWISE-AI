@@ -106,31 +106,36 @@ const appleSpring = { type: 'spring', stiffness: 500, damping: 35 };
 const gentleSpring = { type: 'spring', stiffness: 300, damping: 30 };
 const smoothSpring = { type: 'spring', stiffness: 380, damping: 32 };
 
-/* ── Desktop-only gate ───────────────────────────────────────── */
+/* ── Desktop-only gate (No Mobile Phone Access, No Bypass) ──── */
 function DesktopOnlyGate({ children }: { children: React.ReactNode }) {
-  const [isNarrow, setIsNarrow] = useState(false);
+  const [isMobileBlocked, setIsMobileBlocked] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [bypassed, setBypassed] = useState(false);
   const { t } = useLanguage();
 
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined' && sessionStorage.getItem('gatewise_desktop_override') === 'true') {
-      setBypassed(true);
-    }
+    try {
+      sessionStorage.removeItem('gatewise_desktop_override');
+    } catch {}
+
     const check = () => {
-      // Strict check: Block mobile phones (< 768px or coarse mobile touch phone without desktop screen)
-      const isMobileDevice = window.innerWidth < 768 || (/iPhone|iPod|Android.*Mobile|webOS|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth < 1024);
-      setIsNarrow(isMobileDevice);
+      const ua = navigator.userAgent || '';
+      const isPhoneUA =
+        /Android.*Mobile|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua) ||
+        Boolean((navigator as any).userAgentData?.mobile);
+      const isSmallViewport = window.innerWidth < 768;
+      setIsMobileBlocked(isSmallViewport || isPhoneUA);
     };
     check();
+    setMounted(true);
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  if (!mounted || bypassed) return <>{children}</>;
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#F8FAFC]" aria-busy="true" />;
+  }
 
-  if (isNarrow) {
+  if (isMobileBlocked) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -146,7 +151,7 @@ function DesktopOnlyGate({ children }: { children: React.ReactNode }) {
           <div className="w-16 h-16 rounded-2xl bg-[#2F5BFF] flex items-center justify-center shadow-[0_4px_20px_rgba(47,91,255,0.25)]">
             <LogoMark className="w-10 h-10" />
           </div>
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-100 border border-slate-200 text-[#12B5A6]">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-100 border border-slate-200 text-[#2F5BFF]">
             <Monitor className="w-6 h-6" />
           </div>
           <div className="space-y-2">
@@ -157,22 +162,12 @@ function DesktopOnlyGate({ children }: { children: React.ReactNode }) {
               {t.desktopGateDesc}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
-            <button
-              type="button"
-              onClick={() => {
-                sessionStorage.setItem('gatewise_desktop_override', 'true');
-                setBypassed(true);
-              }}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#2F5BFF] text-white font-bold text-xs hover:bg-[#2549D3] active:scale-95 transition-all shadow-md cursor-pointer"
-            >
-              {t.desktopGateBypass}
-            </button>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] text-slate-600 font-mono bg-slate-100 border border-slate-200">
-            <span className="w-2 h-2 rounded-full bg-[#12B5A6] animate-pulse" />
-            IIM Sambalpur Security Desk
-          </div>
+          <Link
+            href="/"
+            className="w-full py-2.5 px-4 rounded-xl bg-[#2F5BFF] text-white font-bold text-xs hover:bg-[#2549D3] transition-all shadow-md text-center"
+          >
+            Return to Home
+          </Link>
         </motion.div>
       </motion.div>
     );
@@ -323,7 +318,19 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [pathname, authLoading, user, router]);
 
-  if (pathname === '/admin/login') return <>{children}</>;
+  if (pathname === '/admin/login') {
+    return <DesktopOnlyGate>{children}</DesktopOnlyGate>;
+  }
+
+  if (authLoading || !user) {
+    return (
+      <DesktopOnlyGate>
+        <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center p-6">
+          <div className="w-6 h-6 border-2 border-[#2F5BFF] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </DesktopOnlyGate>
+    );
+  }
 
   // STRICT RBAC ISOLATION: Guards must NEVER have access to admin dashboard
   const isGuardSession =
