@@ -614,17 +614,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
 
-              {/* Institution Badge */}
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEF2FF] border border-[#2F5BFF]/20 text-xs font-mono text-[#2F5BFF]">
-                <span>{t.campusActiveBadge}</span>
-              </div>
-
-              {/* Vector Badge */}
-              <div className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-[11px] font-mono text-slate-700">
-                <span>{t.sfaceScore}:</span>
-                <span className="text-slate-900 font-bold">Ready</span>
-              </div>
-
               {/* Notification Bell */}
               <div className="relative" ref={notifRef}>
                 <button
