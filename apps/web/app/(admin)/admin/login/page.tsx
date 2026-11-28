@@ -70,8 +70,8 @@ export default function AdminLoginPage() {
   const { login } = useAuth();
   const { language, setLanguage } = useLanguage();
 
-  const [adminId, setAdminId] = useState('ADM-001');
-  const [password, setPassword] = useState('admin123');
+  const [adminId, setAdminId] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [protoState, setProtoState] = useState<PrototypeState>('default');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,11 +85,11 @@ export default function AdminLoginPage() {
 
     switch (state) {
       case 'default':
-        setAdminId('ADM-001');
-        setPassword('admin123');
+        setAdminId('');
+        setPassword('');
         break;
       case 'focus':
-        setAdminId('admin@institution.edu');
+        setAdminId('');
         setPassword('');
         break;
       case 'validation_error':
@@ -98,21 +98,14 @@ export default function AdminLoginPage() {
         setErrorMessage(translations[language].errValidation);
         break;
       case 'invalid_credentials':
-        setAdminId('ADM-999');
-        setPassword('wrong-pass');
         setErrorMessage(translations[language].errInvalidCreds);
         break;
       case 'account_disabled':
-        setAdminId('ADM-SUSPENDED');
-        setPassword('••••••••');
         setErrorMessage(translations[language].errDisabled);
         break;
       case 'loading':
-        setAdminId('ADM-001');
-        setPassword('••••••••');
         break;
       case 'session_expired':
-        setAdminId('ADM-001');
         setPassword('');
         setErrorMessage(translations[language].errSessionExpired);
         break;
