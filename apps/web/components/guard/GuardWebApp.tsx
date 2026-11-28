@@ -1115,8 +1115,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
 
         <div className="flex items-center gap-2">
           {/* Live Sync Pill */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1FB36B]/15 border border-[#1FB36B]/30 text-[10px] font-semibold text-[#1FB36B]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1FB36B] animate-pulse" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2F5BFF]/10 border border-[#2F5BFF]/25 text-[10px] font-semibold text-[#2F5BFF]">
             <span>LIVE SYNC</span>
           </div>
 
@@ -1212,8 +1211,7 @@ export const GuardWebApp: React.FC<GuardWebAppProps> = ({ embedded = false, onEv
                 <span className={`text-[10px] uppercase font-bold mb-1 ${false ? 'text-white/50' : 'text-black/40'}`}>
                   {lang === 'en' ? 'Live Cloud Sync' : 'केंद्रीय सिंक'}
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-600 text-[10px] font-bold border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2F5BFF]/10 text-[#2F5BFF] text-[10px] font-bold border border-[#2F5BFF]/25">
                   PostgreSQL Active
                 </span>
               </div>

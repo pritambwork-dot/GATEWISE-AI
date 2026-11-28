@@ -136,7 +136,7 @@ export const PhoneOnlyGate: React.FC<PhoneOnlyGateProps> = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#475569]">
-            <span className="w-1.5 h-1.5 bg-[#15803D]" />
+            <span className="w-1.5 h-1.5 bg-[#2F5BFF]" />
             <span>IIM Sambalpur Mobile-Only Guard Access Enforced</span>
           </div>
         </motion.div>

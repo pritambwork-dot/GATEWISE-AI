@@ -615,8 +615,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Institution Badge */}
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-xs font-mono text-emerald-800">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EEF2FF] border border-[#2F5BFF]/20 text-xs font-mono text-[#2F5BFF]">
                 <span>{t.campusActiveBadge}</span>
               </div>
 

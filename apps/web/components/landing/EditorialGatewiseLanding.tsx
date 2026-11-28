@@ -784,10 +784,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
                     <div className="w-full max-w-[360px] bg-white rounded-[36px] border border-[#CBD5E1] p-2.5 shadow-[0_20px_50px_-15px_rgba(47,91,255,0.18)]">
                       <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#E2E8F0] mb-2 font-mono text-[10px] text-[#475569]">
                         <span className="font-bold text-[#0A0E1A]">GATEWISE GUARD // LIVE UI</span>
-                        <span className="inline-flex items-center gap-1 text-[#15803D] font-bold">
-                          <span className="w-1.5 h-1.5 bg-[#15803D] rounded-full animate-pulse" />
-                          SYNC
-                        </span>
+                        <span className="font-bold text-[#2F5BFF]">SYNC</span>
                       </div>
                       <div className="h-[620px] overflow-y-auto rounded-[28px]">
                         <GuardWebApp embedded={true} />
@@ -851,7 +848,7 @@ export const EditorialGatewiseLanding: React.FC = () => {
                                 <div className="flex items-center gap-2">
                                   <h4 className="font-bold text-sm text-[#0A0E1A]">{stage.title}</h4>
                                   {isActive && (
-                                    <span className="w-2 h-2 bg-[#15803D] rounded-full animate-pulse" />
+                                    <span className="w-2 h-2 bg-[#2F5BFF] rounded-full animate-pulse" />
                                   )}
                                 </div>
                                 <p className="text-xs text-[#475569] mt-1 leading-relaxed">
