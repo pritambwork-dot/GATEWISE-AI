@@ -1,311 +1,281 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   UserCheck,
-  Search,
   Plus,
-  Clock,
+  Search,
   CheckCircle2,
-  AlertOctagon,
-  Calendar,
-  Building,
-  User,
-  DoorClosed
+  X,
+  RefreshCw,
 } from 'lucide-react';
+import { liveSync } from '@/lib/services/live-sync';
+import { extractFaceDescriptorFromFile } from '@/lib/biometrics';
+import { RegisteredPerson } from '@/types';
 
 export default function VisitorManagementPage() {
-  const [activeTab, setActiveTab] = useState<'register' | 'history' | 'record'>('register');
+  const [people, setPeople] = useState<RegisteredPerson[]>(() => liveSync.getPersons());
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [department, setDepartment] = useState('');
+  const [purpose, setPurpose] = useState('');
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [faceEmbedding, setFaceEmbedding] = useState<number[] | undefined>(undefined);
+  const [submitting, setSubmitting] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sync = () => setPeople([...liveSync.getPersons()]);
+    sync();
+    const unsub = liveSync.subscribe(sync);
+    liveSync.refreshAdminState().catch(() => {});
+    return () => unsub();
+  }, []);
+
+  const visitors = useMemo(() => {
+    return people
+      .filter((p) => p.category === 'Visitor' || p.category === 'Contractor' || p.category === 'Delivery' || p.category === 'Temporary Staff')
+      .filter((p) => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          p.full_name.toLowerCase().includes(q) ||
+          (p.phone || '').toLowerCase().includes(q) ||
+          (p.department || '').toLowerCase().includes(q)
+        );
+      });
+  }, [people, searchQuery]);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ext = await extractFaceDescriptorFromFile(file);
+    if (ext.dataUrl) setPhotoPreview(ext.dataUrl);
+    if (ext.ok && ext.embedding) setFaceEmbedding(ext.embedding);
+  };
+
+  const handleRegisterVisitor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim()) return;
+    setSubmitting(true);
+    try {
+      await liveSync.addPerson({
+        full_name: fullName.trim(),
+        phone: phone.trim() || undefined,
+        category: 'Visitor',
+        department: department.trim() || 'Guest Visit',
+        registration_notes: purpose.trim() || 'Registered via Admin Visitor Desk',
+        account_status: 'TEMPORARILY_AUTHORIZED',
+        creation_source: 'ADMIN_CREATED',
+        created_by_id: 'ADMIN',
+        created_by_name: 'Administrator',
+        valid_from: new Date().toISOString(),
+        photo_url: photoPreview || undefined,
+        face_embedding: faceEmbedding,
+        authorized_gates: ['GATE-01', 'GATE-02'],
+        valid_until: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      });
+      setNotice(`Visitor "${fullName.trim()}" registered and synced to central database.`);
+      setModalOpen(false);
+      setFullName('');
+      setPhone('');
+      setDepartment('');
+      setPurpose('');
+      setPhotoPreview(null);
+      setFaceEmbedding(undefined);
+    } catch (err: any) {
+      setNotice(err?.message || 'Failed to register visitor.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
-      {/* Header */}
-      {activeTab === 'record' ? (
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                Visitor record
-              </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
-                Confirmed core capability
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Identity, visit details and movement for one visitor.
-            </p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            Visitor Management
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Register and manage temporary campus visitors synced live to gate terminals.
+          </p>
+        </div>
 
+        <div className="flex items-center gap-2.5 self-start">
           <button
-            onClick={() => setActiveTab('register')}
-            className="px-4 py-2 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            type="button"
+            onClick={() => liveSync.refreshAdminState()}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:border-[#2F5BFF] cursor-pointer"
           >
-            Back to visitors
+            <RefreshCw className="w-3.5 h-3.5 text-[#2F5BFF]" />
+            <span>Sync</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Register visitor</span>
           </button>
         </div>
-      ) : (
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                Visitor management
-              </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EBF0FF] text-[#2F5BFF]">
-                Confirmed core capability
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Expected, current and past visitors, with a real movement history.
-            </p>
-          </div>
+      </div>
 
-          <button className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs">
-            Register visitor
+      {notice && (
+        <div className="p-3.5 rounded-xl bg-[#EEF2FF] border border-[#2F5BFF]/20 text-xs font-semibold text-[#2F5BFF] flex items-center justify-between">
+          <span className="inline-flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" />
+            {notice}
+          </span>
+          <button type="button" onClick={() => setNotice(null)} className="cursor-pointer">
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* Subtabs for register vs history */}
-      {activeTab !== 'record' && (
-        <div className="inline-flex items-center p-1 bg-white border border-slate-200 rounded-full shadow-xs text-xs font-medium text-slate-600">
-          <button
-            onClick={() => setActiveTab('register')}
-            className={`px-4 py-1.5 rounded-full transition-colors ${
-              activeTab === 'register'
-                ? 'bg-[#2F5BFF] text-white shadow-xs font-semibold'
-                : 'hover:text-slate-900 text-slate-600'
-            }`}
-          >
-            Visitor register
-          </button>
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`px-4 py-1.5 rounded-full transition-colors ${
-              activeTab === 'history'
-                ? 'bg-[#2F5BFF] text-white shadow-xs font-semibold'
-                : 'hover:text-slate-900 text-slate-600'
-            }`}
-          >
-            Movement history
-          </button>
-        </div>
-      )}
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search visitors by name, phone, or organization..."
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#2F5BFF]"
+        />
+      </div>
 
-      {/* VIEW: Visitor Record (Page 22) */}
-      {activeTab === 'record' && (
-        <div className="space-y-6">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search movement"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
-            />
-          </div>
-
-          {/* Table Container */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    <th className="px-5 py-3">TIME</th>
-                    <th className="px-5 py-3">STATUS</th>
-                    <th className="px-5 py-3">GATE</th>
-                    <th className="px-5 py-3">RECORDED BY</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td colSpan={4} className="py-20 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
-                          <UserCheck className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-base font-bold text-slate-900 mb-1">No movement recorded</h3>
-                        <p className="text-xs text-slate-500 max-w-sm">
-                          The timeline shows Expected, Checked In, Checked Out, Cancelled and Expired, only if they happened.
-                        </p>
-                      </div>
+      {/* Visitors Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-mono uppercase text-slate-500">
+                <th className="py-3 px-4">Visitor</th>
+                <th className="py-3 px-4">Phone</th>
+                <th className="py-3 px-4">Organization</th>
+                <th className="py-3 px-4">Purpose</th>
+                <th className="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-xs">
+              {visitors.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-slate-400">
+                    <UserCheck className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                    No visitors registered yet. Click &ldquo;Register visitor&rdquo; to issue a pass.
+                  </td>
+                </tr>
+              ) : (
+                visitors.map((v) => (
+                  <tr key={v.id} className="hover:bg-slate-50/70">
+                    <td className="py-3 px-4 font-semibold text-slate-900">{v.full_name}</td>
+                    <td className="py-3 px-4 font-mono text-slate-600">{v.phone || '—'}</td>
+                    <td className="py-3 px-4 text-slate-600">{v.department || '—'}</td>
+                    <td className="py-3 px-4 text-slate-600">{v.registration_notes || '—'}</td>
+                    <td className="py-3 px-4">
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF2FF] text-[#2F5BFF]">
+                        {v.account_status}
+                      </span>
                     </td>
                   </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
-              <span>0 shown · count unavailable until the backend responds</span>
-              <div className="flex items-center gap-2">
-                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Previous</button>
-                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Next</button>
-              </div>
-            </div>
-          </div>
-
-          {/* 3 Detail Cards (Page 22 Bottom) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">Visitor identity</h3>
-              <div className="space-y-3 text-xs divide-y divide-slate-100">
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Visitor ID</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Name</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Organisation</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Linked person reference</span><span className="font-mono text-slate-700">—</span></div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">Visit information</h3>
-              <div className="space-y-3 text-xs divide-y divide-slate-100">
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Host</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Department</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Purpose</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Gate</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Expected arrival</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Expected departure</span><span className="font-mono text-slate-700">—</span></div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">Approval and photograph</h3>
-              <div className="space-y-3 text-xs divide-y divide-slate-100">
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Approval state</span><span className="font-mono text-slate-700">—</span></div>
-                <div className="flex items-center justify-between pt-2"><span className="text-slate-500">Photograph (if authorised)</span><span className="font-mono text-slate-700">—</span></div>
-              </div>
-            </div>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
 
-      {/* VIEW: Visitor Register (Page 21) */}
-      {activeTab !== 'record' && (
-        <div className="space-y-6">
-          {/* 5 Stat Cards Grid (Page 21) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#1FB36B]" />
-                <span className="text-xs font-medium text-slate-700">Expected visitors</span>
-              </div>
-              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
-              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
+      {/* Register Visitor Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <form
+            onSubmit={handleRegisterVisitor}
+            className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md p-6 space-y-4 text-xs"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-slate-900">Register Visitor</h2>
+              <button type="button" onClick={() => setModalOpen(false)} className="cursor-pointer">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
             </div>
 
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#1FB36B]" />
-                <span className="text-xs font-medium text-slate-700">Currently inside</span>
-              </div>
-              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
-              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-slate-400" />
-                <span className="text-xs font-medium text-slate-700">Checked out</span>
-              </div>
-              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
-              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-slate-400" />
-                <span className="text-xs font-medium text-slate-700">Expired visits</span>
-              </div>
-              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
-              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
-                <span className="text-xs font-medium text-slate-700">Pending approvals</span>
-              </div>
-              <div className="my-3 text-2xl font-bold text-slate-900">—</div>
-              <div><span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FFF4E5] text-[#B45309]">Awaiting backend</span></div>
-            </div>
-          </div>
-
-          {/* Filters Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Full Name *</label>
               <input
                 type="text"
-                placeholder="Search visitors"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#2F5BFF]"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Visitor full name"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-slate-900"
               />
             </div>
-            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
-              <option value="">Status</option>
-              <option value="Expected">Expected</option>
-              <option value="Inside">Inside</option>
-            </select>
-            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
-              <option value="">Host</option>
-              <option value="Dean">Dean Office</option>
-            </select>
-            <select className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 focus:outline-hidden focus:border-[#2F5BFF]">
-              <option value="">Date</option>
-              <option value="Today">Today</option>
-            </select>
-          </div>
 
-          {/* Table Container */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/60 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    <th className="px-5 py-3">VISITOR ID</th>
-                    <th className="px-5 py-3">NAME</th>
-                    <th className="px-5 py-3">HOST</th>
-                    <th className="px-5 py-3">ORGANISATION</th>
-                    <th className="px-5 py-3">PURPOSE</th>
-                    <th className="px-5 py-3">EXPECTED ARRIVAL</th>
-                    <th className="px-5 py-3">EXPECTED DEPARTURE</th>
-                    <th className="px-5 py-3">CHECK-IN</th>
-                    <th className="px-5 py-3">CHECK-OUT</th>
-                    <th className="px-5 py-3">STATUS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td colSpan={10} className="py-20 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="w-12 h-12 rounded-2xl bg-[#EBF0FF] text-[#2F5BFF] flex items-center justify-center mb-3">
-                          <UserCheck className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-base font-bold text-slate-900 mb-1">No visitors</h3>
-                        <p className="text-xs text-slate-500 max-w-sm mb-4">
-                          Registered visitors will appear here.
-                        </p>
-                        <button
-                          onClick={() => setActiveTab('record')}
-                          className="px-4 py-2 rounded-full text-xs font-medium bg-[#2F5BFF] text-white hover:bg-[#254EDB] transition-colors shadow-xs"
-                        >
-                          Preview visitor record
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Phone Number</label>
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+91 9876543210"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-slate-900"
+              />
             </div>
 
-            <div className="px-5 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-white">
-              <span>0 shown · count unavailable until the backend responds</span>
-              <div className="flex items-center gap-2">
-                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Previous</button>
-                <button disabled className="px-3 py-1 rounded-lg border border-slate-200 text-slate-300 text-xs bg-slate-50 cursor-not-allowed">Next</button>
-              </div>
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Organization / Host</label>
+              <input
+                type="text"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                placeholder="Company or Host Name"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-slate-900"
+              />
             </div>
-          </div>
+
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Visit Purpose</label>
+              <input
+                type="text"
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                placeholder="Meeting / Delivery / Maintenance"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-slate-900"
+              />
+            </div>
+
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Visitor Photograph (Optional)</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handlePhotoUpload}
+                className="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-[#EEF2FF] file:text-[#2F5BFF] file:font-semibold"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-2 rounded-full font-semibold border border-slate-200 text-slate-700 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting || !fullName.trim()}
+                className="px-5 py-2 rounded-full font-semibold bg-[#2F5BFF] text-white disabled:opacity-50 cursor-pointer"
+              >
+                {submitting ? 'Registering...' : 'Register Visitor'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>
